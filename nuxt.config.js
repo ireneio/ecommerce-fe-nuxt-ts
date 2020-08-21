@@ -21,20 +21,20 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        content: process.env.npm_package_description || '',
-      },
+        content: process.env.npm_package_description || ''
+      }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['~/assets/scss/main.scss'],
   /*
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: [],
+  plugins: ['~/plugins/bootstrapVue.ts'],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components
@@ -50,7 +50,7 @@ export default {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/pwa',
+    '@nuxtjs/pwa'
   ],
   /*
    ** Axios module configuration
@@ -61,5 +61,5 @@ export default {
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/
    */
-  build: {},
+  build: {}
 }

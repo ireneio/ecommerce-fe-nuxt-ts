@@ -2,6 +2,9 @@
   <div class="container">
     <div>
       <Logo />
+      <button class="btn btn-primary">
+        TEST
+      </button>
       <h1 class="title">
         stayfun
       </h1>

@@ -1,3 +1,3 @@
 <template>
-  <div>shopping mall coupon</div>
+  <div>shopping mall couponaaaaaaaaaaaaaaaaaaaa</div>
 </template>

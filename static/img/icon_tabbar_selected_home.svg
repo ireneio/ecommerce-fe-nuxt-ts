@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13">
+    <defs>
+        <style>
+            .cls-2{fill:#fabf13}
+        </style>
+    </defs>
+    <g id="icon_tabbar_selected_home" transform="translate(.499 .499)">
+        <path id="Rectangle_83" fill="none" d="M0 0H13V13H0z" data-name="Rectangle 83" transform="translate(-.499 -.499)"/>
+        <g id="icon" transform="translate(.9 1.072)">
+            <path id="Path_35" d="M160.86 162.858a.964.964 0 1 0-.964-.964.965.965 0 0 0 .964.964z" class="cls-2" data-name="Path 35" transform="translate(-159.896 -160.931)"/>
+            <path id="Path_36" d="M193.3 162.858a.964.964 0 1 0-.964-.964.965.965 0 0 0 .964.964z" class="cls-2" data-name="Path 36" transform="translate(-184.091 -160.931)"/>
+            <path id="Path_37" d="M169.879 173.312a.921.921 0 0 0-1.575.665c0 .261.017.53.034.814.073 1.171.149 2.382-.985 2.981a5.235 5.235 0 0 1-4.662 0c-1.131-.6-1.055-1.808-.982-2.98.018-.284.034-.553.034-.814a.924.924 0 1 0-1.847 0v2.252a3.374 3.374 0 0 0 .546 1.891 3.65 3.65 0 0 0 1.512 1.286 9.958 9.958 0 0 0 3.03.454h.093a9.94 9.94 0 0 0 3.016-.454 3.649 3.649 0 0 0 1.511-1.286 3.372 3.372 0 0 0 .546-1.891v-2.252a.9.9 0 0 0-.271-.666z" class="cls-2" data-name="Path 37" transform="translate(-159.896 -169.972)"/>
+        </g>
+    </g>
+</svg>

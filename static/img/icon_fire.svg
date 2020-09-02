@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_fire" width="14" height="14" viewBox="0 0 14 14">
+    <path id="Rectangle_58" fill="none" d="M0 0H14V14H0z" data-name="Rectangle 58"/>
+    <circle id="Ellipse_7" cx="7" cy="7" r="7" fill="#f87b3d" data-name="Ellipse 7"/>
+    <path id="fire" fill="#fff" d="M115.977 64.994q1.046-1.514.087-2.493c-1.394-1.336-.784-2.226-.784-2.226a3.475 3.475 0 0 0-1.763 2.051 3.031 3.031 0 0 0 .978 2.668h-.141c-1.77-.59-3.244-1.758-3.244-3.539 0-3.328 3.3-2.772 3.539-5.9 0 0 3.15.979 2.453 4.007a3.46 3.46 0 0 0 .7-.8 4.352 4.352 0 0 1 1.568 3.027q0 1.87-3.137 3.205h-.254z" transform="translate(-108.379 -53.48)"/>
+</svg>

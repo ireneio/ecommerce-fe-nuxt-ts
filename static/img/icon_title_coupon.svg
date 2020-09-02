@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_title_coupon" width="26" height="26" viewBox="0 0 26 26">
+    <g id="icon_coupon">
+        <path id="Rectangle_57" fill="none" d="M0 0H26V26H0z" data-name="Rectangle 57"/>
+        <g id="ios" transform="translate(.838 1)">
+            <g id="icon包">
+                <g id="Group-21">
+                    <path id="Path" fill="#87bfcc" d="M11.709 0a1.469 1.469 0 0 1 1.469 1.469v18.178a1.469 1.469 0 0 1-1.469 1.469H8.276v-.635c0-.756-.678-1.391-1.806-1.391s-1.756.618-1.756 1.391v.635H1.469A1.469 1.469 0 0 1 0 19.647V1.482A1.469 1.469 0 0 1 1.469.014h3.246v.635c0 .815.614 1.395 1.756 1.395s1.806-.6 1.806-1.395V.017L11.7 0z" transform="rotate(45 7.465 18.023)"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

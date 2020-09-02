@@ -1,5 +1,43 @@
 @import './bootstrap/functions';
+@import './bootstrap/customvariables';
 @import './bootstrap/variables';
 
-@import 'node_modules/bootstrap/scss/bootstrap';
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
 @import 'node_modules/bootstrap-vue/src/index.scss';
+
+@import './utils/reset';
+@import './utils/fonts';
+@import './utils/variables';
+@import './utils/media';
+@import './components/tooltip';
+
+@import './utils/helpers';
+
+@import './bootstrap/carousel';
+@import './components/login';
+
+@import './components/vSelect.scss';
+@import 'vue-select/src/scss/vue-select.scss';
+
+@import './components/datepicker.scss';
+@import '~vue2-datepicker/scss/index.scss';
+
+html,
+body {
+  font-family: customFont !important;
+}
+
+body {
+  background-color: #fff;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+a,
+a:hover {
+  cursor: pointer;
+  text-decoration: none;
+}
+ul {
+  list-style: none;
+}

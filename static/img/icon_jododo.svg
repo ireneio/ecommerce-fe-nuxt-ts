@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_jododo" width="47" height="47" viewBox="0 0 47 47">
+    <defs>
+        <linearGradient id="linear-gradient" x1=".5" x2=".5" y2="1" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#e8dffa"/>
+            <stop offset="1" stop-color="#cebaf4"/>
+        </linearGradient>
+    </defs>
+    <circle id="Ellipse_4" cx="23.5" cy="23.5" r="23.5" fill="#cebaf4" data-name="Ellipse 4"/>
+    <path id="Path_15" fill="url(#linear-gradient)" d="M23.5 23.5H47a23.5 23.5 0 0 1-47 0z" data-name="Path 15" opacity="0.356" transform="rotate(180 23.5 23.5)"/>
+    <path id="Fill-18" fill="#fff" fill-rule="evenodd" d="M15.772 27.559a2.338 2.338 0 0 0-1.61.6 1.883 1.883 0 0 0-.663 1.444v.413a5.64 5.64 0 0 0 2.016 4.351 7.881 7.881 0 0 0 5.209 1.833h.468a7.94 7.94 0 0 0 5.208-1.827 5.677 5.677 0 0 0 2-4.353V12.029a1.887 1.887 0 0 0-.644-1.426 2.358 2.358 0 0 0-1.629-.6 2.331 2.331 0 0 0-1.61.6 1.863 1.863 0 0 0-.663 1.425V30.02a1.962 1.962 0 0 1-.691 1.5 3.4 3.4 0 0 1-1.965.636h-.422a3.622 3.622 0 0 1-2.036-.636 2.144 2.144 0 0 1-.581-.842 4.862 4.862 0 0 1-.193-1.2 2.332 2.332 0 0 0-.329-.99 1.951 1.951 0 0 0-.346-.412 2 2 0 0 0-1.514-.521" transform="translate(1.5)"/>
+</svg>

@@ -44,6 +44,17 @@ $green: #28a745 !default;
 $teal: #20c997 !default;
 $cyan: #17a2b8 !default;
 
+// custom
+$orangery-yellow: #fabf13;
+$seafoam-blue: #5ab9d1;
+
+$white: #fff;
+$white-two: #f1f1f1;
+$pale-grey: #e8eef4;
+$warm-grey: #959595;
+$orangish: #f87b3d;
+$greyish-brown: #4c4948;
+
 $colors: () !default;
 $colors: map-merge(
   (
@@ -57,15 +68,38 @@ $colors: map-merge(
     'green': $green,
     'teal': $teal,
     'cyan': $cyan,
+    // 'white': $white,
+      'gray': $gray-600,
+    'gray-dark': $gray-800,
+    // custom
+      'orangery-yellow': $orangery-yellow,
+    'white-two': $white-two,
+    'seafoam-blue': $seafoam-blue,
     'white': $white,
-    'gray': $gray-600,
-    'gray-dark': $gray-800
+    'pale-grey': $pale-grey,
+    'orangish': $orangish,
+    'greyish-brown': $greyish-brown
   ),
   $colors
 );
 
-// $primary: $blue !default;
-$primary: #fabf13;
+// custom
+$primary: $orangery-yellow;
+$secondary: $seafoam-blue;
+$success: $orangish !default;
+$info: $seafoam-blue;
+$warning: $yellow !default;
+$danger: $red !default;
+$light: $gray-100 !default;
+$dark: $gray-800 !default;
+
+$whiteOne: $white;
+$whiteTwo: $white-two;
+$greyOne: $pale-grey;
+$greyTwo: $warm-grey;
+$greyThree: $greyish-brown;
+
+$primary: $blue !default;
 $secondary: $gray-600 !default;
 $success: $green !default;
 $info: $cyan !default;
@@ -84,7 +118,13 @@ $theme-colors: map-merge(
     'warning': $warning,
     'danger': $danger,
     'light': $light,
-    'dark': $dark
+    'dark': $dark,
+    // custom
+      'whiteOne': $whiteOne,
+    'whiteTwo': $whiteTwo,
+    'greyOne': $greyOne,
+    'greyTwo': $greyTwo,
+    'greyThree': $greyThree
   ),
   $theme-colors
 );
@@ -132,27 +172,27 @@ $enable-deprecation-messages: true !default;
 // variables. Mostly focused on spacing.
 // You can add more entries to the $spacers map, should you need more variation.
 
-$spacer: 1rem !default;
-$spacers: () !default;
-$spacers: map-merge(
-  (
-    0: 0,
-    1: (
-      $spacer * 0.25
-    ),
-    2: (
-      $spacer * 0.5
-    ),
-    3: $spacer,
-    4: (
-      $spacer * 1.5
-    ),
-    5: (
-      $spacer * 3
-    )
-  ),
-  $spacers
-);
+// $spacer: 1rem !default;
+// $spacers: () !default;
+// $spacers: map-merge(
+//   (
+//     0: 0,
+//     1: (
+//       $spacer * 0.25
+//     ),
+//     2: (
+//       $spacer * 0.5
+//     ),
+//     3: $spacer,
+//     4: (
+//       $spacer * 1.5
+//     ),
+//     5: (
+//       $spacer * 3
+//     )
+//   ),
+//   $spacers
+// );
 
 // This variable affects the `.h-*` and `.w-*` classes.
 $sizes: () !default;
@@ -196,13 +236,13 @@ $paragraph-margin-bottom: 1rem !default;
 // Define the minimum dimensions at which your layout will change,
 // adapting to different screen sizes, for use in media queries.
 
-$grid-breakpoints: (
-  xs: 0,
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px
-) !default;
+// $grid-breakpoints: (
+//   xs: 0,
+//   sm: 576px,
+//   md: 768px,
+//   lg: 992px,
+//   xl: 1200px
+// ) !default;
 
 @include _assert-ascending($grid-breakpoints, '$grid-breakpoints');
 @include _assert-starts-at-zero($grid-breakpoints, '$grid-breakpoints');
@@ -211,12 +251,12 @@ $grid-breakpoints: (
 //
 // Define the maximum width of `.container` for different screen sizes.
 
-$container-max-widths: (
-  sm: 540px,
-  md: 720px,
-  lg: 960px,
-  xl: 1140px
-) !default;
+// $container-max-widths: (
+//   sm: 540px,
+//   md: 720px,
+//   lg: 960px,
+//   xl: 1140px
+// ) !default;
 
 @include _assert-ascending($container-max-widths, '$container-max-widths');
 
@@ -224,9 +264,9 @@ $container-max-widths: (
 //
 // Set the number of columns and specify the width of the gutters.
 
-$grid-columns: 24 !default;
-$grid-gutter-width: 30px !default;
-$grid-row-columns: 6 !default;
+// $grid-columns: 12 !default;
+// $grid-gutter-width: 30px !default;
+// $grid-row-columns: 6 !default;
 
 // Components
 //
@@ -275,10 +315,11 @@ $font-family-sans-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
   'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !default;
 $font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
   'Liberation Mono', 'Courier New', monospace !default;
-$font-family-base: $font-family-sans-serif !default;
+// $font-family-base: $font-family-sans-serif !default;
+
 // stylelint-enable value-keyword-case
 
-$font-size-base: 1rem !default; // Assumes the browser default, typically `16px`
+// $font-size-base: 1rem !default; // Assumes the browser default, typically `16px`
 $font-size-lg: $font-size-base * 1.25 !default;
 $font-size-sm: $font-size-base * 0.875 !default;
 

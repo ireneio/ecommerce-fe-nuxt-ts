@@ -1,0 +1,12 @@
+// 微軟正黑體: All
+@font-face {
+  font-family: 'customFont';
+  src: local('微軟正黑體');
+}
+
+// Roboto: English, Latin Letters Only
+@font-face {
+  font-family: 'customFont';
+  // src: url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,700;1,100;1,300;1,400;1,700&display=swap');
+  unicode-range: U+00-024F;
+}

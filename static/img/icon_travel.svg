@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_travel" width="47" height="47" viewBox="0 0 47 47">
+    <defs>
+        <linearGradient id="linear-gradient" x1=".5" x2=".5" y2="1" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#d2f8d4"/>
+            <stop offset="1" stop-color="#89de8c"/>
+        </linearGradient>
+    </defs>
+    <circle id="Ellipse_4" cx="23.5" cy="23.5" r="23.5" fill="#89de8c" data-name="Ellipse 4"/>
+    <path id="Path_15" fill="url(#linear-gradient)" d="M23.5 23.5H47a23.5 23.5 0 0 1-47 0z" data-name="Path 15" opacity="0.356" transform="rotate(180 23.5 23.5)"/>
+    <g id="surface1" transform="translate(8.6 15.011)">
+        <path id="Path_52" fill="#fff" d="M.316 11.042L4.4 12.731l-.867.4a.518.518 0 0 0-.244.666l1.178 2.531a.516.516 0 0 0 .291.268.5.5 0 0 0 .4 0l8.962-4.2.113-1.193.157-1.6a.383.383 0 0 1 .417-.348.378.378 0 0 1 .314.224.353.353 0 0 1 .043.2l-1.039 11.009a1.03 1.03 0 0 0 .8.178c.4-.1.748-.568 1.039-1.33l4.162-12.371.119-.352a.39.39 0 0 1 .748.221.291.291 0 0 0-.01.028l-.406 1.186-.456 1.361 7.018-3.288c2.027-.947 3.069-2.865 2.369-4.36a2.628 2.628 0 0 0-2.03-1.418 4.828 4.828 0 0 0-2.838.436l-7.948 3.709L8.16 1.357a2.636 2.636 0 0 0-2.524.043 2.121 2.121 0 0 0-.774 1.679.521.521 0 0 0 .222.409l5.748 3.932-3.295 1.559L2.014 7.6a.523.523 0 0 0-.576.249l-1.371 2.46a.518.518 0 0 0 .2.707c.015.01.033.018.049.026zm0 0" data-name="Path 52"/>
+    </g>
+</svg>

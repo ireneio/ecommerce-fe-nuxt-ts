@@ -1,0 +1,53 @@
+@mixin grid-xxl {
+  @media (min-width: $xxl-breakpoint) {
+    @content;
+  }
+}
+
+@mixin grid-xl {
+  @media (min-width: $xl-breakpoint) {
+    @content;
+  }
+}
+
+@mixin grid-lg {
+  @media (min-width: $lg-breakpoint) {
+    @content;
+  }
+}
+
+@mixin grid-md {
+  @media (min-width: $md-breakpoint) {
+    @content;
+  }
+}
+
+@mixin grid-sm {
+  @media (min-width: $sm-breakpoint) {
+    @content;
+  }
+}
+
+@mixin desktopBelow {
+  @media (max-width: 1023px) {
+    @content;
+  }
+}
+
+@mixin padBelow {
+  @media (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin mobile569 {
+  @media (max-width: 569px) {
+    @content;
+  }
+}
+
+@mixin mobile320 {
+  @media (max-width: 320px) {
+    @content;
+  }
+}

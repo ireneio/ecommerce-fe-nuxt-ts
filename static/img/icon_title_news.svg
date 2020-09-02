@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="icon_title_news" width="26" height="26" viewBox="0 0 26 26">
+    <g id="notification_1_" data-name="notification (1)" transform="translate(1.237 -29.38)">
+        <g id="Group_1071" data-name="Group 1071" transform="translate(0 32.134)">
+            <path id="Path_5165" fill="#fabf13" d="M23.2 32.271a.688.688 0 0 0-.605-.11L5.009 37.29H.688a.688.688 0 0 0-.688.688v7.366a.688.688 0 0 0 .688.688h3.964a5.108 5.108 0 1 0 9.831 2.768l8.111 2.366a.688.688 0 0 0 .88-.66V32.822a.688.688 0 0 0-.274-.551zM9.527 51.286A3.736 3.736 0 0 1 6 46.322l7.157 2.087a3.756 3.756 0 0 1-3.63 2.877z" data-name="Path 5165" transform="translate(0 -32.134)"/>
+        </g>
+    </g>
+    <path id="Rectangle_509" fill="none" d="M0 0H26V26H0z" data-name="Rectangle 509"/>
+</svg>

@@ -1,0 +1,260 @@
+.login {
+  &__aside,
+  &__main {
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow-y: hidden;
+  }
+  &__aside {
+    background-color: $primary;
+  }
+  &__textBox,
+  &__carouselBox {
+    margin: 0 auto;
+  }
+  &__textBox {
+    width: 95%;
+    @include grid-md {
+      width: 55%;
+    }
+    @include grid-lg {
+      width: 75%;
+    }
+  }
+  &__carouselBox {
+    width: 80%;
+    transform: translateY(50%);
+  }
+  &__carouselText {
+    color: $greyThree;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+  }
+  &__footer {
+    position: absolute;
+    bottom: 67px;
+    color: $greyThree;
+    font-size: 1.25rem;
+    font-weight: 600;
+    width: 100%;
+    text-align: center;
+  }
+  &__logo {
+    padding: 50px 0 25px 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-image: url(/img/sm-logo.png);
+    @include grid-sm {
+      padding: 3.5625rem 1.875rem 5.6875rem 1.875rem;
+    }
+  }
+  &__title {
+    color: $greyThree;
+    font-size: $fz-xxl;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+    @include grid-md {
+      font-size: 2.25rem;
+    }
+  }
+  &__icon {
+    font-size: $fz-m;
+    &--primary {
+      color: $primary;
+    }
+    &--whiteOne {
+      color: $whiteOne;
+    }
+  }
+  &__hinttext {
+    color: $greyTwo;
+    text-align: center;
+  }
+  &__subtext {
+    color: $greyTwo;
+    font-size: $fz-s;
+    text-align: center;
+    margin-top: $spacing-m;
+    margin-bottom: $spacing-m;
+    > span {
+      color: $primary;
+    }
+  }
+  &__recoverBtn {
+    display: flex;
+    align-items: center;
+  }
+  &__recoverIcon {
+    width: 20px;
+    height: 20px;
+  }
+  &__recoverText {
+    margin-left: $spacing-m;
+  }
+  &__subtitle {
+    font-size: $fz-s;
+    color: $primary;
+    text-align: center;
+    margin-bottom: $spacing-m;
+    font-weight: bold;
+  }
+  &__maintitle {
+    font-size: $fz-m;
+    margin-bottom: $spacing-m;
+    color: $greyThree;
+    text-align: center;
+    font-weight: bold;
+  }
+  &__mainsubtitle {
+    font-size: $fz-s;
+    color: $greyThree;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: $spacing-xl;
+    > span {
+      color: $orangeDark;
+    }
+  }
+  &__mainpic {
+    display: none;
+    @include grid-md {
+      display: block;
+      min-height: 300px;
+      width: 300px;
+    }
+  }
+  &__generalError {
+    color: $orangeDark;
+    font-weight: bold;
+  }
+  &__btnHint {
+    font-size: $fz-s;
+    color: $greyTwo;
+    text-align: center;
+  }
+  &__btnHintText {
+    font-size: $fz-s;
+    color: $greyTwo;
+    margin-right: $spacing-xs;
+  }
+  &__resend {
+    color: $whiteOne;
+    margin-right: $spacing-xs;
+    &--active {
+      color: $secondary;
+      cursor: pointer;
+    }
+  }
+  &__titleAlert {
+    color: $orangeDark;
+    text-align: center;
+    font-size: $fz-m;
+    font-weight: bold;
+    @include grid-md {
+      font-size: $fz-l;
+    }
+  }
+  &__bottomHint {
+    color: $secondary;
+    font-size: $fz-s;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+  }
+}
+.loginInputMarginTop {
+  margin-top: $spacing-s;
+  @include grid-md {
+    margin-top: $loginInputMarginTop;
+  }
+}
+.loginmainfooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding-top: $spacing-s;
+  padding-bottom: $spacing-s;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-weight: bold;
+  color: $greyTwo;
+  background: url(/img/group-9@3x.png);
+  background-repeat: repeat;
+  background-size: contain;
+  @include grid-md {
+    padding-bottom: $spacing-xxl;
+  }
+  &__btn {
+    padding: 0 $spacing-m;
+  }
+  &__btn,
+  &__btninline {
+    font-size: 0.875rem;
+    cursor: pointer;
+    color: $greyTwo;
+    &:hover {
+      color: $primary;
+    }
+  }
+  &__footer {
+    font-size: 0.75rem;
+  }
+  &__footerBox {
+    margin-top: $spacing-xxxl;
+  }
+}
+.loginModal {
+  &__title {
+    text-align: center;
+    font-weight: bold;
+    font-size: $fz-xxl;
+    color: $greyThree;
+  }
+  &__subtitle {
+    color: $primary;
+    margin-top: $spacing-m;
+    padding-bottom: $spacing-l;
+    margin-bottom: $spacing-l;
+    border-bottom: 1px solid $whiteOne;
+    text-align: center;
+  }
+  &__body {
+    font-size: $fz-m;
+    color: $greyThree;
+  }
+  &__btnbox {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  &__privacyBox {
+    flex: 0 0 100%;
+    margin-top: $spacing-xxl;
+    margin-bottom: $spacing-xxl;
+    justify-self: center;
+  }
+  &__smallBtn {
+    flex: 0 0 100%;
+    @include grid-md {
+      flex: 0 0 30%;
+    }
+  }
+  &__lgBtn {
+    flex: 0 0 100%;
+    margin-top: $spacing-m;
+    @include grid-md {
+      flex: 0 0 calc(70% - 12px);
+      margin-left: $spacing-m;
+      margin-top: 0;
+    }
+  }
+}

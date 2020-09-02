@@ -1,0 +1,42 @@
+$font-family-base: 'Microsoft JhengHei', '新細明體', Arial, sans-serif !important;
+$font-size-base: 0.875rem; // 14px
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+) !default;
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1200px
+) !default;
+$grid-columns: 24 !default;
+$grid-gutter-width: 30px !default;
+$grid-row-columns: 6 !default;
+$spacer: 1rem !default;
+$spacers: () !default;
+$spacers: map-merge(
+  (
+    0: 0,
+    1: (
+      $spacer * 0.25
+    ),
+    2: (
+      $spacer * 0.5
+    ),
+    3: (
+      $spacer * 0.75
+    ),
+    4: $spacer,
+    5: (
+      $spacer * 1.5
+    ),
+    6: (
+      $spacer * 3
+    )
+  ),
+  $spacers
+);

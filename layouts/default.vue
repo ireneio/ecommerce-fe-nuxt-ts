@@ -1,55 +1,73 @@
 <template>
   <div>
-    <Nuxt />
+    <DefaultHeader :menu="menu" @logout="handleLogout" :user="user" />
+    <b-container>
+      <b-row>
+        <b-col cols="24" class="px-0 position-static">
+          <Nuxt keep-alive />
+        </b-col>
+      </b-row>
+    </b-container>
+    <DefaultFooter />
+    <DefaultMask :active="maskState" />
   </div>
 </template>
 
-<style>
-html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
-  word-spacing: 1px;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-}
+<script lang="ts">
+import { Component, Vue } from 'nuxt-property-decorator'
+import DefaultHeader from '~/components/DefaultHeader.vue'
+import DefaultFooter from '~/components/DefaultFooter.vue'
+import DefaultMask from '~/components/DefaultMask.vue'
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-}
+import { dialogStore, authStore } from '~/store'
 
-.button--green {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
-  text-decoration: none;
-  padding: 10px 30px;
-}
+@Component({
+  components: {
+    DefaultHeader,
+    DefaultFooter,
+    DefaultMask
+  }
+})
+export default class DefaultLayout extends Vue {
+  public async handleLogout() {
+    try {
+      this.$nuxt.$loading.start()
+      await authStore.signOut({ token: this.$cookies.get('accessToken') })
+    } catch (e) {
+      // sign out error
+    } finally {
+      this.$nuxt.$loading.finish()
+      this.$router.push('/account')
+    }
+  }
 
-.button--green:hover {
-  color: #fff;
-  background-color: #3b8070;
-}
+  get maskState() {
+    return dialogStore.maskActive
+  }
 
-.button--grey {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #35495e;
-  color: #35495e;
-  text-decoration: none;
-  padding: 10px 30px;
-  margin-left: 15px;
-}
+  get user() {
+    return authStore.user !== null ? authStore.user.accountid : ''
+  }
 
-.button--grey:hover {
-  color: #fff;
-  background-color: #35495e;
+  get menu() {
+    return authStore.menu.length
+      ? authStore.menu
+          .filter(
+            (item: any) =>
+              item.moduleName &&
+              item.moduleName !== '好好買' &&
+              item.moduleName !== '我的禮物盒'
+          )
+          .map((item: any) => item.moduleName)
+      : []
+  }
+
+  public async fetch() {
+    await authStore.getMenu({ token: this.$cookies.get('accessToken') })
+  }
+
+  public async created() {
+    await authStore.getMenu({ token: this.$cookies.get('accessToken') })
+  }
 }
-</style>
+</script>

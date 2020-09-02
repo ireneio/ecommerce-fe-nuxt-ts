@@ -12,10 +12,13 @@
       >
         <span>{{
           category.content.find((item) => item.value === values.categoryId)
-            .text === '全部'
-            ? '所有店家'
-            : category.content.find((item) => item.value === values.categoryId)
-                .text
+            ? category.content.find((item) => item.value === values.categoryId)
+                .text === '全部'
+              ? '所有店家'
+              : category.content.find(
+                  (item) => item.value === values.categoryId
+                ).text
+            : ''
         }}</span>
         <fa
           :icon="['fas', 'angle-down']"
@@ -74,10 +77,12 @@
         @mouseleave="currentTab = 0"
       >
         <span>{{
-          area.content.find((item) => item.value === values.areaId).text ===
-          '全部'
-            ? '全部地區'
-            : area.content.find((item) => item.value === values.areaId).text
+          area.content.find((item) => item.value === values.areaId)
+            ? area.content.find((item) => item.value === values.areaId).text ===
+              '全部'
+              ? '全部地區'
+              : area.content.find((item) => item.value === values.areaId).text
+            : ''
         }}</span>
         <fa
           :icon="['fas', 'angle-down']"
@@ -124,9 +129,13 @@
         :class="{ 'visitStoreSearchBar__listitem--active': currentTab === 3 }"
         @mouseover="handleMouseover($event, 3)"
         @mouseleave="currentTab = 0"
+        v-if="type !== 'shoppingmall'"
       >
         <span>{{
-          groupType.content.find((item) => item.value === values.groupType).text
+          groupType.content.find((item) => item.value === values.groupType)
+            ? groupType.content.find((item) => item.value === values.groupType)
+                .text
+            : ''
         }}</span>
         <fa
           :icon="['fas', 'angle-down']"
@@ -175,7 +184,9 @@
         @mouseleave="currentTab = 0"
       >
         <span>{{
-          sort.content.find((item) => item.value === values.sort).text
+          sort.content.find((item) => item.value === values.sort)
+            ? sort.content.find((item) => item.value === values.sort).text
+            : ''
         }}</span>
         <fa
           :icon="['fas', 'angle-down']"
@@ -247,12 +258,52 @@ export default class VisitStoreSearchBar extends Vue {
   })
   readonly values!: any
 
+  @Prop({
+    type: Array,
+    default() {
+      return []
+    }
+  })
+  readonly categories!: any
+
+  @Prop({
+    type: Array,
+    default() {
+      return []
+    }
+  })
+  readonly areas!: any
+
+  @Prop({
+    type: String,
+    default() {
+      return ''
+    }
+  })
+  readonly type!: string
+
   public currentTab: Number = 0
   handleMouseover(e: any, val: Number): void {
     if (!e.target.classList.contains('sublist')) this.currentTab = val
   }
 
   public isSticky: boolean = false
+
+  // @Watch('categories')
+  // public onLoad(newVal: any) {
+  //   if (newVal.length) {
+  //     this.category.content.forEach((item: any) => {
+  //       if (item.text) {
+  //         const target = newVal.find((val: any) => {
+  //           return val.category === item.text
+  //         })
+  //         if (target) {
+  //           item.value = target.id
+  //         }
+  //       }
+  //     })
+  //   }
+  // }
 
   public category: any = {
     params: 'categoryId',

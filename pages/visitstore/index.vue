@@ -3,6 +3,7 @@
     <VisitStoreSearchBar
       :values="searchParams"
       @update-search="handleUpdateSearch"
+      :categories="categories"
     />
     <template v-slot:body>
       <b-container>
@@ -47,7 +48,7 @@ import VisitStoreContainer from '~/components/VisitStoreContainer.vue'
 import VisitStoreSearchBar from '~/components/VisitStoreSearchBar.vue'
 import VisitStoreCard from '~/components/VisitStoreCard.vue'
 import BaseButton from '~/components/BaseButton.vue'
-import { visitStore } from '~/store'
+import { visitStore, commonStore } from '~/store'
 
 interface card {
   title: String
@@ -111,9 +112,34 @@ export default class VisitStoreIndex extends Vue {
     })
   }
 
+  get categories() {
+    return commonStore.categories
+  }
+
   public async sendStoreSearchRequest() {
     try {
       await visitStore.getStoreHome({
+        token: this.$cookies.get('accessToken'),
+        sectionType: 0
+      })
+    } catch (e) {
+      // error
+    }
+  }
+
+  public async sendGetCategoriesRequest() {
+    try {
+      await commonStore.getCategories({
+        token: this.$cookies.get('accessToken')
+      })
+    } catch (e) {
+      // error
+    }
+  }
+
+  public async sendGetAreasRequest() {
+    try {
+      await commonStore.getAreas({
         token: this.$cookies.get('accessToken')
       })
     } catch (e) {
@@ -122,12 +148,16 @@ export default class VisitStoreIndex extends Vue {
   }
 
   public async fetch() {
+    await this.sendGetCategoriesRequest()
+    await this.sendGetAreasRequest()
     await this.sendStoreSearchRequest()
   }
 
   public activated() {
     this.$nextTick(async () => {
       this.$nuxt.$loading.start()
+      await this.sendGetCategoriesRequest()
+      await this.sendGetAreasRequest()
       await this.sendStoreSearchRequest()
       this.$nuxt.$loading.finish()
     })

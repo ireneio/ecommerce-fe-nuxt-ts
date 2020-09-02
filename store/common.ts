@@ -10,6 +10,8 @@ import { ProxyRequestObject, ResponseObject } from 'Http'
 export default class CommonModule extends VuexModule {
   public areaList: any = []
   public countyList: any = []
+  public areas: any = []
+  public categories: any = []
 
   @Mutation
   setAreaList(payload: any) {
@@ -21,6 +23,16 @@ export default class CommonModule extends VuexModule {
     let arr = [...this.countyList, [...data, index]]
     arr.sort((a, b) => a.index - b.index)
     this.countyList = [...arr]
+  }
+
+  @Mutation
+  setCategories(payload: any) {
+    this.categories = payload
+  }
+
+  @Mutation
+  setAreas(payload: any) {
+    this.areas = payload
   }
 
   @Action({ commit: 'setAreaList' })
@@ -64,6 +76,52 @@ export default class CommonModule extends VuexModule {
           return new Error('Failed to Get List')
         default:
           return new Error('Error rating the store')
+      }
+    } catch (e) {
+      throw new Error(`Backend Error: ${e}`)
+    }
+  }
+
+  @Action({ commit: 'setCategories' })
+  async getCategories({ token }: any) {
+    const requestBody: ProxyRequestObject = {
+      endpoint: '/api/Main/FindCategories',
+      key: process.env.apiKey,
+      method: 'get',
+      token
+    }
+    try {
+      const result: ResponseObject = await $axios.post('/api', requestBody)
+      switch (Number(result.data.syscode)) {
+        case 200:
+          return result.data.data
+        case 404:
+          return new Error('Failed to Get List')
+        default:
+          return null
+      }
+    } catch (e) {
+      throw new Error(`Backend Error: ${e}`)
+    }
+  }
+
+  @Action({ commit: 'setAreas' })
+  async getAreas({ token }: any) {
+    const requestBody: ProxyRequestObject = {
+      endpoint: '/api/Main/FindAreas',
+      key: process.env.apiKey,
+      method: 'get',
+      token
+    }
+    try {
+      const result: ResponseObject = await $axios.post('/api', requestBody)
+      switch (Number(result.data.syscode)) {
+        case 200:
+          return result.data.data
+        case 404:
+          return new Error('Failed to Get List')
+        default:
+          return null
       }
     } catch (e) {
       throw new Error(`Backend Error: ${e}`)

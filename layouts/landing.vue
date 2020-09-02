@@ -21,7 +21,7 @@
     <main class="landingBody">
       <b-container>
         <b-row>
-          <b-col class="px-0">
+          <b-col class="px-0 position-static">
             <Nuxt />
           </b-col>
         </b-row>
@@ -122,7 +122,7 @@ export default class LandingLayout extends Vue {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
     const { url } = dialogStore.confirmAction
-    location.href = url
+    window.open(url, '_blank')
   }
 
   public handleDialogClose() {

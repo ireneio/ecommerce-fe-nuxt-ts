@@ -153,7 +153,7 @@
                       >
                         <fa
                           :icon="[i === 0 ? 'far' : 'fas', 'star']"
-                          v-for="(i, index) in starCount"
+                          v-for="(i, index) in myStarCount"
                           :key="index"
                         ></fa>
                       </div>
@@ -508,12 +508,25 @@ export default class VisitStoreDetails extends Vue {
   public async handleDialogConfirm() {
     this.$nuxt.$loading.start()
     const { stars } = dialogStore.confirmAction
-    await this.sendSubmitRatingRequest(stars)
-    await this.sendGetStoreDetailRequest()
-    dialogStore.setConfirmed(true)
-    dialogStore.setActive(false)
-    dialogStore.setMaskActive(false)
-    this.$nuxt.$loading.finish()
+    try {
+      await this.sendSubmitRatingRequest(stars)
+      await this.sendGetStoreDetailRequest()
+      dialogStore.setConfirmed(true)
+      dialogStore.setActive(false)
+      dialogStore.setMaskActive(false)
+    } catch (e) {
+      // error
+      dialogStore.setContent({
+        title: '此特約商店已經評分',
+        type: 'accept',
+        icon: true,
+        initializer: 'visitstore-rating-error'
+      })
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+    } finally {
+      this.$nuxt.$loading.finish()
+    }
   }
 
   public handleDialogClose() {
@@ -597,8 +610,9 @@ export default class VisitStoreDetails extends Vue {
       switch (Number(result.data.syscode)) {
         case 200:
           return result.data.data
+        case 404:
         case 400:
-          return new Error('Store is already rated')
+          throw new Error('Store is already rated')
         default:
           return new Error('Error rating the store')
       }

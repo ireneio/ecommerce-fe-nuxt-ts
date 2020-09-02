@@ -2,3 +2,12 @@
   margin-left: -15px;
   margin-right: -15px;
 }
+
+@mixin cutLine($line) {
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  -webkit-line-clamp: $line;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}

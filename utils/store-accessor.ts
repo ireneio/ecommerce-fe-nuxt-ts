@@ -10,6 +10,8 @@ import QuestionnairesModule from '~/store/questionnaires'
 import WelfareModule from '~/store/welfare'
 import FunEventModule from '~/store/funevents'
 import CommonModule from '~/store/common'
+import GiftModule from '~/store/gift'
+import PointModule from '~/store/point'
 
 let authStore: AuthModule
 let landingStore: LandingModule
@@ -20,6 +22,8 @@ let questionnairesStore: QuestionnairesModule
 let welfareStore: WelfareModule
 let funEventsStore: FunEventModule
 let commonStore: CommonModule
+let giftStore: GiftModule
+let pointStore: PointModule
 
 function initialiseStores(store: Store<any>): void {
   authStore = getModule(AuthModule, store)
@@ -31,6 +35,8 @@ function initialiseStores(store: Store<any>): void {
   welfareStore = getModule(WelfareModule, store)
   funEventsStore = getModule(FunEventModule, store)
   commonStore = getModule(CommonModule, store)
+  giftStore = getModule(GiftModule, store)
+  pointStore = getModule(PointModule, store)
 }
 
 export {
@@ -43,5 +49,7 @@ export {
   questionnairesStore,
   welfareStore,
   funEventsStore,
-  commonStore
+  commonStore,
+  giftStore,
+  pointStore
 }

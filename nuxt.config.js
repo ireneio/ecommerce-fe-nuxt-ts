@@ -38,7 +38,6 @@ export default {
    ** https://nuxtjs.org/guide/plugins
    */
   plugins: [
-    '~/plugins/composition-api',
     '~/plugins/fontawesome',
     '~/plugins/axios',
     '~/plugins/vee-validate.js',

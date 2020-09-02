@@ -22,10 +22,10 @@
                   :key="img.serialno"
                 ></div>
                 <template #prevArrow>
-                  <div class="cardBox__arrowLeft"></div>
+                  <div class="carouselArrowLeft"></div>
                 </template>
                 <template #nextArrow>
-                  <div class="cardBox__arrowRight"></div>
+                  <div class="carouselArrowRight"></div>
                 </template>
               </VueSlickCarousel>
             </client-only>

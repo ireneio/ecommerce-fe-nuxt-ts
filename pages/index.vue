@@ -1,271 +1,272 @@
 <template>
-  <b-container>
-    <b-row>
-      <b-col class="px-0">
-        <div
-          class="landingBody__section"
-          v-for="item in pageData"
-          :key="item.title"
-        >
-          <LandingPageSection
-            v-if="item.title === 'announcementTag'"
-            title="最新公告"
-            :hasNew="hasUnreadAnnouncements"
-            iconUrl="/img/icon_title_news.svg"
+  <div>
+    <b-container>
+      <b-row>
+        <b-col class="px-0">
+          <div
+            class="landingBody__section"
+            v-for="item in pageData"
+            :key="item.title"
           >
-            <div class="landingPageNews">
-              <LandingPageNewsItem
-                v-for="detail in item.data"
-                :key="detail.serialno"
-                :text="detail.content"
-                :name="detail.creatorname"
-                :date="new Date(detail.createdatetime).toLocaleString()"
-                @click="handleGoToAnnouncements(detail.serialno)"
-              />
-            </div>
-          </LandingPageSection>
-          <client-only>
-            <VueSlickCarousel
-              v-bind="adsCarouselSetting"
-              v-if="item.title === 'secondBanner'"
+            <LandingPageSection
+              v-if="item.title === 'announcementTag'"
+              title="最新公告"
+              :hasNew="hasUnreadAnnouncements"
+              iconUrl="/img/icon_title_news.svg"
             >
-              <div
-                class="sectionAds__box"
-                v-for="i in 10"
-                :key="i"
-                v-show="!secondBannerData.length"
-              >
-                <div class="sectionAds"></div>
+              <div class="landingPageNews">
+                <LandingPageNewsItem
+                  v-for="detail in item.data"
+                  :key="detail.serialno"
+                  :text="detail.content"
+                  :name="detail.creatorname"
+                  :date="new Date(detail.createdatetime).toLocaleString()"
+                  @click="handleGoToAnnouncements(detail.serialno)"
+                />
               </div>
-            </VueSlickCarousel>
-          </client-only>
-          <client-only>
-            <VueSlickCarousel
-              v-if="item.title === 'secondBanner'"
-              v-bind="adsCarouselSetting"
-            >
-              <div
-                class="sectionAds__box"
-                v-for="item in secondBannerData"
-                :key="item.serialno"
-                v-show="secondBannerData.length"
+            </LandingPageSection>
+            <client-only>
+              <VueSlickCarousel
+                v-bind="adsCarouselSetting"
+                v-if="item.title === 'secondBanner'"
               >
-                <a
-                  :href="item.url"
-                  target="_blank"
-                  class="sectionAds"
-                  :style="{ 'background-image': `url(${item.image})` }"
-                ></a>
-              </div>
-              <template #prevArrow>
-                <div class="cardBox__arrowLeft"></div>
-              </template>
-              <template #nextArrow>
-                <div class="cardBox__arrowRight"></div>
-              </template>
-            </VueSlickCarousel>
-          </client-only>
-        </div>
+                <div
+                  class="sectionAds__box"
+                  v-for="i in 10"
+                  :key="i"
+                  v-show="!secondBannerData.length"
+                >
+                  <div class="sectionAds"></div>
+                </div>
+              </VueSlickCarousel>
+            </client-only>
+            <client-only>
+              <VueSlickCarousel
+                v-if="item.title === 'secondBanner'"
+                v-bind="adsCarouselSetting"
+              >
+                <div
+                  class="sectionAds__box"
+                  v-for="item in secondBannerData"
+                  :key="item.serialno"
+                  v-show="secondBannerData.length"
+                >
+                  <a
+                    :href="item.url"
+                    target="_blank"
+                    class="sectionAds"
+                    :style="{ 'background-image': `url(${item.image})` }"
+                  ></a>
+                </div>
+                <template #prevArrow>
+                  <div class="cardBox__arrowLeft"></div>
+                </template>
+                <template #nextArrow>
+                  <div class="cardBox__arrowRight"></div>
+                </template>
+              </VueSlickCarousel>
+            </client-only>
+          </div>
 
-        <div
-          class="landingBody__section"
-          v-for="(tab, i) in tabData"
-          :key="tab.serialno"
-        >
-          <LandingPageSection
-            :title="tab.name"
-            hasTabs
-            iconUrl="/img/img-smile.svg"
-            :linkUrl="tab.url ? tab.url : ''"
-            @click="handleRedirect(tab)"
+          <div
+            class="landingBody__section"
+            v-for="(tab, i) in tabData"
+            :key="tab.serialno"
           >
-            <template #tabs>
-              <div class="landingPageTab">
-                <VueSlickCarousel v-bind="tabCarouselSetting">
-                  <div
-                    class="landingPageTab__item"
-                    v-for="(babyTab, j) in tab.tabList"
-                    :key="babyTab.serialno"
-                    @click="handleTabUpdate(i, j)"
-                  >
-                    {{ babyTab.name }}
+            <LandingPageSection
+              :title="tab.name"
+              hasTabs
+              iconUrl="/img/img-smile.svg"
+              :linkUrl="tab.url ? tab.url : ''"
+              @click="handleRedirect(tab)"
+            >
+              <template #tabs>
+                <div class="landingPageTab">
+                  <VueSlickCarousel v-bind="tabCarouselSetting">
+                    <div
+                      class="landingPageTab__item"
+                      v-for="(babyTab, j) in tab.tabList"
+                      :key="babyTab.serialno"
+                      @click="handleTabUpdate(i, j)"
+                    >
+                      {{ babyTab.name }}
+                    </div>
+                  </VueSlickCarousel>
+                </div>
+              </template>
+              <client-only>
+                <VueSlickCarousel
+                  v-bind="cardCarouselSetting"
+                  v-if="!tabData.length"
+                >
+                  <div class="cardBox" v-for="i in 15" :key="i">
+                    <LandingPageCard hasNotif />
                   </div>
+                  <template #prevArrow>
+                    <div class="cardBox__arrowLeft"></div>
+                  </template>
+                  <template #nextArrow>
+                    <div class="cardBox__arrowRight"></div>
+                  </template>
                 </VueSlickCarousel>
-              </div>
-            </template>
-            <client-only>
-              <VueSlickCarousel
-                v-bind="cardCarouselSetting"
-                v-if="!tabData.length"
-              >
-                <div class="cardBox" v-for="i in 15" :key="i">
-                  <LandingPageCard hasNotif />
-                </div>
-                <template #prevArrow>
-                  <div class="cardBox__arrowLeft"></div>
-                </template>
-                <template #nextArrow>
-                  <div class="cardBox__arrowRight"></div>
-                </template>
-              </VueSlickCarousel>
-            </client-only>
-            <client-only>
-              <VueSlickCarousel
-                v-bind="cardCarouselSetting"
-                v-show="isCurrentTab(i, babyTabIndex)"
-                v-for="(babyTab, babyTabIndex) in tab.tabList"
-                :key="babyTab.serialno"
-              >
-                <div
-                  class="cardBox"
-                  v-for="card in babyTab.tabProductList"
-                  :key="card.serialno"
+              </client-only>
+              <client-only>
+                <VueSlickCarousel
+                  v-bind="cardCarouselSetting"
+                  v-show="isCurrentTab(i, babyTabIndex)"
+                  v-for="(babyTab, babyTabIndex) in tab.tabList"
+                  :key="babyTab.serialno"
                 >
-                  <LandingPageCard
-                    hasNotif
-                    hasNotifIcon
-                    :detail="{
-                      name: card.name,
-                      description: card.description,
-                      url: card.url,
-                      imageUrl: card.imageUrl
-                    }"
-                    @click="handleRedirect(card)"
-                  />
-                </div>
-                <template #prevArrow>
-                  <div class="cardBox__arrowLeft"></div>
-                </template>
-                <template #nextArrow>
-                  <div class="cardBox__arrowRight"></div>
-                </template>
-              </VueSlickCarousel>
-            </client-only>
-          </LandingPageSection>
-        </div>
+                  <div
+                    class="cardBox"
+                    v-for="card in babyTab.tabProductList"
+                    :key="card.serialno"
+                  >
+                    <LandingPageCard
+                      hasNotif
+                      hasNotifIcon
+                      :detail="{
+                        name: card.name,
+                        description: card.description,
+                        url: card.url,
+                        imageUrl: card.imageUrl
+                      }"
+                      @click="handleRedirect(card)"
+                    />
+                  </div>
+                  <template #prevArrow>
+                    <div class="cardBox__arrowLeft"></div>
+                  </template>
+                  <template #nextArrow>
+                    <div class="cardBox__arrowRight"></div>
+                  </template>
+                </VueSlickCarousel>
+              </client-only>
+            </LandingPageSection>
+          </div>
 
-        <div
-          class="landingBody__section"
-          v-for="theme in themeData"
-          :key="theme.serialno"
-        >
-          <LandingPageSection
-            :title="theme.name"
-            :iconUrl="
-              theme.name === 'Judodo揪多多'
-                ? '/img/icon_jododo.svg'
-                : theme.name === '電子票券'
-                ? '/img/icon_title_coupon.svg'
-                : '/img/img-smile.svg'
-            "
-            :linkUrl="theme.url ? theme.url : ''"
-            @click="handleRedirect(theme)"
+          <div
+            class="landingBody__section"
+            v-for="theme in themeData"
+            :key="theme.serialno"
           >
-            <client-only>
-              <VueSlickCarousel
-                v-bind="cardCarouselSetting"
-                v-if="!themeData.length"
-              >
-                <div class="cardBox" v-for="i in 15" :key="i">
-                  <LandingPageCard hasNotif />
-                </div>
-                <template #prevArrow>
-                  <div class="cardBox__arrowLeft"></div>
-                </template>
-                <template #nextArrow>
-                  <div class="cardBox__arrowRight"></div>
-                </template>
-              </VueSlickCarousel>
-            </client-only>
-            <client-only>
-              <VueSlickCarousel v-bind="cardCarouselSetting">
-                <div
-                  class="cardBox"
-                  v-for="card in theme.themeProductsList"
-                  :key="card.serialno"
+            <LandingPageSection
+              :title="theme.name"
+              :iconUrl="
+                theme.name === 'Judodo揪多多'
+                  ? '/img/icon_jododo.svg'
+                  : theme.name === '電子票券'
+                  ? '/img/icon_title_coupon.svg'
+                  : '/img/img-smile.svg'
+              "
+              :linkUrl="theme.url ? theme.url : ''"
+              @click="handleRedirect(theme)"
+            >
+              <client-only>
+                <VueSlickCarousel
+                  v-bind="cardCarouselSetting"
+                  v-if="!themeData.length"
                 >
-                  <LandingPageCard
-                    hasNotif
-                    hasNotifIcon
-                    :detail="{
-                      name: card.name,
-                      description: card.description,
-                      url: card.url,
-                      imageUrl: card.imageUrl
-                    }"
-                    @click="handleRedirect(card)"
-                  />
-                </div>
-                <template #prevArrow>
-                  <div class="cardBox__arrowLeft"></div>
-                </template>
-                <template #nextArrow>
-                  <div class="cardBox__arrowRight"></div>
-                </template>
-              </VueSlickCarousel>
-            </client-only>
-          </LandingPageSection>
-        </div>
+                  <div class="cardBox" v-for="i in 15" :key="i">
+                    <LandingPageCard hasNotif />
+                  </div>
+                  <template #prevArrow>
+                    <div class="cardBox__arrowLeft"></div>
+                  </template>
+                  <template #nextArrow>
+                    <div class="cardBox__arrowRight"></div>
+                  </template>
+                </VueSlickCarousel>
+              </client-only>
+              <client-only>
+                <VueSlickCarousel v-bind="cardCarouselSetting">
+                  <div
+                    class="cardBox"
+                    v-for="card in theme.themeProductsList"
+                    :key="card.serialno"
+                  >
+                    <LandingPageCard
+                      hasNotif
+                      hasNotifIcon
+                      :detail="{
+                        name: card.name,
+                        description: card.description,
+                        url: card.url,
+                        imageUrl: card.imageUrl
+                      }"
+                      @click="handleRedirect(card)"
+                    />
+                  </div>
+                  <template #prevArrow>
+                    <div class="cardBox__arrowLeft"></div>
+                  </template>
+                  <template #nextArrow>
+                    <div class="cardBox__arrowRight"></div>
+                  </template>
+                </VueSlickCarousel>
+              </client-only>
+            </LandingPageSection>
+          </div>
 
-        <div
-          class="landingBody__section landingBody__section--last"
-          v-for="ranking in rankingData"
-          :key="ranking.serialno"
-          :linkUrl="ranking.url ? ranking.url : ''"
-        >
-          <LandingPageSection
-            :title="ranking.name"
-            iconUrl="/img/img-smile.svg"
-            @click="handleRedirect(ranking)"
+          <div
+            class="landingBody__section landingBody__section--last"
+            v-for="ranking in rankingData"
+            :key="ranking.serialno"
+            :linkUrl="ranking.url ? ranking.url : ''"
           >
-            <client-only>
-              <VueSlickCarousel
-                v-bind="cardCarouselSetting"
-                v-if="!rankingData.length"
-              >
-                <div class="cardBox" v-for="i in 15" :key="i">
-                  <LandingPageCard hasNotif />
-                </div>
-                <template #prevArrow>
-                  <div class="cardBox__arrowLeft"></div>
-                </template>
-                <template #nextArrow>
-                  <div class="cardBox__arrowRight"></div>
-                </template>
-              </VueSlickCarousel>
-            </client-only>
-            <client-only>
-              <VueSlickCarousel v-bind="cardCarouselSetting">
-                <div
-                  class="cardBox"
-                  v-for="card in ranking.rankingProductList"
-                  :key="card.serialno"
+            <LandingPageSection
+              :title="ranking.name"
+              iconUrl="/img/img-smile.svg"
+              @click="handleRedirect(ranking)"
+            >
+              <client-only>
+                <VueSlickCarousel
+                  v-bind="cardCarouselSetting"
+                  v-if="!rankingData.length"
                 >
-                  <LandingPageCard
-                    hasNotifIcon
-                    hasSubtitle
-                    :detail="{
-                      name: card.name,
-                      description: card.description,
-                      url: card.url,
-                      imageUrl: card.imageUrl
-                    }"
-                    @click="handleRedirect(card)"
-                  />
-                </div>
-                <template #prevArrow>
-                  <div class="cardBox__arrowLeft"></div>
-                </template>
-                <template #nextArrow>
-                  <div class="cardBox__arrowRight"></div>
-                </template>
-              </VueSlickCarousel>
-            </client-only>
-          </LandingPageSection>
-        </div>
+                  <div class="cardBox" v-for="i in 15" :key="i">
+                    <LandingPageCard hasNotif />
+                  </div>
+                  <template #prevArrow>
+                    <div class="cardBox__arrowLeft"></div>
+                  </template>
+                  <template #nextArrow>
+                    <div class="cardBox__arrowRight"></div>
+                  </template>
+                </VueSlickCarousel>
+              </client-only>
+              <client-only>
+                <VueSlickCarousel v-bind="cardCarouselSetting">
+                  <div
+                    class="cardBox"
+                    v-for="card in ranking.rankingProductList"
+                    :key="card.serialno"
+                  >
+                    <LandingPageCard
+                      hasNotifIcon
+                      hasSubtitle
+                      :detail="{
+                        name: card.name,
+                        description: card.description,
+                        url: card.url,
+                        imageUrl: card.imageUrl
+                      }"
+                      @click="handleRedirect(card)"
+                    />
+                  </div>
+                  <template #prevArrow>
+                    <div class="cardBox__arrowLeft"></div>
+                  </template>
+                  <template #nextArrow>
+                    <div class="cardBox__arrowRight"></div>
+                  </template>
+                </VueSlickCarousel>
+              </client-only>
+            </LandingPageSection>
+          </div>
 
-        <!-- 熱門午茶 Layout -->
-        <!-- <div class="landingBody__section">
+          <!-- 熱門午茶 Layout -->
+          <!-- <div class="landingBody__section">
           <LandingPageSection
             title="熱門午茶"
             hasNew
@@ -289,24 +290,45 @@
             </div>
           </LandingPageSection>
         </div> -->
-      </b-col>
-    </b-row>
-  </b-container>
+        </b-col>
+      </b-row>
+    </b-container>
+    <DefaultModal
+      :active="modalState[index]"
+      v-show="gifts.length"
+      v-for="(item, index) in gifts"
+      :key="item.serialno"
+      @click="handleModalClose(index)"
+    >
+      <div v-html="item.content"></div>
+      <div>
+        <BaseButton
+          type="primary"
+          display="block"
+          @click="handleGetGift(item.serialno)"
+          >立即領取
+        </BaseButton>
+      </div>
+    </DefaultModal>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'nuxt-property-decorator'
-
 import VueSlickCarousel from 'vue-slick-carousel'
+import { ProxyRequestObject, ResponseObject } from 'Http'
+import { $axios } from '~/utils/api'
 import LandingPageSection from '~/components/LandingPageSection.vue'
 import LandingPageCard from '~/components/LandingPageCard.vue'
 import LandingPageStoreIcon from '~/components/LandingPageStoreIcon.vue'
 import LandingPageNewsItem from '~/components/LandingPageNewsItem.vue'
+import DefaultModal from '~/components/DefaultModal.vue'
+import BaseButton from '~/components/BaseButton.vue'
 
 import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 
-import { landingStore, dialogStore } from '~/store'
+import { landingStore, dialogStore, giftStore } from '~/store'
 
 @Component({
   layout: 'landing',
@@ -316,10 +338,58 @@ import { landingStore, dialogStore } from '~/store'
     LandingPageSection,
     LandingPageCard,
     LandingPageStoreIcon,
-    LandingPageNewsItem
+    LandingPageNewsItem,
+    DefaultModal,
+    BaseButton
   }
 })
 export default class Index extends Vue {
+  get gifts() {
+    return giftStore.notTakenOut
+  }
+
+  public modalState: Array<boolean> = []
+
+  public handleModalClose(index: number) {
+    dialogStore.setMaskActive(false)
+    this.modalState[index] = false
+  }
+
+  public async handleGetGift(serialno: string) {
+    try {
+      await this.sendClaimGiftRequest(serialno)
+      this.$router.push({
+        name: 'announcements-serialno',
+        params: { serialno }
+      })
+    } catch (e) {
+      // error
+    }
+  }
+
+  public async sendClaimGiftRequest(serialno: string) {
+    const requestBody: ProxyRequestObject = {
+      endpoint: '/api/GiftActivity/notTakenOuts',
+      key: process.env.apiKey,
+      data: { AnnouncementSerialNo: serialno },
+      method: 'post',
+      token: this.$cookies.get('accessToken')
+    }
+    try {
+      const result: ResponseObject = await $axios.post('/api', requestBody)
+      switch (Number(result.data.syscode)) {
+        case 200:
+          return result.data.data
+        case 404:
+          throw new Error('Failed to update status for this gift')
+        default:
+          return null
+      }
+    } catch (e) {
+      throw new Error(`Backend Error: ${e}`)
+    }
+  }
+
   public sectionTeaCarouselSetting: any = {
     dots: false,
     edgeFriction: 0.35,
@@ -602,7 +672,7 @@ export default class Index extends Vue {
       })
       dialogStore.setConfirmAction({ url })
     } else {
-      location.href = url
+      window.open(url, '_blank')
     }
   }
 
@@ -625,6 +695,16 @@ export default class Index extends Vue {
     }
   }
 
+  public async sendGetGiftRequest() {
+    try {
+      await giftStore.getNotTakenOut({
+        token: this.$cookies.get('accessToken')
+      })
+    } catch (e) {
+      //  error
+    }
+  }
+
   public async fetch() {
     await this.sendGetLandingRequest()
     this.initialized = true
@@ -636,6 +716,14 @@ export default class Index extends Vue {
       await this.sendGetLandingRequest()
       this.$nuxt.$loading.finish()
     })
+  }
+
+  public async mounted() {
+    await this.sendGetGiftRequest()
+    if (this.gifts.length) {
+      dialogStore.setMaskActive(true)
+      this.modalState = Array(this.gifts.length).fill(true)
+    }
   }
 }
 </script>

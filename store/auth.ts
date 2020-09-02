@@ -35,7 +35,7 @@ export default class AuthModule extends VuexModule {
   public countryCode: any = []
   public accountHint: any = {}
   public privacyContent: any = {}
-  public showPrivacy: boolean = true
+  public showPrivacy: boolean = false
   public accountToken: string = ''
 
   get privacyHtml() {
@@ -104,7 +104,6 @@ export default class AuthModule extends VuexModule {
     const result: ResponseObject = await $axios.post('/api', requestBody)
     switch (result.data.syscode) {
       case 200:
-        console.log(result.data)
         return true
       case 406:
         // Account Error

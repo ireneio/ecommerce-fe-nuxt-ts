@@ -1,0 +1,38 @@
+.carouselArrowLeft {
+  left: 0 !important;
+  background: url(/img/icon_lwft.svg) !important;
+  &--outside {
+    left: -17px !important;
+  }
+  &:hover {
+    background: url(/img/icon_lwft.svg);
+  }
+  &:before {
+    content: '';
+  }
+}
+.carouselArrowRight {
+  right: 0 !important;
+  background: url(/img/icon_right.svg) !important;
+  &--outside {
+    right: -17px !important;
+  }
+  &:hover {
+    background: url(/img/icon_right.svg);
+  }
+  &:before {
+    content: '';
+  }
+}
+.carouselArrowLeft,
+.carouselArrowRight {
+  z-index: 10;
+  width: 24px !important;
+  height: 36px !important;
+  &:before {
+    display: none !important;
+  }
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}

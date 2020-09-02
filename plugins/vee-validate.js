@@ -4,7 +4,7 @@ extend('required', {
   validate(value) {
     return {
       required: true,
-      valid: ['', null, undefined].includes(value)
+      valid: ['', null, undefined].indexOf(value) === -1
     }
   },
   message: '必填',

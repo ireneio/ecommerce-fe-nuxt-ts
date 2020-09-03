@@ -11,3 +11,12 @@
   text-overflow: ellipsis;
   white-space: normal;
 }
+
+@mixin bgImg($size, $url) {
+  @if ($url) {
+    background-image: url($url);
+  }
+  background-size: $size;
+  background-repeat: no-repeat;
+  background-position: center center;
+}

@@ -192,14 +192,27 @@ export default class Login extends Vue {
         dialogStore.setMaskActive(true)
         authStore.setAccountToken(result.data)
       } else if (result) {
-        const { AccessToken } = result
-
+        const {
+          AccessToken,
+          ProfileInfo: { isfirstlogin }
+        } = result
         this.$cookies.set('accessToken', AccessToken, {
           path: '/',
           maxAge: 60 * 60 * 24 * 7,
           sameSite: true
         })
-        this.$router.push({ name: 'index' })
+        // unactivated
+        if (isfirstlogin) {
+          authStore.setShowPrivacy(true)
+          dialogStore.setMaskActive(true)
+          authStore.setTempUserInfo({
+            username: this.form.username,
+            password: this.form.password,
+            isRemember: this.form.isRemember
+          })
+        } else {
+          this.$router.push({ name: 'index' })
+        }
       }
     } catch (e) {
       // error

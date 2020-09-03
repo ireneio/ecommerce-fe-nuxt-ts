@@ -48,7 +48,16 @@
               </BaseLabel>
             </b-col>
             <b-col cols="16" class="loginInputMarginTop">
-              <ValidationProvider rules="required|max:50" v-slot="{ errors }">
+              <ValidationProvider
+                :rules="`required|numeric|${
+                  phoneNumberPrefix === '+886'
+                    ? 'taiwanPhone'
+                    : phoneNumberPrefix === '+86'
+                    ? 'chinaPhone'
+                    : 'max:20'
+                }`"
+                v-slot="{ errors }"
+              >
                 <BaseLabel
                   :hint="{
                     text: errors.length ? errors[0] : '',
@@ -83,8 +92,8 @@
                 "
                 size="lg"
                 @click="handleSubmit"
-                >確認</BaseButton
-              >
+                >確認
+              </BaseButton>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
               <p
@@ -165,6 +174,7 @@ import { $axios } from '~/utils/api'
 import BaseInput from '~/components/BaseInput.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import BaseLabel from '~/components/BaseLabel.vue'
+import BaseSelect from '~/components/BaseSelect.vue'
 import { authStore } from '~/store'
 
 @Component({
@@ -173,6 +183,7 @@ import { authStore } from '~/store'
     BaseInput,
     BaseButton,
     BaseLabel,
+    BaseSelect,
     ValidationObserver,
     ValidationProvider
   }
@@ -293,6 +304,9 @@ export default class ForgetAccount extends Vue {
   }
 
   public beforeRouteEnter(to: any, from: any, next: any) {
+    if (!to) {
+      next('/account')
+    }
     if (to.params.active) {
       next()
     } else {

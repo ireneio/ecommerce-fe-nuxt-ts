@@ -10,6 +10,7 @@ import { ProxyRequestObject, ResponseObject } from 'Http'
 export default class CommonModule extends VuexModule {
   public areaList: any = []
   public countyList: any = []
+  public countyListForFunEvents: any = []
   public areas: any = []
   public categories: any = []
 
@@ -20,9 +21,11 @@ export default class CommonModule extends VuexModule {
 
   @Mutation
   setCountyList({ data, index }: any) {
-    let arr = [...this.countyList, [...data, index]]
+    let arr = [...this.countyListForFunEvents, [...data, index]]
     arr.sort((a, b) => a.index - b.index)
-    this.countyList = [...arr]
+    this.countyListForFunEvents = [...arr]
+
+    this.countyList = data
   }
 
   @Mutation

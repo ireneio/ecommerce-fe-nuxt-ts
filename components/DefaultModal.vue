@@ -66,13 +66,16 @@ export default class DefaultModal extends Vue {
   max-height: 90vh;
   width: 90vw;
   overflow: auto;
+  background-color: #fff;
+  padding: $spacing-s $spacing-xl;
+  border-radius: 8px;
+  @include grid-md {
+    padding: 42px 85px 53px;
+  }
   @include grid-lg {
     width: 50vw;
     transform: translate(-50%, -50%);
   }
-  background-color: #fff;
-  padding: 42px 85px 53px;
-  border-radius: 8px;
   &--active {
     z-index: 1000;
     opacity: 1;

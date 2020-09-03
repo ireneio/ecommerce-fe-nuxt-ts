@@ -39,19 +39,39 @@
         <BaseLabel text="發票地址" v-if="value === '2' || value === '5'">
           <div class="addressBox">
             <div class="addressBox__area">
-              <BaseSelect :valid="!errors.length" v-model="form.addressArea" />
+              <ValidationProvider rules="required" v-slot="{ errors }">
+                <BaseSelect
+                  :valid="!errors.length"
+                  v-model="form.addressArea"
+                  :options="areaOptions"
+                />
+              </ValidationProvider>
             </div>
             <div class="addressBox__county">
-              <BaseSelect
-                :valid="!errors.length"
-                v-model="form.addressCounty"
-              />
+              <ValidationProvider rules="required">
+                <BaseSelect
+                  :valid="true"
+                  v-model="form.addressCounty"
+                  :disabled="!form.addressArea.length"
+                  :options="countyOptions"
+                />
+              </ValidationProvider>
             </div>
-            <ValidationProvider rules="required|max:50" v-slot="{ errors }">
-              <div class="addressBox__line">
-                <BaseInput :valid="!errors.length" v-model="form.addressLine" />
-              </div>
-            </ValidationProvider>
+            <div class="addressBox__line">
+              <ValidationProvider rules="required|max:50" v-slot="{ errors }">
+                <div class="addressBox__lineVal">
+                  <span class="addressBox__lineZip">{{
+                    form.addressZipCode
+                  }}</span>
+                  <BaseInput
+                    class="addressBox__lineInput"
+                    :valid="!errors.length"
+                    v-model="form.addressLine"
+                    :disabled="!form.addressArea.length"
+                  />
+                </div>
+              </ValidationProvider>
+            </div>
           </div>
         </BaseLabel>
         <ValidationProvider rules="required|max:50" v-slot="{ errors }">
@@ -89,7 +109,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 import { ValidationObserver, ValidationProvider } from 'vee-validate'
 import BaseInput from '~/components/BaseInput.vue'
 import BaseLabel from '~/components/BaseLabel.vue'
@@ -111,9 +131,57 @@ export default class DefaultReceiptSelector extends Vue {
     addressArea: '',
     addressCounty: '',
     addressLine: '',
+    addressZipCode: '',
     barcode: '',
     companyName: '',
-    identification: ''
+    identification: '',
+    isValid: false
+  }
+
+  @Watch('form', { deep: true })
+  public onFormChange(newVal: any) {
+    this.$emit('form-update', newVal)
+  }
+
+  @Watch('isValid')
+  public onValidChange(newVal: boolean) {
+    this.form.isValid = newVal
+  }
+
+  get isValid() {
+    if (this.value === '1') {
+      return true
+    }
+    if (this.value === '3' || this.value === '4') {
+      if (this.form.barcode !== '') {
+        return true
+      }
+    }
+    if (this.value === '2' || this.value === '5') {
+      if (
+        this.form.addressArea !== '' &&
+        this.form.addressCounty !== '' &&
+        this.form.addressLine !== ''
+      ) {
+        return true
+      }
+    }
+    return false
+  }
+
+  @Watch('form.addressArea')
+  public onAddressAreaChange(newVal: string | number) {
+    this.form.addressCounty = ''
+    this.$emit('address-area-update', newVal)
+  }
+
+  @Watch('form.addressCounty')
+  public onAddressCountyChange(newVal: string) {
+    const zipCode = this.countyOptions
+      .filter((item: any) => item.value === newVal)
+      .map((item: any) => item.zipcode)
+      .find((item: any, index: number) => index === 0)
+    this.form.addressZipCode = zipCode
   }
 
   public handleOptionChange(e: any) {
@@ -122,20 +190,20 @@ export default class DefaultReceiptSelector extends Vue {
   }
 
   @Prop({
-    type: Boolean,
+    type: Array,
     default() {
-      return false
+      return []
     }
   })
-  readonly active!: boolean
+  readonly areaOptions!: any
 
   @Prop({
-    type: Boolean,
+    type: Array,
     default() {
-      return true
+      return []
     }
   })
-  readonly button!: boolean
+  readonly countyOptions!: any
 }
 </script>
 <style lang="scss" scoped>
@@ -144,14 +212,40 @@ export default class DefaultReceiptSelector extends Vue {
 
 .addressBox {
   display: flex;
+  flex-wrap: wrap;
   &__area {
-    flex: 0 0 20%;
+    flex: 0 0 100%;
+    @include grid-md {
+      flex: 0 0 25%;
+      margin-right: $spacing-m;
+    }
   }
   &__county {
-    flex: 0 0 20%;
+    flex: 0 0 100%;
+    @include grid-md {
+      flex: 0 0 25%;
+      margin-right: $spacing-m;
+    }
   }
   &__line {
-    flex: 0 0 40%;
+    flex: 0 0 100%;
+    @include grid-md {
+      flex: 0 0 calc(50% - 24px);
+      margin-top: $spacing-xs + 1px;
+    }
+  }
+  &__lineVal {
+    display: flex;
+    width: 100%;
+    align-items: center;
+  }
+  &__lineZip {
+    margin-right: $spacing-m;
+    color: $greyThree;
+    font-weight: bold;
+  }
+  &__lineInput {
+    flex-grow: 1;
   }
 }
 .defaultReceiptSelector {

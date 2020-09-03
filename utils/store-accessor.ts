@@ -12,6 +12,7 @@ import FunEventModule from '~/store/funevents'
 import CommonModule from '~/store/common'
 import GiftModule from '~/store/gift'
 import PointModule from '~/store/point'
+import ZendeskModule from '~/store/zendesk'
 
 let authStore: AuthModule
 let landingStore: LandingModule
@@ -24,6 +25,7 @@ let funEventsStore: FunEventModule
 let commonStore: CommonModule
 let giftStore: GiftModule
 let pointStore: PointModule
+let zendeskStore: ZendeskModule
 
 function initialiseStores(store: Store<any>): void {
   authStore = getModule(AuthModule, store)
@@ -37,6 +39,7 @@ function initialiseStores(store: Store<any>): void {
   commonStore = getModule(CommonModule, store)
   giftStore = getModule(GiftModule, store)
   pointStore = getModule(PointModule, store)
+  zendeskStore = getModule(ZendeskModule, store)
 }
 
 export {
@@ -51,5 +54,6 @@ export {
   funEventsStore,
   commonStore,
   giftStore,
-  pointStore
+  pointStore,
+  zendeskStore
 }

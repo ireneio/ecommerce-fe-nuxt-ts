@@ -879,6 +879,7 @@ import DefaultMainContainer from '~/components/DefaultMainContainer.vue'
 
 @Component({
   layout: 'default',
+  middleware: 'auth',
   components: {
     DefaultMainContainer
   }

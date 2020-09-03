@@ -42,7 +42,8 @@ export default {
     '~/plugins/axios',
     '~/plugins/vee-validate.js',
     { src: '~/plugins/vue-good-table', ssr: false },
-    '~/plugins/tooltip'
+    '~/plugins/tooltip',
+    { src: '~plugins/zendesk.js', mode: 'client' }
   ],
   /*
    ** Auto import components
@@ -83,13 +84,15 @@ export default {
         return [['@nuxt/babel-preset-app', { loose: true }]]
       }
     },
-    transpile: ['vee-validate/dist/rules']
+    transpile: ['vee-validate/dist/rules'],
+    analyze: true
   },
   env: {
     apiUrl: process.env.API_URL || '',
     apiKey: process.env.API_KEY || '',
     proxyUrl: process.env.PROXY_URL || 'http://localhost:8080',
-    useProxy: process.env.USE_PROXY || '1'
+    useProxy: process.env.USE_PROXY || '1',
+    zendeskKey: process.env.ZENDESK_KEY || '5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP'
   },
   loading: '~/components/DefaultLoading.vue',
   pageTransition: 'fade'

@@ -1,6 +1,7 @@
 .login {
   &__aside,
   &__main {
+    position: relative;
     min-height: 100vh;
     max-height: 100vh;
     overflow-y: hidden;
@@ -214,6 +215,12 @@
   }
 }
 .loginModal {
+  &__titlebox {
+    position: sticky;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+  }
   &__title {
     text-align: center;
     font-weight: bold;

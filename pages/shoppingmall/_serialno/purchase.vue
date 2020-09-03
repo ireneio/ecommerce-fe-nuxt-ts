@@ -99,16 +99,35 @@
                   {{ form.paymentType }}
                 </div>
               </div>
-              <div class="couponPurchaseReceipt__receiptbox">
-                <div class="couponPurchaseReceipt__title">發票類型</div>
+              <div
+                class="couponPurchaseReceipt__receiptbox"
+                v-show="subtotal > 0"
+              >
+                <div class="couponPurchaseReceipt__title">
+                  發票類型
+                </div>
               </div>
-              <div class="couponPurchaseReceipt__receiptbox">
-                <DefaultReceiptSelector />
+              <div
+                class="couponPurchaseReceipt__receiptbox"
+                v-show="subtotal > 0"
+              >
+                <DefaultReceiptSelector
+                  @input="handleReceiptTypeUpdate"
+                  @address-area-update="handleGetCounty"
+                  @form-update="receiptInfo = $event"
+                  :areaOptions="area"
+                  :countyOptions="county"
+                />
               </div>
             </div>
           </section>
           <div class="couponPurchase__btn">
-            <BaseButton type="primary" display="block" @click="handlePurchase">
+            <BaseButton
+              :type="receiptInfo.isValid ? 'primary' : 'greyOne'"
+              display="block"
+              @click="handlePurchase"
+              :disabled="!receiptInfo.isValid"
+            >
               立即購買
             </BaseButton>
           </div>
@@ -164,6 +183,8 @@ import { visitStore, commonStore, dialogStore, pointStore } from '~/store'
   }
 })
 export default class ShoppingMallPurchase extends Vue {
+  public receiptInfo: any = {}
+
   public async handlePurchase() {
     try {
       this.$nuxt.$loading.start()
@@ -180,8 +201,8 @@ export default class ShoppingMallPurchase extends Vue {
         dialogStore.setConfirmAction('member-info')
         dialogStore.setMaskActive(true)
         dialogStore.setActive(true)
-        this.$nuxt.$loading.finish()
       }
+      this.$nuxt.$loading.finish()
     } catch (e) {
       // error
       dialogStore.setContent({
@@ -258,6 +279,40 @@ export default class ShoppingMallPurchase extends Vue {
     return total
   }
 
+  public receiptType: '1' | '2' | '3' | '4' | '5' | '' = ''
+
+  public async handleReceiptTypeUpdate(val: '1' | '2' | '3' | '4' | '5') {
+    if (this.receiptType !== '2' && this.receiptType !== '5') {
+      if (val === '2' || val === '5') {
+        await this.sendGetAreasRequest()
+      }
+    }
+    this.receiptType = val
+  }
+
+  get area() {
+    return commonStore.areas.length
+      ? commonStore.areas.map((item: any) => ({
+          label: item.area,
+          value: item.area
+        }))
+      : []
+  }
+
+  get county() {
+    return commonStore.countyList.length
+      ? commonStore.countyList.map((item: any) => ({
+          label: item.area,
+          value: item.area,
+          zipcode: item.zipCode
+        }))
+      : []
+  }
+
+  public async handleGetCounty(val: number | string) {
+    await this.sendGetCountyRequest(val)
+  }
+
   public async handleUpdateAmount(val: number) {
     if (!(val === -1 && this.form.amount === 0)) {
       this.form.quantity += val
@@ -291,19 +346,42 @@ export default class ShoppingMallPurchase extends Vue {
   }
 
   public async sendCouponTransactionRequest() {
-    const { quantity, invoiceType, amount } = this.form
+    const { quantity, amount } = this.form
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/CouponTransaction/Order',
       key: process.env.apiKey,
       data: {
         ticketId: this.$route.params.serialno,
         quantity,
-        invoiceType,
+        invoiceType: Number(this.receiptType),
         amount,
         isIE: false
       },
       method: 'post',
       token: this.$cookies.get('accessToken')
+    }
+    // 會員載具
+    if (this.receiptType === '2') {
+      requestBody.data.buyerName = this.receiptInfo.receiver.toString()
+      requestBody.data.buyerAddress =
+        this.receiptInfo.addressZipCode.toString() +
+        this.receiptInfo.addressArea.toString() +
+        this.receiptInfo.addressCounty.toString() +
+        this.receiptInfo.addressLine.toString()
+    }
+    // 手機載具 || 自然人憑證
+    if (this.receiptType === '3' || this.receiptType === '4') {
+      requestBody.data.carrierId = this.receiptInfo.barcode.toString()
+    }
+    // 三聯式發票
+    if (this.receiptType === '5') {
+      requestBody.data.buyerName = this.receiptInfo.receiver.toString()
+      requestBody.data.buyerAddress =
+        this.receiptInfo.addressZipCode.toString() +
+        this.receiptInfo.addressArea.toString() +
+        this.receiptInfo.addressCounty.toString() +
+        this.receiptInfo.addressLine.toString()
+      requestBody.data.buyerID = this.receiptInfo.identification.toString()
     }
 
     const result: ResponseObject = await $axios.post('/api', requestBody)
@@ -316,6 +394,25 @@ export default class ShoppingMallPurchase extends Vue {
         throw new Error('Server Error')
       default:
         return null
+    }
+  }
+
+  public async sendGetAreasRequest() {
+    try {
+      await commonStore.getAreas({ token: this.$cookies.get('accessToken') })
+    } catch (e) {
+      // error
+    }
+  }
+
+  public async sendGetCountyRequest(areaName: string | number) {
+    try {
+      await commonStore.getCounty({
+        token: this.$cookies.get('accessToken'),
+        areaName
+      })
+    } catch (e) {
+      // error
     }
   }
 
@@ -506,6 +603,8 @@ export default class ShoppingMallPurchase extends Vue {
     font-weight: bold;
   }
   &__footerContent {
+    position: relative;
+    top: $spacing-xs + 1px;
     color: $orangeDark;
     font-size: $fz-xxl;
     font-weight: bold;

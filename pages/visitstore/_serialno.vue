@@ -351,26 +351,49 @@
       </template>
       <ValidationObserver v-slot="{ invalid }" v-if="modalType === 0">
         <form @submit.prevent="handleSubmitReport">
-          <BaseLabel text="問題類型" required>
-            <BaseSelect
-              placeholder="請選擇問題類型"
-              v-model="reportForm.problemType"
-              :options="[
-                { label: '電話錯誤', value: 0, id: '1' },
-                { label: '地址錯誤', value: 1, id: '2' },
-                { label: '優惠項目錯誤', value: 2, id: '3' },
-                { label: '無法使用特約優惠', value: 3, id: '4' },
-                { label: '店家已歇業', value: 4, id: '5' },
-                { label: '其他', value: 5, id: '6' }
-              ]"
-            />
-          </BaseLabel>
-          <BaseLabel text="消費日期/時間" required class="formRange">
-            <BaseDatepicker
-              v-model="reportForm.problemDate"
-              format="YYYY-MM-DD"
-            />
-          </BaseLabel>
+          <ValidationProvider rules="required" v-slot="{ errors }">
+            <BaseLabel
+              text="問題類型"
+              :valid="!errors.length"
+              required
+              :hint="{
+                type: 'warning',
+                text: errors.length ? errors[0] : ''
+              }"
+            >
+              <BaseSelect
+                placeholder="請選擇問題類型"
+                v-model="reportForm.problemType"
+                :options="[
+                  { label: '電話錯誤', value: 0, id: '1' },
+                  { label: '地址錯誤', value: 1, id: '2' },
+                  { label: '優惠項目錯誤', value: 2, id: '3' },
+                  { label: '無法使用特約優惠', value: 3, id: '4' },
+                  { label: '店家已歇業', value: 4, id: '5' },
+                  { label: '其他', value: 5, id: '6' }
+                ]"
+                :valid="!errors.length"
+              />
+            </BaseLabel>
+          </ValidationProvider>
+          <ValidationProvider rules="required" v-slot="{ errors }">
+            <BaseLabel
+              text="消費日期/時間"
+              required
+              class="formRange"
+              :valid="!errors.length"
+              :hint="{
+                type: 'warning',
+                text: errors.length ? errors[0] : ''
+              }"
+            >
+              <BaseDatepicker
+                v-model="reportForm.problemDate"
+                format="YYYY-MM-DD"
+                :valid="!errors.length"
+              />
+            </BaseLabel>
+          </ValidationProvider>
           <BaseLabel text="是否告知為STAYFUN用戶？" required class="formRange">
             <b-form-radio-group
               id="radio-group-1"
@@ -395,18 +418,21 @@
               <b-form-radio :value="false">否</b-form-radio>
             </b-form-radio-group>
           </BaseLabel>
-          <ValidationProvider v-slot="{ errors }" rules="max:500|min:1">
+          <ValidationProvider v-slot="{ errors }" rules="required|max:500">
             <BaseLabel
               text="使用經過"
               required
               class="formRange"
-              :valid="!errors.length && reportForm.problemDesc.length > 0"
+              :valid="!errors.length"
               :hint="{
-                text: errors.length ? errors[0] : '必填',
+                text: errors.length ? errors[0] : '',
                 type: 'warning'
               }"
             >
-              <BaseTextarea v-model="reportForm.problemDesc" />
+              <BaseTextarea
+                v-model="reportForm.problemDesc"
+                :valid="!errors.length"
+              />
             </BaseLabel>
           </ValidationProvider>
           <BaseButton
@@ -641,7 +667,13 @@ export default class VisitStoreDetails extends Vue {
       key: process.env.apiKey,
       data: {
         storeSerialno: this.$route.params.serialno,
-        mobilephone: authStore.user ? authStore.user.mobilephonenumber : '',
+        mobilephone: authStore.user
+          ? authStore.user.phonenumber
+            ? authStore.user.phonenumber
+            : authStore.user.mobilephonenumber
+            ? authStore.user.mobilephonenumber
+            : ''
+          : '',
         primaryemail: authStore.user ? authStore.user.email : '',
         type: problemType,
         startDate: problemDate + ' 00:00:00',

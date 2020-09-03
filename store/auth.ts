@@ -37,6 +37,7 @@ export default class AuthModule extends VuexModule {
   public privacyContent: any = {}
   public showPrivacy: boolean = false
   public accountToken: string = ''
+  public tempUserInfo: any = {}
 
   get privacyHtml() {
     return this.privacyContent.content
@@ -48,6 +49,11 @@ export default class AuthModule extends VuexModule {
 
   get privacyVersionNumber() {
     return this.privacyContent.versionSerialNo
+  }
+
+  @Mutation
+  setTempUserInfo(payload: any) {
+    this.tempUserInfo = payload
   }
 
   @Mutation
@@ -145,7 +151,8 @@ export default class AuthModule extends VuexModule {
   }
 
   @Action({ commit: 'setUser' })
-  async getAccessToken({ username, password, isRemember }: SignInForm) {
+  async getAccessToken(payload: SignInForm) {
+    const { username, password, isRemember } = payload
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/auth/signin',
       data: {
@@ -155,6 +162,9 @@ export default class AuthModule extends VuexModule {
       },
       key: process.env.apiKey,
       method: 'post'
+    }
+    if (payload.privacyVersionName) {
+      requestBody.data.privacyVersionName = payload.privacyVersionName
     }
 
     const result: ResponseObject = await $axios.post('/auth', requestBody)

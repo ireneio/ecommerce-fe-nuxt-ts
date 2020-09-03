@@ -111,7 +111,6 @@
                   type="text"
                   value="****"
                   :valid="true"
-                  max="4"
                   :disabled="true"
                   :center="true"
                 />
@@ -175,7 +174,7 @@
                     :value="phoneSixDigit[key]"
                     :valid="!errors.length"
                     :center="true"
-                    max="1"
+                    maxlength="1"
                   />
                 </BaseLabel>
               </ValidationProvider>
@@ -495,6 +494,9 @@ export default class ForgetAccount extends Vue {
   }
 
   public beforeRouteEnter(to: any, from: any, next: any) {
+    if (!to) {
+      next('/account')
+    }
     if (to.params.active) {
       next()
     } else {

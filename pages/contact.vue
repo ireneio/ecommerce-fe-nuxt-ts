@@ -26,7 +26,8 @@ import { Component, Vue } from 'nuxt-property-decorator'
 import DefaultMainContainer from '~/components/DefaultMainContainer.vue'
 
 @Component({
-  layout: 'default'
+  layout: 'default',
+  middleware: 'auth'
 })
 export default class Contact extends Vue {}
 </script>

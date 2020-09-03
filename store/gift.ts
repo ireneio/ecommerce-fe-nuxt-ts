@@ -9,9 +9,15 @@ import { ProxyRequestObject, ResponseObject } from 'Http'
 })
 export default class GiftModule extends VuexModule {
   public notTakenOut: any = []
+  public hasShowed: boolean = false
 
   @Mutation
   setNotTakenOut(payload: any) {
+    this.notTakenOut = payload
+  }
+
+  @Mutation
+  setHasShowed(payload: boolean) {
     this.notTakenOut = payload
   }
 

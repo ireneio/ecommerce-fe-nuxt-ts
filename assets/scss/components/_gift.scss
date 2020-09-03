@@ -1,0 +1,48 @@
+.gift {
+  &__title,
+  &__banner,
+  &__maintitle {
+  }
+  &__title {
+    margin-top: $spacing-xxl;
+    height: 32px;
+    min-width: 200px;
+    margin-bottom: $spacing-m;
+    @include grid-md {
+      margin-bottom: $spacing-xxxl;
+    }
+    @include bgImg(contain, '/img/surprise@3x.png');
+  }
+  &__banner {
+    height: 276px;
+    min-width: 200px;
+    margin-bottom: $spacing-m;
+    @include grid-md {
+      margin-bottom: $spacing-xxxl;
+    }
+    @include bgImg(contain, '/img/img-gift@3x.png');
+  }
+  &__maintitle {
+    height: 40px;
+    min-width: 200px;
+    @include grid-md {
+      margin-bottom: $spacing-xl;
+    }
+    @include bgImg(contain, '/img/invalid-subTitle@3x.png');
+  }
+  &__footer {
+    height: 25px;
+    min-width: 200px;
+    margin-bottom: $spacing-l;
+    @include grid-md {
+      margin-bottom: 40px;
+    }
+    @include bgImg(contain, '/img/invalid-name@3x.png');
+  }
+  &__content {
+    padding: $spacing-m 0;
+    text-align: center;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+}

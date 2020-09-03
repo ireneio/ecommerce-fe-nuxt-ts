@@ -2,7 +2,7 @@
   <div>
     <b-container fluid="xl">
       <b-row>
-        <b-col cols="24" lg="12" class="px-0 d-none d-lg-block">
+        <b-col cols="24" lg="12" class="px-0 d-none d-lg-block position-static">
           <aside class="login__aside">
             <div class="login__carouselBox">
               <b-carousel
@@ -30,7 +30,7 @@
             <footer class="login__footer">STAY here, always have FUN.</footer>
           </aside>
         </b-col>
-        <b-col cols="24" lg="12">
+        <b-col cols="24" lg="12" class="position-static">
           <main class="login__main">
             <div class="login__textBox">
               <div class="login__logo"></div>
@@ -60,11 +60,11 @@
                   >忘記密碼
                 </span>
               </div>
-              <div class="loginmainfooter__footerBox">
-                <p class="loginmainfooter__footer">
+              <section class="loginmainfooter__footerBox">
+                <div class="loginmainfooter__footer">
                   Copyright © MAYO Human Capital Inc.
-                </p>
-                <p class="loginmainfooter__footer">
+                </div>
+                <div class="loginmainfooter__footer">
                   All Right Reserved
                   <a
                     href="javascript:;"
@@ -72,14 +72,13 @@
                     class="loginmainfooter__btninline"
                     >服務條款
                   </a>
-                </p>
-              </div>
+                </div>
+              </section>
             </div>
           </main>
         </b-col>
       </b-row>
     </b-container>
-    <!-- v-if="modalState" -->
     <DefaultModal :active="modalState" :button="false">
       <div class="loginModal">
         <div class="loginModal__titlebox">
@@ -102,7 +101,7 @@
             display="block"
             type="greyTwo"
             class="loginModal__smallBtn"
-            @click="modalState = false"
+            @click="handleDisagreePrivacy"
           >
             不同意並登出
           </BaseButton>
@@ -118,6 +117,7 @@
         </div>
       </div>
     </DefaultModal>
+    <DefaultMask :active="maskState" />
   </div>
 </template>
 <script lang="ts">
@@ -133,6 +133,10 @@ interface images {
 
 @Component
 export default class AccountLayout extends Vue {
+  get maskState() {
+    return dialogStore.maskActive
+  }
+
   slide: number = 0
 
   sliding: boolean = false
@@ -178,20 +182,41 @@ export default class AccountLayout extends Vue {
     dialogStore.setMaskActive(false)
   }
 
-  public handleAgreePrivacy() {
+  public handleDisagreePrivacy() {
+    this.modalState = false
+    this.$nuxt.$loading.start()
+    setTimeout(() => {
+      this.$nuxt.$loading.finish()
+    }, 1000)
+  }
+
+  public async handleAgreePrivacy() {
     try {
-      // await authStore.getAccessToken({})
+      this.modalState = false
+      await this.sendSignInRequest()
+      this.$router.push({ name: 'account-register' })
+    } catch (e) {
+      // error
+    }
+  }
+
+  public async sendSignInRequest() {
+    try {
+      const { username, password, isRemember } = authStore.tempUserInfo
+      await authStore.getAccessToken({
+        username,
+        password,
+        isRemember,
+        privacyVersionName: authStore.privacyVersionName
+      })
     } catch (e) {}
   }
 
   public async mounted() {
     try {
-      // this.$nuxt.$loading.start()
       await authStore.getPrivacyContent()
     } catch (e) {
       // fail to get privacy content
-    } finally {
-      // this.$nuxt.$loading.finish()
     }
   }
 }

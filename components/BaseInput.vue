@@ -20,6 +20,7 @@
       :placeholder="placeholder"
       :min="min"
       :max="max"
+      :maxlength="maxlength"
       @input="handleInput"
       @blur="handleBlur"
       @focus="handleFocus"
@@ -58,6 +59,14 @@ export default class BaseInput extends Vue {
     }
   })
   readonly placeholder!: string
+
+  @Prop({
+    type: String,
+    default() {
+      return ''
+    }
+  })
+  readonly maxlength!: string
 
   @Prop({
     type: String,

@@ -294,19 +294,25 @@
       </b-row>
     </b-container>
     <DefaultModal
-      :active="modalState[index]"
-      v-show="gifts.length"
-      v-for="(item, index) in gifts"
-      :key="item.serialno"
-      @click="handleModalClose(index)"
+      :active="modalState"
+      v-if="gifts.length"
+      @click="handleModalClose"
     >
-      <div v-html="item.content"></div>
+      <div class="gift">
+        <div class="gift__title"></div>
+        <div class="gift__banner"></div>
+        <div class="gift__maintitle"></div>
+        <div class="gift__content">{{ gifts[0].title }}</div>
+        <div class="gift__footer"></div>
+      </div>
+
       <div>
         <BaseButton
           type="primary"
           display="block"
-          @click="handleGetGift(item.serialno)"
-          >立即領取
+          @click="handleGetGift(gifts[0].announcementSerialNo)"
+        >
+          立即領取
         </BaseButton>
       </div>
     </DefaultModal>
@@ -328,11 +334,11 @@ import BaseButton from '~/components/BaseButton.vue'
 import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 
-import { landingStore, dialogStore, giftStore } from '~/store'
+import { landingStore, dialogStore, giftStore, authStore } from '~/store'
 
 @Component({
   layout: 'landing',
-  middleware: 'auth',
+  middleware: ['auth', 'zendesk'],
   components: {
     VueSlickCarousel,
     LandingPageSection,
@@ -348,16 +354,18 @@ export default class Index extends Vue {
     return giftStore.notTakenOut
   }
 
-  public modalState: Array<boolean> = []
+  public modalState: boolean = false
 
-  public handleModalClose(index: number) {
+  public handleModalClose() {
     dialogStore.setMaskActive(false)
-    this.modalState[index] = false
+    this.modalState = false
   }
 
   public async handleGetGift(serialno: string) {
     try {
       await this.sendClaimGiftRequest(serialno)
+      giftStore.setHasShowed(true)
+      dialogStore.setMaskActive(false)
       this.$router.push({
         name: 'announcements-serialno',
         params: { serialno }
@@ -718,12 +726,20 @@ export default class Index extends Vue {
     })
   }
 
-  public async mounted() {
-    await this.sendGetGiftRequest()
-    if (this.gifts.length) {
-      dialogStore.setMaskActive(true)
-      this.modalState = Array(this.gifts.length).fill(true)
-    }
+  public timer: any = null
+
+  public mounted() {
+    this.timer = setTimeout(async () => {
+      await this.sendGetGiftRequest()
+      if (this.gifts.length) {
+        dialogStore.setMaskActive(true)
+        this.modalState = true
+      }
+    }, 3000)
+  }
+
+  public beforeDestroyed() {
+    clearTimeout(this.timer)
   }
 }
 </script>

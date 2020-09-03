@@ -3,7 +3,7 @@ declare module 'SignIn' {
     username: string
     password: string
     isRemember: boolean
-    isCheckPrivacy: boolean
+    isCheckPrivacy?: boolean
     privacyVersionName?: string
     accountToken?: string
   }

@@ -1,4 +1,4 @@
-# stayfun
+# STAYFUN-FRONTEND
 
 ## Build Setup
 

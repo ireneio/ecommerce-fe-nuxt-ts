@@ -1,14 +1,15 @@
 <template>
-  <label for="" class="input">
-    <DatePicker
+  <label for class="input">
+    <date-picker
       class="baseDatepicker"
       @input="$emit('input', $event)"
       :value="value"
-      valueType="format"
+      value-type="format"
       :format="format"
       prefix-class="xmx"
       :disabled-date="disabledDates"
-    ></DatePicker>
+      :disabled="disabled"
+    ></date-picker>
   </label>
 </template>
 <script lang="ts">
@@ -44,6 +45,14 @@ export default class BaseDatepicker extends Vue {
     }
   })
   readonly format!: string
+
+  @Prop({
+    type: Boolean,
+    default() {
+      return false
+    }
+  })
+  readonly disabled!: boolean
 }
 </script>
 <style lang="scss" scoped>

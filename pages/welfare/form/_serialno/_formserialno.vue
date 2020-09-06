@@ -1,29 +1,21 @@
 <template>
   <div>
-    <WelfareContainer>
+    <welfare-container>
       <template v-slot:header>
         <header class="welfareFormHeader">
-          <h4 class="welfareFormHeader__title">
-            {{ formInfo.sheetName }}
-          </h4>
-          <h5 class="welfareFormHeader__subtitle">
-            {{ formInfo.documentNumber }}
-          </h5>
-          <span class="welfareFormHeader__date">
-            更新時間：{{ latestUpdatedDateTime }}
-          </span>
-          <p class="welfareFormHeader__desc">
-            {{ formInfo.description }}
-          </p>
+          <h4 class="welfareFormHeader__title">{{ formInfo.sheetName }}</h4>
+          <h5 class="welfareFormHeader__subtitle">{{ formInfo.documentNumber }}</h5>
+          <span class="welfareFormHeader__date">更新時間：{{ latestUpdatedDateTime }}</span>
+          <p class="welfareFormHeader__desc">{{ formInfo.description }}</p>
         </header>
       </template>
-      <ValidationObserver>
+      <validation-observer>
         <section class="welfareForm">
           <b-container fluid>
             <b-row>
               <b-col cols="24" lg="12" class="mb-5">
-                <ValidationProvider v-slot="{ errors }" rules="max:50|required">
-                  <BaseLabel
+                <validation-provider v-slot="{ errors }" rules="max:50|required">
+                  <base-label
                     text="填表人"
                     required
                     :valid="!errors.length"
@@ -32,24 +24,25 @@
                       type: 'warning'
                     }"
                   >
-                    <BaseInput
+                    <base-input
                       type="text"
                       required
                       v-model="basicInfo.creatorChineseName"
                       placeholder="請輸入真實姓名"
                       :valid="!errors.length"
+                      :disabled="formInfo.isPublished"
                     />
-                  </BaseLabel>
-                </ValidationProvider>
+                  </base-label>
+                </validation-provider>
               </b-col>
               <b-col cols="24" lg="12" class="mb-5">
-                <BaseLabel text="填表人帳號">
-                  <BaseInput type="text" readonly :value="userId" />
-                </BaseLabel>
+                <base-label text="填表人帳號">
+                  <base-input type="text" readonly :value="userId" />
+                </base-label>
               </b-col>
               <b-col cols="24" lg="12" class="mb-5">
-                <ValidationProvider v-slot="{ errors }" rules="max:50|required">
-                  <BaseLabel
+                <validation-provider v-slot="{ errors }" rules="max:50|required">
+                  <base-label
                     text="申請人帳號"
                     required
                     :valid="!errors.length"
@@ -58,25 +51,21 @@
                       type: 'warning'
                     }"
                   >
-                    <BaseInput
+                    <base-input
                       type="text"
                       required
                       v-model="basicInfo.applicantId"
                       placeholder="請輸入真實帳號"
                       :valid="!errors.length"
+                      :disabled="formInfo.isPublished"
                     />
-                  </BaseLabel>
-                </ValidationProvider>
+                  </base-label>
+                </validation-provider>
               </b-col>
               <b-col cols="24" lg="12" class="mb-5">
-                <BaseLabel text="補助金額">
-                  <BaseInput
-                    type="text"
-                    required
-                    readonly
-                    :value="baseAllowance"
-                  />
-                </BaseLabel>
+                <base-label text="補助金額">
+                  <base-input type="text" required readonly :value="baseAllowance" />
+                </base-label>
               </b-col>
               <b-col
                 cols="24"
@@ -90,8 +79,8 @@
                 :key="col.columnId"
                 v-show="col.isDisplay"
               >
-                <ValidationProvider v-slot="{ errors }" rules="max:50|required">
-                  <BaseLabel
+                <validation-provider v-slot="{ errors }" rules="max:50|required">
+                  <base-label
                     :text="col.columnName"
                     :required="col.isRequired"
                     :valid="!errors.length"
@@ -105,7 +94,7 @@
                       col.type === 'password'
                     "
                   >
-                    <BaseInput
+                    <base-input
                       v-if="
                         col.type === 'text' ||
                         col.type === 'email' ||
@@ -115,11 +104,12 @@
                       v-model="form[col.columnId]"
                       :placeholder="col.placeholder ? col.placeholder : ''"
                       :valid="!errors.length"
+                      :disabled="formInfo.isPublished"
                     />
-                  </BaseLabel>
-                </ValidationProvider>
-                <ValidationProvider v-slot="{ errors }" rules="required">
-                  <BaseLabel
+                  </base-label>
+                </validation-provider>
+                <validation-provider v-slot="{ errors }" rules="required">
+                  <base-label
                     :text="col.columnName"
                     :required="col.isRequired"
                     :valid="!errors.length"
@@ -134,9 +124,10 @@
                       col.type === 'select'
                     "
                   >
-                    <BaseDatepicker
+                    <base-datepicker
                       format="YYYY/MM/DD"
-                      v-model="form[col.columnId]"
+                      @input="form[col.columnId] = $event"
+                      :value="form[col.columnId]"
                       :valid="!errors.length"
                       :placeholder="col.placeholder ? col.placeholder : ''"
                       :disabledDates="
@@ -149,15 +140,33 @@
                             : (date) => false
                           : (date) => false
                       "
+                      :disabled="formInfo.isPublished"
                       v-if="col.type === 'date'"
                     />
-                    <BaseFile
+                    <base-file
                       :placeholder="col.placeholder ? col.placeholder : ''"
                       :valid="!errors.length"
                       id="file"
                       @change="handleFileInput($event, form[col.columnId])"
                       v-if="col.type === 'files'"
+                      :disabled="formInfo.isPublished"
                     />
+                    <div
+                      v-if="col.type === 'files' && formFiles.length > 0"
+                      class="welfareForm__filedownload"
+                    >
+                      <button
+                        class="welfareForm__filedownloadBtn"
+                        v-for="item in formFiles"
+                        :key="item.fileId"
+                        @click="handleFileDownload(item.fileUrl)"
+                      >
+                        <span class="welfareForm__filedownloadBtnText">{{ item.fileName }}</span>
+                        <span
+                          class="welfareForm__filedownloadBtnTime"
+                        >{{ new Date(item.createDateTime).toLocaleString({ hour: '2-digit', minute: '2-digit', month: '2-digit', day: '2-digit', year: 'numeric'}) }}</span>
+                      </button>
+                    </div>
                     <b-form-radio-group
                       :id="col.columnId"
                       v-model="form[col.columnId]"
@@ -168,21 +177,19 @@
                         :value="value"
                         v-for="(value, key) in colsMap[col.columnId].values"
                         :key="key"
-                      >
-                        {{ key }}
-                      </b-form-radio>
+                      >{{ key }}</b-form-radio>
                     </b-form-radio-group>
-                    <BaseSelect
+                    <base-select
                       v-if="col.type === 'select'"
                       :placeholder="col.placeholder ? col.placeholder : ''"
                       v-model="form[col.columnId]"
                       :options="colsMap[col.columnId].values"
                       :valid="!errors.length"
                     />
-                  </BaseLabel>
-                </ValidationProvider>
-                <ValidationProvider v-slot="{ errors }" rules="max:150">
-                  <BaseLabel
+                  </base-label>
+                </validation-provider>
+                <validation-provider v-slot="{ errors }" rules="max:150">
+                  <base-label
                     :text="col.columnName"
                     :required="false"
                     :valid="!errors.length"
@@ -192,56 +199,48 @@
                     }"
                     v-if="col.type === 'textarea'"
                   >
-                    <BaseTextarea
+                    <base-textarea
                       v-if="col.type === 'textarea'"
                       v-model="form[col.columnId]"
                       :placeholder="col.placeholder ? col.placeholder : ''"
                       :valid="!errors.length"
                     />
-                  </BaseLabel>
-                </ValidationProvider>
+                  </base-label>
+                </validation-provider>
               </b-col>
             </b-row>
             <b-row class="mt-5">
               <b-col cols="24" lg="12" xl="9">
                 <div class="welfareForm__btngroup">
                   <span class="welfareForm__btn">
-                    <BaseButton type="greyTwoOutline" @click="handleDelete">
-                      刪除
-                    </BaseButton>
+                    <base-button type="greyTwoOutline" @click="handleDelete">刪除</base-button>
                   </span>
                   <span class="welfareForm__btn">
-                    <BaseButton type="greyTwo" @click="handlePrint">
-                      列印
-                    </BaseButton>
+                    <base-button type="greyTwo" @click="handlePrint">列印</base-button>
                   </span>
                   <span class="welfareForm__btn">
-                    <BaseButton
+                    <base-button
                       :type="confirmDisabled ? 'greyOne' : 'greyTwo'"
                       @click="handleSubmit(0)"
                       :disabled="confirmDisabled"
-                    >
-                      暫存
-                    </BaseButton>
+                    >暫存</base-button>
                   </span>
                 </div>
               </b-col>
               <b-col cols="24" lg="12" xl="15" class="mt-5 mt-lg-0">
-                <BaseButton
+                <base-button
                   :type="submitDisabled ? 'greyOne' : 'primary'"
                   display="block"
                   @click="handleSubmit(1)"
                   :disabled="submitDisabled"
-                >
-                  送出
-                </BaseButton>
+                >送出</base-button>
               </b-col>
             </b-row>
           </b-container>
         </section>
-      </ValidationObserver>
-    </WelfareContainer>
-    <DefaultDialog
+      </validation-observer>
+    </welfare-container>
+    <default-dialog
       :active="dialogState"
       @cancel="handleDialogClose"
       @accept="handleDialogClose"
@@ -250,8 +249,7 @@
       :title="dialogContent.title"
       :type="dialogContent.type"
       :icon="dialogContent.icon"
-    >
-    </DefaultDialog>
+    ></default-dialog>
   </div>
 </template>
 
@@ -327,6 +325,10 @@ export default class WelfareForm extends Vue {
     if (dialogStore.content.initializer === 'welfare-submit-success') {
       this.$router.push('/welfare/reportlist')
     }
+  }
+
+  private handleFileDownload(url: string): void {
+    window.open(url, '_blank')
   }
 
   get submitDisabled() {
@@ -470,6 +472,10 @@ export default class WelfareForm extends Vue {
     }
   }
 
+  get formFiles() {
+    return welfareStore.formNew.files || []
+  }
+
   get formInfo() {
     return welfareStore.formInfo
   }
@@ -607,7 +613,9 @@ export default class WelfareForm extends Vue {
         serialno: this.$route.params.serialno,
         token: this.$cookies.get('accessToken')
       })
-    } catch (e) {}
+    } catch (e) {
+      throw new Error(e)
+    }
   }
 
   public async sendAuthorizeRequest() {
@@ -637,6 +645,7 @@ export default class WelfareForm extends Vue {
       })
     } catch (e) {
       // error
+      throw new Error(e)
     }
   }
 
@@ -738,6 +747,27 @@ export default class WelfareForm extends Vue {
   &__btngroup {
     display: flex;
     flex-wrap: wrap;
+  }
+  &__filedownload {
+    padding: $spacing-m 0;
+  }
+  &__filedownloadBtn {
+    border: none;
+    outline: none;
+    background-color: $whiteTwo;
+    border-radius: 40px;
+    color: $greyThree;
+    padding: $spacing-s $spacing-m;
+    margin: $spacing-s;
+  }
+  &__filedownloadBtnText {
+    font-weight: bold;
+    color: $greyThree;
+  }
+  &__filedownloadBtnTime {
+    margin-left: $spacing-m;
+    font-size: $fz-xs;
+    color: $greyTwo;
   }
 }
 .welfareFormHeader {

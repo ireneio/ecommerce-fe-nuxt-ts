@@ -1,9 +1,6 @@
 <template>
   <span class="landingPageStoreIcon">
-    <span
-      class="landingPageStoreIcon__img"
-      :style="{ 'background-image': `url(${url})` }"
-    ></span>
+    <span class="landingPageStoreIcon__img" :style="{ 'background-image': `url(${url})` }"></span>
     <span class="landingPageStoreIcon__text">{{ text }}</span>
   </span>
 </template>

@@ -1,9 +1,9 @@
 <template>
   <div class="landingPageAppCarousel">
     <client-only>
-      <VueSlickCarousel v-bind="carouselSetting">
+      <vue-slick-carousel v-bind="carouselSetting">
         <div v-for="(item, index) in icons" :key="index">
-          <LandingPageAppIcon
+          <landing-page-app-icon
             :text="item.text"
             :url="item.url"
             :icon="item.icon"
@@ -11,7 +11,7 @@
           />
         </div>
         <div v-for="i in 5" :key="i" v-show="!icons.length"></div>
-      </VueSlickCarousel>
+      </vue-slick-carousel>
     </client-only>
   </div>
 </template>

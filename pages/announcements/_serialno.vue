@@ -1,28 +1,33 @@
 <template>
-  <DefaultMainContainer
-    title="返回訊息牆"
-    dark
-    :clickableTitle="true"
-    route="announcements"
-  >
-    <div class="announcementsDetail">
-      <div class="announcementsDetail__titlebar">
-        <h3 class="announcementsDetail__title">{{ detailData.title }}</h3>
-        <div class="announcementsDetail__date">
-          {{ detailData.date.split(' ')[0] }}
+  <div>
+    <default-main-container title="返回訊息牆" dark :clickableTitle="true" route="announcements">
+      <div class="announcementsDetail">
+        <div class="announcementsDetail__titlebar">
+          <h3 class="announcementsDetail__title">{{ detailData.title }}</h3>
+          <div class="announcementsDetail__date">{{ detailData.date.split(' ')[0] }}</div>
+        </div>
+        <div class="announcementsDetail__content">
+          <p v-html="detailData.content"></p>
         </div>
       </div>
-      <div class="announcementsDetail__content">
-        <p v-html="detailData.content"></p>
-      </div>
-    </div>
-  </DefaultMainContainer>
+    </default-main-container>
+    <client-only>
+      <default-dialog
+        :active="dialogState"
+        @accept="handleDialogClose"
+        :message="dialogContent.message"
+        :title="dialogContent.title"
+        :type="dialogContent.type"
+        :icon="dialogContent.icon"
+      ></default-dialog>
+    </client-only>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
 import DefaultMainContainer from '~/components/DefaultMainContainer.vue'
-import { announcementsStore } from '~/store'
+import { announcementsStore, dialogStore } from '~/store'
 
 interface AnnouncementsDetailProps {
   title: number
@@ -37,6 +42,19 @@ interface AnnouncementsDetailProps {
   }
 })
 export default class AnnouncementsDetail extends Vue {
+  get dialogState() {
+    return dialogStore.active
+  }
+
+  get dialogContent() {
+    return dialogStore.content
+  }
+
+  public handleDialogClose() {
+    dialogStore.setActive(false)
+    dialogStore.setMaskActive(false)
+  }
+
   get detailData(): AnnouncementsDetailProps {
     const { title, announceDate, content } = announcementsStore.adDetail
     return {
@@ -54,8 +72,13 @@ export default class AnnouncementsDetail extends Vue {
       })
     } catch (e) {
       // error
-      this.$router.push('/')
-    } finally {
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '資料加載錯誤，請刷新再試。',
+        icon: true,
+        type: 'accept'
+      })
     }
   }
 

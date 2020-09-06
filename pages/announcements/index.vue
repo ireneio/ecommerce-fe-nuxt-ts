@@ -1,23 +1,21 @@
 <template>
   <div>
-    <DefaultMainContainer title="訊息牆" dark>
+    <default-main-container title="訊息牆" dark>
       <div class="announcements">
         <div class="announcements__tabbar">
           <span
             class="announcements__tab"
             :class="{ 'announcements__tab--active': currentTab === 0 }"
             @click="currentTab = 0"
-            >最新消息</span
-          >
+          >最新消息</span>
           <span
             class="announcements__tab"
             :class="{ 'announcements__tab--active': currentTab === 1 }"
             @click="currentTab = 1"
-            >個人通知</span
-          >
+          >個人通知</span>
         </div>
         <div class="announcements__content">
-          <QuestionnairesCard
+          <questionnaires-card
             v-for="item in latestNewsCardData"
             :key="item.id"
             class="mb-5"
@@ -26,7 +24,7 @@
             :value="item"
             v-show="currentTab === 0"
           />
-          <QuestionnairesCard
+          <questionnaires-card
             v-for="item in personalNewsCardData"
             :key="item.id"
             class="mb-5"
@@ -41,9 +39,7 @@
             class="announcements__page"
             @click="handlePageUpdateTab0(-1)"
             v-show="pageTab0 > 1"
-          >
-            上一頁
-          </div>
+          >上一頁</div>
           <div
             class="announcements__page"
             v-for="i in latestNewsPages"
@@ -58,18 +54,14 @@
             class="announcements__page"
             @click="handlePageUpdateTab0(1)"
             v-show="pageTab0 < latestNewsPages"
-          >
-            下一頁
-          </div>
+          >下一頁</div>
         </div>
         <div class="announcements__paging" v-if="currentTab === 1">
           <div
             class="announcements__page"
             @click="handlePageUpdateTab1(-1)"
             v-show="pageTab1 > 1"
-          >
-            上一頁
-          </div>
+          >上一頁</div>
           <div
             class="announcements__page"
             v-for="i in personalNewsPages"
@@ -84,32 +76,36 @@
             class="announcements__page"
             @click="handlePageUpdateTab1(1)"
             v-show="pageTab1 < personalNewsPages"
-          >
-            下一頁
-          </div>
+          >下一頁</div>
         </div>
       </div>
-    </DefaultMainContainer>
-    <DefaultDialog
-      :active="dialogState"
-      @accept="handleDialogClose"
-      :message="dialogContent.message"
-      :title="dialogContent.title"
-      :type="dialogContent.type"
-      :icon="dialogContent.icon"
-    ></DefaultDialog>
+    </default-main-container>
+    <client-only>
+      <default-dialog
+        :active="dialogState"
+        @accept="handleDialogClose"
+        :message="dialogContent.message"
+        :title="dialogContent.title"
+        :type="dialogContent.type"
+        :icon="dialogContent.icon"
+      ></default-dialog>
+    </client-only>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 import DefaultMainContainer from '~/components/DefaultMainContainer.vue'
+import DefaultDialog from '~/components/DefaultDialog.vue'
+import QuestionnairesCard from '~/components/QuestionnairesCard.vue'
 import { announcementsStore, dialogStore } from '~/store'
 
 @Component({
   middleware: 'auth',
   components: {
-    DefaultMainContainer
+    DefaultMainContainer,
+    DefaultDialog,
+    QuestionnairesCard
   }
 })
 export default class AnnouncementsIndex extends Vue {
@@ -146,7 +142,7 @@ export default class AnnouncementsIndex extends Vue {
     }
     setTimeout(() => {
       this.$nuxt.$loading.finish()
-    }, 1000)
+    }, 500)
   }
 
   public handlePageUpdateTab1(val: number) {
@@ -163,7 +159,7 @@ export default class AnnouncementsIndex extends Vue {
     }
     setTimeout(() => {
       this.$nuxt.$loading.finish()
-    }, 1000)
+    }, 500)
   }
 
   get latestNews() {

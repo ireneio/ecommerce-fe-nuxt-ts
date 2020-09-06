@@ -1,49 +1,60 @@
 <template>
-  <VisitStoreContainer>
-    <VisitStoreSearchBar
-      :values="searchParams"
-      @update-search="handleUpdateSearch"
-      :categories="categories"
-      type="shoppingmall"
-    />
-    <template #body>
-      <b-container>
-        <b-row>
-          <b-col
-            v-for="item in storeData"
-            :key="item.serialno"
-            cols="24"
-            md="12"
-            lg="6"
-            class="mt-5"
-          >
-            <VisitStoreCard
-              :title="item.title"
-              :subtitle="item.subtitle"
-              :type="item.type"
-              :serialno="item.serialno"
-              :logoUrl="item.logoUrl"
-              :cardType="item.cardType"
-              :originalPrice="item.originalPrice"
-              :salePrice="item.salePrice"
-              @update-route="handleUpdateRoute(item.storeId, item.serialno)"
-            />
-          </b-col>
-          <b-col cols="24" class="mt-5">
-            <div class="d-flex justify-content-center">
-              <BaseButton
-                type="primary"
-                display="inline"
-                @click="handlePageUpdate"
-                v-show="storeData.length < storeDataLength"
-                >看更多</BaseButton
-              >
-            </div>
-          </b-col>
-        </b-row>
-      </b-container>
-    </template>
-  </VisitStoreContainer>
+  <div>
+    <visit-store-container>
+      <visit-store-search-bar
+        :values="searchParams"
+        @update-search="handleUpdateSearch"
+        :categories="categories"
+        type="shoppingmall"
+      />
+      <template #body>
+        <b-container>
+          <b-row>
+            <b-col
+              v-for="item in storeData"
+              :key="item.serialno"
+              cols="24"
+              md="12"
+              lg="6"
+              class="mt-5"
+            >
+              <visit-store-card
+                :title="item.title"
+                :subtitle="item.subtitle"
+                :type="item.type"
+                :serialno="item.serialno"
+                :logoUrl="item.logoUrl"
+                :cardType="item.cardType"
+                :originalPrice="item.originalPrice"
+                :salePrice="item.salePrice"
+                @update-route="handleUpdateRoute(item.storeId, item.serialno)"
+              />
+            </b-col>
+            <b-col cols="24" class="mt-5">
+              <div class="d-flex justify-content-center">
+                <base-button
+                  type="primary"
+                  display="inline"
+                  @click="handlePageUpdate"
+                  v-show="storeData.length < storeDataLength"
+                >看更多</base-button>
+              </div>
+            </b-col>
+          </b-row>
+        </b-container>
+      </template>
+    </visit-store-container>
+    <client-only>
+      <default-dialog
+        :active="dialogState"
+        @accept="handleDialogClose"
+        :message="dialogContent.message"
+        :title="dialogContent.title"
+        :type="dialogContent.type"
+        :icon="dialogContent.icon"
+      ></default-dialog>
+    </client-only>
+  </div>
 </template>
 
 <script lang="ts">
@@ -51,7 +62,8 @@ import { Component, Vue } from 'nuxt-property-decorator'
 import VisitStoreContainer from '~/components/VisitStoreContainer.vue'
 import VisitStoreSearchBar from '~/components/VisitStoreSearchBar.vue'
 import VisitStoreCard from '~/components/VisitStoreCard.vue'
-import { visitStore, commonStore } from '~/store'
+import BaseButton from '~/components/BaseButton.vue'
+import { visitStore, commonStore, dialogStore } from '~/store'
 
 @Component({
   layout: 'default',
@@ -59,10 +71,24 @@ import { visitStore, commonStore } from '~/store'
   components: {
     VisitStoreSearchBar,
     VisitStoreContainer,
-    VisitStoreCard
+    VisitStoreCard,
+    BaseButton
   }
 })
 export default class ShoppingMallIndex extends Vue {
+  get dialogState() {
+    return dialogStore.active
+  }
+
+  get dialogContent() {
+    return dialogStore.content
+  }
+
+  public handleDialogClose() {
+    dialogStore.setActive(false)
+    dialogStore.setMaskActive(false)
+  }
+
   public async handleUpdateSearch(payload: any): Promise<any> {
     visitStore.setSearchParams({ ...payload })
     this.$nuxt.$loading.start()
@@ -74,10 +100,11 @@ export default class ShoppingMallIndex extends Vue {
 
   public handlePageUpdate() {
     this.$nuxt.$loading.start()
-    this.paging += 20
-    setTimeout(() => {
+    this.paging += 10
+    const timeout = setTimeout(() => {
       this.$nuxt.$loading.finish()
-    }, 2000)
+      clearTimeout(timeout)
+    }, 500)
   }
 
   public handleUpdateRoute(storeId: string, serialno: string) {
@@ -121,6 +148,7 @@ export default class ShoppingMallIndex extends Vue {
       })
     } catch (e) {
       // error
+      throw new Error(e)
     }
   }
 
@@ -131,6 +159,7 @@ export default class ShoppingMallIndex extends Vue {
       })
     } catch (e) {
       // error
+      throw new Error(e)
     }
   }
 
@@ -141,6 +170,7 @@ export default class ShoppingMallIndex extends Vue {
       })
     } catch (e) {
       // error
+      throw new Error(e)
     }
   }
 
@@ -149,18 +179,39 @@ export default class ShoppingMallIndex extends Vue {
     //   this.sendGetAreasRequest(),
     //   this.sendGetCategoriesRequest()
     // ])
-    await this.sendGetCategoriesRequest()
-    await this.sendGetAreasRequest()
-    await this.sendStoreSearchRequest()
+    try {
+      await this.sendGetCategoriesRequest()
+      await this.sendGetAreasRequest()
+      await this.sendStoreSearchRequest()
+    } catch (e) {
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '資料加載錯誤，請刷新再試。',
+        icon: true,
+        type: 'accept'
+      })
+    }
   }
 
   public activated() {
     this.$nextTick(async () => {
-      this.$nuxt.$loading.start()
-      await this.sendGetCategoriesRequest()
-      await this.sendGetAreasRequest()
-      await this.sendStoreSearchRequest()
-      this.$nuxt.$loading.finish()
+      try {
+        this.$nuxt.$loading.start()
+        await this.sendGetCategoriesRequest()
+        await this.sendGetAreasRequest()
+        await this.sendStoreSearchRequest()
+      } catch (e) {
+        dialogStore.setActive(true)
+        dialogStore.setMaskActive(true)
+        dialogStore.setContent({
+          title: '資料加載錯誤，請刷新再試。',
+          icon: true,
+          type: 'accept'
+        })
+      } finally {
+        this.$nuxt.$loading.finish()
+      }
     })
   }
 }

@@ -17,7 +17,10 @@ import {
   faGlobe,
   faPaperclip,
   faCalendar,
-  faCommentDots
+  faCommentDots,
+  faTicketAlt,
+  faUser,
+  faArrowUp
 } from '@fortawesome/free-solid-svg-icons'
 import {
   faQuestionCircle,
@@ -51,7 +54,10 @@ const icons = [
   faPaperclip,
   faCalendar,
   faEnvelope,
-  faCommentDots
+  faCommentDots,
+  faTicketAlt,
+  faUser,
+  faArrowUp
 ]
 icons.forEach((icon) => library.add(icon))
 

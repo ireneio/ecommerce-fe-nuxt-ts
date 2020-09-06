@@ -1,50 +1,54 @@
 <template>
-  <DefaultMainContainer title="調查所" dark>
-    <span class="questionnairesheading">截止日期</span>
-    <QuestionnairesCard
-      v-for="item in questionnairesListReformatted"
-      :key="item.serialno"
-      :value="item"
-      class="mb-5"
-      hasStatus
-      hasPic
-      type="questionnaires"
-      @click="$router.push(`/questionnaires/${item.serialno}`)"
-    />
-    <div class="questionnaires__paging">
-      <div
-        class="questionnaires__page"
-        @click="handlePageUpdate(-1)"
-        v-show="page > 1"
-      >
-        上一頁
+  <div>
+    <default-main-container title="調查所" dark>
+      <span class="questionnairesheading">截止日期</span>
+      <questionnaires-card
+        v-for="item in questionnairesListReformatted"
+        :key="item.serialno"
+        :value="item"
+        class="mb-5"
+        hasStatus
+        hasPic
+        type="questionnaires"
+        @click="handleRouteUpdate(item.Url)"
+      />
+      <div class="questionnaires__paging">
+        <div class="questionnaires__page" @click="handlePageUpdate(-1)" v-show="page > 1">上一頁</div>
+        <div
+          class="questionnaires__page"
+          v-for="i in questionnairesListPagination"
+          v-show="i === page || i === page - 1 || i === page + 1"
+          :key="i"
+          @click="handlePageUpdate(i)"
+        >
+          <span>{{ i }}</span>
+          <span>.</span>
+        </div>
+        <div
+          class="questionnaires__page"
+          @click="handlePageUpdate(1)"
+          v-show="page < questionnairesListPages"
+        >下一頁</div>
       </div>
-      <div
-        class="questionnaires__page"
-        v-for="i in questionnairesListPagination"
-        v-show="i === page || i === page - 1 || i === page + 1"
-        :key="i"
-        @click="handlePageUpdate(i)"
-      >
-        <span>{{ i }}</span>
-        <span>.</span>
-      </div>
-      <div
-        class="questionnaires__page"
-        @click="handlePageUpdate(1)"
-        v-show="page < questionnairesListPages"
-      >
-        下一頁
-      </div>
-    </div>
-  </DefaultMainContainer>
+    </default-main-container>
+    <client-only>
+      <default-dialog
+        :active="dialogState"
+        @accept="handleDialogClose"
+        :message="dialogContent.message"
+        :title="dialogContent.title"
+        :type="dialogContent.type"
+        :icon="dialogContent.icon"
+      ></default-dialog>
+    </client-only>
+  </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 import DefaultMainContainer from '~/components/DefaultMainContainer.vue'
 import QuestionnairesCard from '~/components/QuestionnairesCard.vue'
-import { questionnairesStore } from '~/store'
+import { questionnairesStore, dialogStore } from '~/store'
 
 @Component({
   middleware: 'auth',
@@ -54,6 +58,24 @@ import { questionnairesStore } from '~/store'
   }
 })
 export default class QuestionnairesIndex extends Vue {
+  get dialogState() {
+    return dialogStore.active
+  }
+
+  get dialogContent() {
+    return dialogStore.content
+  }
+
+  public handleDialogClose() {
+    dialogStore.setActive(false)
+    dialogStore.setMaskActive(false)
+  }
+
+  public handleRouteUpdate(url: string) {
+    // $router.push(`/questionnaires/${item.serialno}`)
+    window.open(url, '_blank')
+  }
+
   public page: number = 1
 
   public handlePageUpdate(val: number): void {
@@ -70,7 +92,7 @@ export default class QuestionnairesIndex extends Vue {
     }
     setTimeout(() => {
       this.$nuxt.$loading.finish()
-    }, 1000)
+    }, 500)
   }
 
   get questionnairesList() {
@@ -114,6 +136,13 @@ export default class QuestionnairesIndex extends Vue {
       })
     } catch (e) {
       // error
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '資料加載錯誤，請刷新再試。',
+        icon: true,
+        type: 'accept'
+      })
     }
   }
 

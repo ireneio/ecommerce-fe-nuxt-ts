@@ -1,41 +1,33 @@
 <template>
   <div>
-    <VisitStoreContainer>
+    <visit-store-container>
       <div class="couponDetail__wrapper">
         <div class="couponDetail">
           <div class="couponDetail__carousel">
             <client-only>
-              <VueSlickCarousel v-bind="carouselSetting">
+              <vue-slick-carousel v-bind="carouselSetting">
                 <div
                   class="couponDetail__carouselImg"
                   v-for="img in carouselImages"
                   :key="img.id"
                   :style="{ 'background-image': `url(${img.imageUrl})` }"
                 ></div>
-                <div v-if="!carouselImages.length">
-                  Placeholder Image
-                </div>
+                <div v-if="!carouselImages.length">Placeholder Image</div>
                 <template #prevArrow>
                   <div class="carouselArrowLeft"></div>
                 </template>
                 <template #nextArrow>
                   <div class="carouselArrowRight"></div>
                 </template>
-              </VueSlickCarousel>
+              </vue-slick-carousel>
             </client-only>
           </div>
           <div class="couponDetailDescBox">
-            <h3 class="couponDetailDescBox__title">
-              {{ couponDetail.couponName }}
-            </h3>
-            <p class="couponDetailDescBox__subtitle">
-              {{ couponDetail.description }}
-            </p>
+            <h3 class="couponDetailDescBox__title">{{ couponDetail.couponName }}</h3>
+            <p class="couponDetailDescBox__subtitle">{{ couponDetail.description }}</p>
             <div class="couponDetailDescBox__ratingBox">
               <div class="couponDetailRating">
-                <span class="couponDetailRating__num">
-                  {{ couponDetail.aveScore }}
-                </span>
+                <span class="couponDetailRating__num">{{ couponDetail.aveScore }}</span>
                 <div class="couponDetailRating__stars">
                   <fa
                     class="couponDetail__stars"
@@ -44,9 +36,7 @@
                     :key="index"
                   ></fa>
                 </div>
-                <span class="couponDetailRating__count">
-                  {{ couponDetail.scoreTimes }} reviews
-                </span>
+                <span class="couponDetailRating__count">{{ couponDetail.scoreTimes }} reviews</span>
               </div>
               <div class="couponDetailDescBox__myRating">
                 <span class="couponDetailDescBox__myRatingText">評分</span>
@@ -82,10 +72,7 @@
                       @mouseover="handleMouseoverRating(5)"
                     ></fa>
                   </div>
-                  <div
-                    style="cursor: not-allowed;"
-                    v-if="couponDetail.myScore > 0"
-                  >
+                  <div style="cursor: not-allowed;" v-if="couponDetail.myScore > 0">
                     <fa
                       class="couponDetail__stars"
                       :icon="[i === 0 ? 'far' : 'fas', 'star']"
@@ -97,59 +84,39 @@
               </div>
             </div>
             <div class="couponDetailDescBox__priceBox">
-              <div class="couponDetailDescBox__ogPrice">
-                原價${{ couponDetail.originalPrice }}
-              </div>
-              <div class="couponDetailDescBox__newPrice">
-                ${{ couponDetail.salePrice }}
-              </div>
+              <div class="couponDetailDescBox__ogPrice">原價${{ couponDetail.originalPrice }}</div>
+              <div class="couponDetailDescBox__newPrice">${{ couponDetail.salePrice }}</div>
             </div>
             <div class="couponDetailDescBox__date">
               <span class="couponDetailDescBox__dateIcon"></span>
-              <span class="couponDetailDescBox__dateText">{{
+              <span class="couponDetailDescBox__dateText">
+                {{
                 couponDetail.lastUseTimeDisplay
-              }}</span>
+                }}
+              </span>
             </div>
             <div class="couponDetailDescBox__btn">
-              <BaseButton
-                type="primary"
-                display="block"
-                @click="handlePurchase"
-              >
-                立即購買
-              </BaseButton>
+              <base-button type="primary" display="block" @click="handlePurchase">立即購買</base-button>
             </div>
           </div>
         </div>
         <div class="couponDetail__desc">
           <section class="couponDetailSection">
-            <h5 class="couponDetailSection__title">
-              票券基本資訊
-            </h5>
-            <article class="couponDetailSection__content">
-              {{ couponDetail.description }}
-            </article>
+            <h5 class="couponDetailSection__title">票券基本資訊</h5>
+            <article class="couponDetailSection__content">{{ couponDetail.description }}</article>
           </section>
           <section class="couponDetailSection">
-            <h5 class="couponDetailSection__title">
-              票券兌換規則
-            </h5>
-            <article class="couponDetailSection__content">
-              {{ couponDetail.rule }}
-            </article>
+            <h5 class="couponDetailSection__title">票券兌換規則</h5>
+            <article class="couponDetailSection__content">{{ couponDetail.rule }}</article>
           </section>
           <section class="couponDetailSection">
-            <h5 class="couponDetailSection__title">
-              適用分店
-            </h5>
-            <article class="couponDetailSection__content">
-              {{ couponDetail.note }}
-            </article>
+            <h5 class="couponDetailSection__title">適用分店</h5>
+            <article class="couponDetailSection__content">{{ couponDetail.note }}</article>
           </section>
         </div>
       </div>
-    </VisitStoreContainer>
-    <DefaultDialog
+    </visit-store-container>
+    <default-dialog
       :active="dialogState"
       @cancel="handleDialogClose"
       @accept="handleDialogClose"
@@ -158,7 +125,7 @@
       :title="dialogContent.title"
       :type="dialogContent.type"
       :icon="dialogContent.icon"
-    ></DefaultDialog>
+    ></default-dialog>
   </div>
 </template>
 
@@ -169,6 +136,7 @@ import { ProxyRequestObject, ResponseObject } from 'Http'
 import { $axios } from '~/utils/api'
 import VisitStoreContainer from '~/components/VisitStoreContainer.vue'
 import BaseButton from '~/components/BaseButton.vue'
+import DefaultDialog from '~/components/DefaultDialog.vue'
 import { visitStore, commonStore, dialogStore } from '~/store'
 
 @Component({
@@ -177,6 +145,7 @@ import { visitStore, commonStore, dialogStore } from '~/store'
   components: {
     VisitStoreContainer,
     BaseButton,
+    DefaultDialog,
     VueSlickCarousel
   }
 })
@@ -296,6 +265,7 @@ export default class ShoppingMallDetail extends Vue {
       })
     } catch (e) {
       // error
+      throw new Error(e)
     }
   }
 
@@ -328,14 +298,35 @@ export default class ShoppingMallDetail extends Vue {
   }
 
   public async fetch() {
-    await this.sendGetCouponDetailRequest()
+    try {
+      await this.sendGetCouponDetailRequest()
+    } catch (e) {
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '資料加載錯誤，請刷新再試。',
+        icon: true,
+        type: 'accept'
+      })
+    }
   }
 
   public activated() {
     this.$nextTick(async () => {
-      this.$nuxt.$loading.start()
-      await this.sendGetCouponDetailRequest()
-      this.$nuxt.$loading.finish()
+      try {
+        this.$nuxt.$loading.start()
+        await this.sendGetCouponDetailRequest()
+      } catch (e) {
+        dialogStore.setActive(true)
+        dialogStore.setMaskActive(true)
+        dialogStore.setContent({
+          title: '資料加載錯誤，請刷新再試。',
+          icon: true,
+          type: 'accept'
+        })
+      } finally {
+        this.$nuxt.$loading.finish()
+      }
     })
   }
 }

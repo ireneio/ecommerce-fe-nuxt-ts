@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "nuxt-ts",
-    "build": "nuxt-ts build",
-    "start": "nuxt-ts start",
-    "generate": "nuxt-ts generate",
+    "dev": "cross-env NUXT_ENV_PROXY_URL=http://localhost:8081 NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP nuxt-ts",
+    "build": "cross-env NUXT_ENV_PROXY_URL=http://localhost:8081 NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP nuxt-ts build",
+    "start": "cross-env NUXT_ENV_PROXY_URL=http://localhost:8081 NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP nuxt-ts start",
+    "generate": "cross-env NUXT_ENV_PROXY_URL=http://localhost:8081 NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP nuxt-ts generate",
     "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "lint": "npm run lint:js",
     "test": "jest"
@@ -42,6 +42,7 @@
     "vue": "^2.6.12",
     "vue-good-table": "^2.21.0",
     "vue-select": "^3.10.8",
+    "vue-simple-calendar": "^5.0.0",
     "vue-slick-carousel": "^1.0.6",
     "vue2-datepicker": "^3.6.2"
   },
@@ -55,6 +56,7 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.1.0",
+    "cross-env": "^7.0.2",
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-standard": "^14.1.1",

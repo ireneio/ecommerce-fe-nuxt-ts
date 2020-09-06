@@ -81,6 +81,7 @@ export default class LandingHeader extends Vue {}
       display: block;
     }
     a {
+      color: $greyTwo;
       margin: 0 $spacing-s;
       padding: 32px 16px;
       &:hover {
@@ -97,10 +98,11 @@ export default class LandingHeader extends Vue {}
     align-items: center;
     span {
       margin: 0 $spacing-s;
-      color: $primary;
+      color: $greyTwo;
       padding: 16px;
     }
     a {
+      color: $greyTwo;
       margin: 0 $spacing-xs;
       padding: $spacing-l $spacing-s;
       @include grid-md {

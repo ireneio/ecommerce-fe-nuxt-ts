@@ -2,12 +2,12 @@
   <div>
     <h2 class="login__title">登入</h2>
     <div>
-      <ValidationObserver>
+      <validation-observer>
         <b-container>
           <b-row>
             <b-col cols="24">
-              <ValidationProvider rules="required|max:50" v-slot="{ errors }">
-                <BaseLabel
+              <validation-provider rules="required|max:50" v-slot="{ errors }">
+                <base-label
                   text="帳號"
                   :hint="{
                     text: errors.length ? errors[0] : usernameHint,
@@ -15,7 +15,7 @@
                   }"
                   :valid="!errors.length && usernameValid"
                 >
-                  <BaseInput
+                  <base-input
                     @blur="handleAccountBlur"
                     placeholder="請輸入您的STAYFUN帳號或Email"
                     type="text"
@@ -41,13 +41,13 @@
                         />
                       </span>
                     </template>
-                  </BaseInput>
-                </BaseLabel>
-              </ValidationProvider>
+                  </base-input>
+                </base-label>
+              </validation-provider>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
-              <ValidationProvider rules="required|max:50" v-slot="{ errors }">
-                <BaseLabel
+              <validation-provider rules="required|max:50" v-slot="{ errors }">
+                <base-label
                   text="密碼"
                   :hint="{
                     text: errors.length ? errors[0] : passwordHint,
@@ -55,7 +55,7 @@
                   }"
                   :valid="!errors.length && passwordValid"
                 >
-                  <BaseInput
+                  <base-input
                     :type="showPassword ? 'text' : 'password'"
                     placeholder="請輸入您的密碼(密碼有區分大小寫)"
                     id="password"
@@ -77,31 +77,23 @@
                         />
                       </span>
                     </template>
-                  </BaseInput>
-                </BaseLabel>
-              </ValidationProvider>
+                  </base-input>
+                </base-label>
+              </validation-provider>
             </b-col>
             <b-col cols="24" class="mt-3">
-              <BaseCheckbox
+              <base-checkbox
                 id="rememberpassword"
                 v-model="form.isRemember"
                 :value="form.isRemember"
-              >
-                記住我的帳號(請勿在公共場所使用此功能)
-              </BaseCheckbox>
+              >記住我的帳號(請勿在公共場所使用此功能)</base-checkbox>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
-                type="primary"
-                display="block"
-                size="lg"
-                @click="handleSignIn"
-                >確認</BaseButton
-              >
+              <base-button type="primary" display="block" size="lg" @click="handleSignIn">確認</base-button>
             </b-col>
           </b-row>
         </b-container>
-      </ValidationObserver>
+      </validation-observer>
     </div>
   </div>
 </template>

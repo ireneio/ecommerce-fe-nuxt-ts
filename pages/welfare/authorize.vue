@@ -1,20 +1,19 @@
 <template>
-  <div>
-    <welfare-container
-      title="申請紀錄"
-      :isAuthorized="authorized"
-      @input="searchParams.SearchText = $event"
-      @click="handleSearch"
-      @keydown-enter="handleSearch"
-    >
-      <div class="welfareRecord">
-        <client-only>
-          <vue-good-table
-            :columns="tableFields"
-            :rows="appliedList"
-            :line-numbers="true"
-            :total-rows="appliedListDataLength"
-            :pagination-options="{
+  <welfare-container
+    title="審核紀錄"
+    :isAuthorized="authorized"
+    @input="searchParams.SearchText = $event"
+    @click="handleSearch"
+    @keydown-enter="handleSearch"
+  >
+    <div class="welfareRecord">
+      <client-only>
+        <vue-good-table
+          :columns="tableFields"
+          :rows="appliedList"
+          :line-numbers="true"
+          :total-rows="appliedListDataLength"
+          :pagination-options="{
             enabled: true,
             mode: 'remote',
             perPage: pagination.length,
@@ -29,64 +28,53 @@
             pageLabel: '', // for 'pages' mode
             allLabel: '全部'
           }"
-            @on-page-change="handlePageUpdate"
-            @on-per-page-change="handlePageLengthUpdate"
-            @on-row-click="handleRowClick"
-          >
-            <div slot="emptystate">This will show up when there are no rows</div>
-            <template slot="table-row" slot-scope="props">
-              <span v-if="props.column.field == 'application'">
-                <div class="welfareRecord__tablerow">
-                  <p class="welfareRecord__text">{{ props.row.application }}</p>
-                  <p class="welfareRecord__subtext">{{ props.row.applicationId }}</p>
-                </div>
-              </span>
-              <span v-if="props.column.field == 'time'">
-                <div class="welfareRecord__tablerow">
-                  <p class="welfareRecord__text">{{ props.row.time }}</p>
-                </div>
-              </span>
-              <span v-if="props.column.field == 'applier'">
-                <div class="welfareRecord__tablerow">
-                  <p class="welfareRecord__text">{{ props.row.applier }}</p>
-                </div>
-              </span>
-              <span v-if="props.column.field == 'verification'">
-                <div class="welfareRecord__tablerow">
-                  <p class="welfareRecord__text">{{ props.row.verification }}</p>
-                </div>
-              </span>
-              <span v-if="props.column.field == 'status'">
-                <div class="welfareRecord__tablerow welfareRecord__rowStatus">
-                  <span class="welfareRecord__badge">{{ props.row.status }}</span>
-                </div>
-              </span>
-            </template>
+          @on-page-change="handlePageUpdate"
+          @on-per-page-change="handlePageLengthUpdate"
+          @on-row-click="handleRowClick"
+        >
+          <div slot="emptystate">This will show up when there are no rows</div>
+          <template slot="table-row" slot-scope="props">
+            <span v-if="props.column.field == 'application'">
+              <div class="welfareRecord__tablerow">
+                <p class="welfareRecord__text">{{ props.row.application }}</p>
+                <p class="welfareRecord__subtext">{{ props.row.applicationId }}</p>
+              </div>
+            </span>
+            <span v-if="props.column.field == 'time'">
+              <div class="welfareRecord__tablerow">
+                <p class="welfareRecord__text">{{ props.row.time }}</p>
+              </div>
+            </span>
+            <span v-if="props.column.field == 'applier'">
+              <div class="welfareRecord__tablerow">
+                <p class="welfareRecord__text">{{ props.row.applier }}</p>
+              </div>
+            </span>
+            <span v-if="props.column.field == 'verification'">
+              <div class="welfareRecord__tablerow">
+                <p class="welfareRecord__text">{{ props.row.verification }}</p>
+              </div>
+            </span>
+            <span v-if="props.column.field == 'status'">
+              <div class="welfareRecord__tablerow welfareRecord__rowStatus">
+                <span class="welfareRecord__badge">{{ props.row.status }}</span>
+              </div>
+            </span>
+          </template>
 
-            <template slot="table-column" slot-scope="props">
-              <div class="welfareRecord__tableheadingtext">{{ props.column.label }}</div>
-            </template>
-          </vue-good-table>
-        </client-only>
-      </div>
-    </welfare-container>
-    <client-only>
-      <default-dialog
-        :active="dialogState"
-        @accept="handleDialogClose"
-        :message="dialogContent.message"
-        :title="dialogContent.title"
-        :type="dialogContent.type"
-        :icon="dialogContent.icon"
-      ></default-dialog>
-    </client-only>
-  </div>
+          <template slot="table-column" slot-scope="props">
+            <div class="welfareRecord__tableheadingtext">{{ props.column.label }}</div>
+          </template>
+        </vue-good-table>
+      </client-only>
+    </div>
+  </welfare-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 import WelfareContainer from '~/components/WelfareContainer.vue'
-import { welfareStore, dialogStore } from '~/store'
+import { welfareStore } from '~/store'
 
 interface TableData {
   id: string
@@ -115,20 +103,7 @@ interface TableField {
   }
 })
 export default class WelfareRecord extends Vue {
-  get dialogState() {
-    return dialogStore.active
-  }
-
-  get dialogContent() {
-    return dialogStore.content
-  }
-
-  public handleDialogClose() {
-    dialogStore.setActive(false)
-    dialogStore.setMaskActive(false)
-  }
-
-  private tableFields: Array<TableField> = [
+  tableFields: Array<TableField> = [
     { label: '時間', field: 'time' },
     { label: '申請項目', field: 'application' },
     { label: '申請人', field: 'applier' },
@@ -253,7 +228,6 @@ export default class WelfareRecord extends Vue {
       })
     } catch (e) {
       // error
-      throw new Error(e)
     }
   }
 
@@ -263,7 +237,8 @@ export default class WelfareRecord extends Vue {
         token: this.$cookies.get('accessToken')
       })
     } catch (e) {
-      throw new Error(e)
+      this.$router.push('/')
+    } finally {
     }
   }
 
@@ -273,34 +248,15 @@ export default class WelfareRecord extends Vue {
       await this.sendGetAppliedListRequest()
     } catch (e) {
       // error
-      dialogStore.setActive(true)
-      dialogStore.setMaskActive(true)
-      dialogStore.setContent({
-        title: '資料加載錯誤，請刷新再試。',
-        icon: true,
-        type: 'accept'
-      })
     }
   }
 
   public activated() {
     this.$nextTick(async () => {
-      try {
-        this.$nuxt.$loading.start()
-        await this.sendAuthorizeRequest()
-        await this.sendGetAppliedListRequest()
-      } catch (e) {
-        // error
-        dialogStore.setActive(true)
-        dialogStore.setMaskActive(true)
-        dialogStore.setContent({
-          title: '資料加載錯誤，請刷新再試。',
-          icon: true,
-          type: 'accept'
-        })
-      } finally {
-        this.$nuxt.$loading.finish()
-      }
+      this.$nuxt.$loading.start()
+      await this.sendGetAppliedListRequest()
+      await this.sendAuthorizeRequest()
+      this.$nuxt.$loading.finish()
     })
   }
 }

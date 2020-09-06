@@ -1,11 +1,7 @@
 <template>
   <section class="landingPageSection">
     <div class="landingPageSection__banner">
-      <span
-        class="landingPageSection__icon"
-        :style="{ 'background-image': `url(${iconUrl})` }"
-      >
-      </span>
+      <span class="landingPageSection__icon" :style="{ 'background-image': `url(${iconUrl})` }"></span>
       <h2 class="landingPageSection__title">{{ title }}</h2>
       <span class="landingPageSection__newIcon" v-if="hasNew"></span>
       <button class="landingPageSection__link">
@@ -24,6 +20,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
+
 @Component
 export default class LandingPageSection extends Vue {
   @Prop({

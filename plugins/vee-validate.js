@@ -27,6 +27,30 @@ extend('min', {
   message: '長度不可小於{val}'
 })
 
+extend('minNumber', {
+  validate(value, args) {
+    return Number(value) >= Number(args.val)
+  },
+  params: ['val'],
+  message: '最小值為{val}'
+})
+
+extend('maxNumber', {
+  validate(value, args) {
+    return Number(value) <= Number(args.val)
+  },
+  params: ['val'],
+  message: '最大值為{val}'
+})
+
+extend('eqZero', {
+  validate(value, args) {
+    return Number(value) === 0
+  },
+  params: ['val'],
+  message: '最小值為 0'
+})
+
 extend('numeric', {
   validate(value, args) {
     // return !isNaN(value)
@@ -68,4 +92,13 @@ extend('isPassword', {
   },
   params: ['val'],
   message: '非正確密碼格式'
+})
+
+extend('oneOf', {
+  validate(value, args) {
+    return (
+      [...args].findIndex((item) => item.toString() === value.toString()) > -1
+    )
+  },
+  params: ['val']
 })

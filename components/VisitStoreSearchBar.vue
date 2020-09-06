@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="visitStoreSearchBar"
-    :class="{ 'visitStoreSearchBar--sticky': isSticky }"
-  >
+  <div class="visitStoreSearchBar" :class="{ 'visitStoreSearchBar--sticky': isSticky }">
     <ul class="visitStoreSearchBar__list">
       <li
         class="visitStoreSearchBar__listitem"
@@ -10,16 +7,18 @@
         @mouseover="handleMouseover($event, 1)"
         @mouseleave="currentTab = 0"
       >
-        <span>{{
+        <span>
+          {{
           category.content.find((item) => item.value === values.categoryId)
-            ? category.content.find((item) => item.value === values.categoryId)
-                .text === '全部'
-              ? '所有店家'
-              : category.content.find(
-                  (item) => item.value === values.categoryId
-                ).text
-            : ''
-        }}</span>
+          ? category.content.find((item) => item.value === values.categoryId)
+          .text === '全部'
+          ? '所有店家'
+          : category.content.find(
+          (item) => item.value === values.categoryId
+          ).text
+          : ''
+          }}
+        </span>
         <fa
           :icon="['fas', 'angle-down']"
           class="visitStoreSearchBar__caret"
@@ -76,14 +75,16 @@
         @mouseover="handleMouseover($event, 2)"
         @mouseleave="currentTab = 0"
       >
-        <span>{{
+        <span>
+          {{
           area.content.find((item) => item.value === values.areaId)
-            ? area.content.find((item) => item.value === values.areaId).text ===
-              '全部'
-              ? '全部地區'
-              : area.content.find((item) => item.value === values.areaId).text
-            : ''
-        }}</span>
+          ? area.content.find((item) => item.value === values.areaId).text ===
+          '全部'
+          ? '全部地區'
+          : area.content.find((item) => item.value === values.areaId).text
+          : ''
+          }}
+        </span>
         <fa
           :icon="['fas', 'angle-down']"
           class="visitStoreSearchBar__caret"
@@ -131,12 +132,14 @@
         @mouseleave="currentTab = 0"
         v-if="type !== 'shoppingmall'"
       >
-        <span>{{
+        <span>
+          {{
           groupType.content.find((item) => item.value === values.groupType)
-            ? groupType.content.find((item) => item.value === values.groupType)
-                .text
-            : ''
-        }}</span>
+          ? groupType.content.find((item) => item.value === values.groupType)
+          .text
+          : ''
+          }}
+        </span>
         <fa
           :icon="['fas', 'angle-down']"
           class="visitStoreSearchBar__caret"
@@ -183,11 +186,13 @@
         @mouseover="handleMouseover($event, 4)"
         @mouseleave="currentTab = 0"
       >
-        <span>{{
+        <span>
+          {{
           sort.content.find((item) => item.value === values.sort)
-            ? sort.content.find((item) => item.value === values.sort).text
-            : ''
-        }}</span>
+          ? sort.content.find((item) => item.value === values.sort).text
+          : ''
+          }}
+        </span>
         <fa
           :icon="['fas', 'angle-down']"
           class="visitStoreSearchBar__caret"
@@ -230,7 +235,7 @@
       </li>
     </ul>
     <div class="visitStoreSearchBar__search">
-      <DefaultSearchBar
+      <default-search-bar
         placeholder="輸入特約商家名稱"
         @blur="$emit('update-search', { value: $event, params: 'keyWord' })"
         @keydown-enter="
@@ -288,22 +293,6 @@ export default class VisitStoreSearchBar extends Vue {
   }
 
   public isSticky: boolean = false
-
-  // @Watch('categories')
-  // public onLoad(newVal: any) {
-  //   if (newVal.length) {
-  //     this.category.content.forEach((item: any) => {
-  //       if (item.text) {
-  //         const target = newVal.find((val: any) => {
-  //           return val.category === item.text
-  //         })
-  //         if (target) {
-  //           item.value = target.id
-  //         }
-  //       }
-  //     })
-  //   }
-  // }
 
   public category: any = {
     params: 'categoryId',

@@ -41,9 +41,11 @@ export default {
     '~/plugins/fontawesome',
     '~/plugins/axios',
     '~/plugins/vee-validate.js',
-    { src: '~/plugins/vue-good-table', ssr: false },
+    { src: '~/plugins/vue-good-table', mode: 'client' },
     '~/plugins/tooltip',
-    { src: '~plugins/zendesk.js', mode: 'client' }
+    { src: '~/plugins/vue-simple-calendar', mode: 'client' },
+    { src: '~plugins/zendesk.js', mode: 'client' },
+    { src: '~/plugins/nuxt-leaflet.js', mode: 'client' }
   ],
   /*
    ** Auto import components
@@ -67,13 +69,13 @@ export default {
   ],
   bootstrapVue: {
     bootstrapCSS: false, // Or `css: false`
-    bootstrapVueCSS: true // Or `bvCSS: false`
+    bootstrapVueCSS: false // Or `bvCSS: false`
   },
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {},
+  // axios: {},
   /*
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/
@@ -88,11 +90,9 @@ export default {
     analyze: true
   },
   env: {
-    apiUrl: process.env.API_URL || '',
-    apiKey: process.env.API_KEY || '',
-    proxyUrl: process.env.PROXY_URL || 'http://localhost:8080',
-    useProxy: process.env.USE_PROXY || '1',
-    zendeskKey: process.env.ZENDESK_KEY || '5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP'
+    apiKey: '',
+    PROXY_URL: process.env.NUXT_ENV_PROXY_URL,
+    ZENDESK_KEY: process.env.NUXT_ENV_ZENDESK_KEY
   },
   loading: '~/components/DefaultLoading.vue',
   pageTransition: 'fade'

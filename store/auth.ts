@@ -3,6 +3,7 @@ import { $axios } from '~/utils/api'
 import { SignInForm, User } from 'SignIn'
 import { ProxyRequestObject, ResponseObject } from 'Http'
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { commonStore } from '~/utils/store-accessor'
 
 @Module({
   name: 'auth',
@@ -240,6 +241,8 @@ export default class AuthModule extends VuexModule {
       key: process.env.apiKey,
       method: 'get'
     }
+
+    console.log($axios)
 
     const result: ResponseObject = await $axios.post('/auth', requestBody)
     switch (result.data.syscode) {

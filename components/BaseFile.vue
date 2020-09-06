@@ -4,27 +4,34 @@
       :for="id"
       class="baseFile__text"
       :class="{ 'input__text--placeholder': filename === '' }"
-      >{{ filename !== '' ? filename : placeholder }}
-
+    >
+      {{ disabled ? '點擊下方下載' : filename !== '' ? filename : placeholder }}
       <input
         :id="id"
         type="file"
         class="baseFile__file"
         @change="handleFileSelect"
+        :disabled="disabled"
         multiple
       />
     </label>
     <span class="baseFile__icon">
       <slot name="icon"></slot>
     </span>
-    <label class="baseFile__btn" :for="id">
-      <BaseButton type="primaryOutline" display="block">
+    <label
+      class="baseFile__btn"
+      :for="id"
+      :style="{'cursor': disabled ? 'not-allowed' : 'pointer'}"
+    >
+      <base-button
+        :type="disabled ? 'greyOne' : 'primaryOutline'"
+        display="block"
+        :disabled="disabled"
+      >
         <label :for="id" class="baseFile__btnlabel">上傳附件</label>
-      </BaseButton>
+      </base-button>
     </label>
-    <p class="baseFile__helper">
-      2M 以下，格式限定 pdf、doc、docx、xls、xlsx、jpg、jpeg、png、gif
-    </p>
+    <p class="baseFile__helper">2M 以下，格式限定 pdf、doc、docx、xls、xlsx、jpg、jpeg、png、gif</p>
   </span>
 </template>
 <script lang="ts">

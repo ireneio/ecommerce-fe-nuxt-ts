@@ -50,7 +50,14 @@ export default class WelfareModule extends VuexModule {
 
   get latestUpdatedDateTime() {
     return Object.keys(this.formNew).length
-      ? new Date(this.formNew.latestUpdateDateTime).toLocaleString()
+      ? new Date(this.formNew.latestUpdateDateTime).toLocaleString('zh-tw', {
+          month: '2-digit',
+          day: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          formatMatcher: 'basic'
+        })
       : ''
   }
 
@@ -156,7 +163,7 @@ export default class WelfareModule extends VuexModule {
     const result: ResponseObject = await $axios.post('/api', requestBody)
     switch (result.data.syscode) {
       case 200:
-        return true
+        return result.data.data
       case 403:
       case 400:
       case 401:

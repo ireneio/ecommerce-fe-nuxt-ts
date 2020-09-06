@@ -65,7 +65,7 @@ export default class BaseButton extends Vue {
   width: auto;
   font-size: $fz-m;
   &:focus {
-    border: 2px solid rgba($color: $secondary, $alpha: 0.7);
+    outline: 2px solid rgba($color: $secondary, $alpha: 0.7);
   }
   &--large {
     font-size: 1.25rem;

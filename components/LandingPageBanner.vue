@@ -1,13 +1,8 @@
 <template>
   <div class="landingPageBanner">
     <client-only>
-      <VueSlickCarousel v-bind="carouselSetting">
-        <div
-          class="landingPageBanner__item"
-          v-for="i in 15"
-          :key="i"
-          v-show="!items.length"
-        ></div>
+      <vue-slick-carousel v-bind="carouselSetting">
+        <div class="landingPageBanner__item" v-for="i in 15" :key="i" v-show="!items.length"></div>
         <a
           :href="item.url"
           class="landingPageBanner__item"
@@ -22,12 +17,9 @@
           <div class="landingPageBanner__arrowRight"></div>
         </template>
         <template #customPaging="page">
-          <div
-            class="landingPageBanner__dot"
-            :class="{ 'landingPageBanner__dot--active': page }"
-          ></div>
+          <div class="landingPageBanner__dot" :class="{ 'landingPageBanner__dot--active': page }"></div>
         </template>
-      </VueSlickCarousel>
+      </vue-slick-carousel>
     </client-only>
   </div>
 </template>
@@ -90,7 +82,7 @@ export default class LandingpageBanner extends Vue {
     @include grid-md {
       height: 250px;
     }
-    @include grid-xxl {
+    @include grid-lg {
       height: 405px;
     }
   }

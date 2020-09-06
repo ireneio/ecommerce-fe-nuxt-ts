@@ -2,17 +2,28 @@
   <b-container class="mb-5">
     <b-row>
       <b-col cols="24">
-        <h2 class="welfare__title">津貼中心</h2>
+        <div class="welfare__title">津貼中心</div>
       </b-col>
     </b-row>
     <b-row>
       <b-col cols="24" xl="4">
         <div class="welfaremenu">
           <h3 class="welfaremenu__title">
-            <img src="/img/ic-welfare.svg" alt="" />
+            <img src="/img/ic-welfare.svg" alt />
             <span>津貼中心</span>
           </h3>
           <ul class="welfaremenu__list">
+            <li class="welfaremenu__listitem" v-if="!isAuthorized">
+              <nuxt-link
+                to="/welfare/authorize"
+                class="welfaremenu__link"
+                :class="{
+                  'welfaremenu__link--active':
+                    $route.name === 'welfare-authorize'
+                }"
+                >審核紀錄
+              </nuxt-link>
+            </li>
             <li class="welfaremenu__listitem">
               <nuxt-link
                 to="/welfare/reportlist"
@@ -41,16 +52,14 @@
         <header
           class="welfareheader"
           :class="{
-            'welfareheader--dark': title === '申請紀錄',
+            'welfareheader--dark': title === '申請紀錄' || title === '審核紀錄',
             'welfareheader--light': title === '表單申請'
           }"
           v-if="title"
         >
-          <h3 class="welfareheader__title">
-            {{ title }}
-          </h3>
+          <h3 class="welfareheader__title">{{ title }}</h3>
           <div class="welfareheader__search" v-if="title === '申請紀錄'">
-            <DefaultSearchBar
+            <default-search-bar
               placeholder="輸入關鍵字"
               @input="$emit('input', $event)"
               @keydown-enter="$emit('keydown-enter', $event)"
@@ -64,7 +73,7 @@
         <main
           class="welfaremain"
           :class="{
-            'welfaremain--light': title === '申請紀錄',
+            'welfaremain--light': title === '申請紀錄' || title === '審核紀錄',
             'welfaremain--dark': title === '表單申請',
             'welfaremain--isolatedsection': title
           }"
@@ -88,6 +97,14 @@ export default class WelfareContainer extends Vue {
     }
   })
   readonly title!: string
+
+  @Prop({
+    type: Boolean,
+    default() {
+      return false
+    }
+  })
+  readonly isAuthorized!: boolean
 }
 </script>
 

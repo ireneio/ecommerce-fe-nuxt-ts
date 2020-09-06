@@ -5,106 +5,95 @@
       @input="handleOptionChange"
       name="defaultReceiptSelector"
     >
-      <b-form-radio value="1">
-        捐贈財團法人天主教華光社會福利基金會
-      </b-form-radio>
-      <b-form-radio value="2">
-        StayFun會員載具
-      </b-form-radio>
-      <b-form-radio value="3">
-        雲端發票（手機載具
-      </b-form-radio>
-      <b-form-radio value="4">
-        雲端發票（自然人憑證）
-      </b-form-radio>
-      <b-form-radio value="5">
-        三聯式發票
-      </b-form-radio>
+      <b-form-radio value="1">捐贈財團法人天主教華光社會福利基金會</b-form-radio>
+      <b-form-radio value="2">StayFun會員載具</b-form-radio>
+      <b-form-radio value="3">雲端發票（手機載具</b-form-radio>
+      <b-form-radio value="4">雲端發票（自然人憑證）</b-form-radio>
+      <b-form-radio value="5">三聯式發票</b-form-radio>
     </b-form-radio-group>
-    <section
-      class="defaultReceiptSelector__inputBox"
-      v-if="value !== '1' || value !== ''"
-    >
-      <ValidationObserver>
-        <ValidationProvider rules="required|max:50" v-slot="{ errors }">
-          <BaseLabel
+    <section class="defaultReceiptSelector__inputBox" v-if="value !== '1' || value !== ''">
+      <validation-observer>
+        <validation-provider rules="required|max:50" v-slot="{ errors }">
+          <base-label
             text="收件人"
             v-if="value === '2'"
             :valid="!errors.length"
             :hint="{ type: 'warning', text: errors.length ? errors[0] : '' }"
           >
-            <BaseInput :valid="!errors.length" v-model="form.receiver" />
-          </BaseLabel>
-        </ValidationProvider>
-        <BaseLabel text="發票地址" v-if="value === '2' || value === '5'">
+            <base-input :valid="!errors.length" v-model="form.receiver" />
+          </base-label>
+        </validation-provider>
+        <base-label text="發票地址" v-if="value === '2' || value === '5'">
           <div class="addressBox">
             <div class="addressBox__area">
-              <ValidationProvider rules="required" v-slot="{ errors }">
-                <BaseSelect
+              <validation-provider rules="required" v-slot="{ errors }">
+                <base-select
                   :valid="!errors.length"
                   v-model="form.addressArea"
                   :options="areaOptions"
                 />
-              </ValidationProvider>
+              </validation-provider>
             </div>
             <div class="addressBox__county">
-              <ValidationProvider rules="required">
-                <BaseSelect
+              <validation-provider rules="required">
+                <base-select
                   :valid="true"
                   v-model="form.addressCounty"
                   :disabled="!form.addressArea.length"
                   :options="countyOptions"
                 />
-              </ValidationProvider>
+              </validation-provider>
             </div>
             <div class="addressBox__line">
-              <ValidationProvider rules="required|max:50" v-slot="{ errors }">
+              <validation-provider rules="required|max:50" v-slot="{ errors }">
                 <div class="addressBox__lineVal">
-                  <span class="addressBox__lineZip">{{
+                  <span class="addressBox__lineZip">
+                    {{
                     form.addressZipCode
-                  }}</span>
-                  <BaseInput
+                    }}
+                  </span>
+                  <base-input
                     class="addressBox__lineInput"
                     :valid="!errors.length"
                     v-model="form.addressLine"
                     :disabled="!form.addressArea.length"
                   />
                 </div>
-              </ValidationProvider>
+              </validation-provider>
             </div>
           </div>
-        </BaseLabel>
-        <ValidationProvider rules="required|max:50" v-slot="{ errors }">
-          <BaseLabel
+        </base-label>
+        <validation-provider rules="required|max:50" v-slot="{ errors }">
+          <base-label
             text="條碼"
             v-if="value === '3' || value === '4'"
             :valid="!errors.length"
             :hint="{ type: 'warning', text: errors.length ? errors[0] : '' }"
           >
-            <BaseInput :valid="!errors.length" v-model="form.barcode" />
-          </BaseLabel>
-        </ValidationProvider>
-        <ValidationProvider rules="required|max:50" v-slot="{ errors }">
-          <BaseLabel
+            <base-input :valid="!errors.length" v-model="form.barcode" />
+          </base-label>
+        </validation-provider>
+        <validation-provider rules="required|max:50" v-slot="{ errors }">
+          <base-label
             text="公司名稱"
             v-if="value === '5'"
             :valid="!errors.length"
             :hint="{ type: 'warning', text: errors.length ? errors[0] : '' }"
           >
-            <BaseInput :valid="!errors.length" v-model="form.companyName" />
-          </BaseLabel>
-        </ValidationProvider>
-        <ValidationProvider rules="required|max:50" v-slot="{ errors }">
-          <BaseLabel
+            <base-input :valid="!errors.length" v-model="form.companyName" />
+          </base-label>
+        </validation-provider>
+        <validation-provider rules="required|max:50" v-slot="{ errors }">
+          <base-label
             text="統一編號"
             v-if="value === '5'"
             :valid="!errors.length"
             :hint="{ type: 'warning', text: errors.length ? errors[0] : '' }"
           >
-            <BaseInput :valid="!errors.length" v-model="form.identification" />
-          </BaseLabel>
-        </ValidationProvider>
-      </ValidationObserver>
+            <base-input :valid="!errors.length" v-model="form.identification" />
+          </base-label>
+        </validation-provider>
+      </validation-observer>
     </section>
   </div>
 </template>

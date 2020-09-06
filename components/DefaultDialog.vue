@@ -6,12 +6,7 @@
   >
     <div class="defaultDialog__icon"></div>
     <p class="defaultDialog__title" v-if="icon">
-      <img
-        src="/img/icon-oops@3x.png"
-        alt="warning icon"
-        width="48px"
-        height="48px"
-      />
+      <img src="/img/icon-oops@3x.png" alt="warning icon" width="48px" height="48px" />
     </p>
     <p class="defaultDialog__title" v-if="title === 'qrcode'">
       <img
@@ -21,32 +16,24 @@
         height="150px"
       />
     </p>
-    <p class="defaultDialog__title" v-if="title !== 'qrcode'">
-      {{ title }}
-    </p>
+    <p class="defaultDialog__title" v-if="title !== 'qrcode'">{{ title }}</p>
     <p class="defaultDialog__content">{{ message }}</p>
     <div class="defaultDialog__btnbox">
       <button
         class="defaultDialog__btn defaultDialog__btn--greyTwo defaultDialog__btn--left"
         @click="$emit('cancel')"
         v-if="type === 'confirm'"
-      >
-        取消
-      </button>
+      >取消</button>
       <button
         class="defaultDialog__btn defaultDialog__btn--primary defaultDialog__btn--right"
         @click="$emit('confirm')"
         v-if="type === 'confirm'"
-      >
-        確定
-      </button>
+      >確定</button>
       <button
         class="defaultDialog__btn defaultDialog__btn--primary defaultDialog__btn--single"
         @click="$emit('accept')"
         v-if="type === 'accept'"
-      >
-        關閉
-      </button>
+      >關閉</button>
     </div>
   </div>
 </template>
@@ -126,6 +113,7 @@ export default class LandingPageNewsItem extends Vue {
   max-height: 90vh;
   width: 90vw;
   overflow: auto;
+  transition: opacity 0.3s;
   @include grid-sm {
     max-height: 50vh;
     width: 400px;

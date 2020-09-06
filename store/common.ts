@@ -21,11 +21,25 @@ export default class CommonModule extends VuexModule {
 
   @Mutation
   setCountyList({ data, index }: any) {
-    let arr = [...this.countyListForFunEvents, [...data, index]]
-    arr.sort((a, b) => a.index - b.index)
-    this.countyListForFunEvents = [...arr]
-
-    this.countyList = data
+    if (data) {
+      const doesExist = this.countyListForFunEvents.find(
+        (subarr: any) => subarr[subarr.length - 1] === index
+      )
+      if (!doesExist) {
+        let arr = [...this.countyListForFunEvents, [...data, index]]
+        // arr.sort((a, b) => a.index - b.index)
+        this.countyListForFunEvents = [...arr]
+      } else {
+        let arr = this.countyListForFunEvents.filter(
+          (subarr: any) => subarr[subarr.length - 1] !== index
+        )
+        arr = [...arr, [...data, index]]
+        this.countyListForFunEvents = [...arr]
+      }
+      this.countyList = data
+    } else {
+      this.countyList = []
+    }
   }
 
   @Mutation

@@ -1,13 +1,5 @@
 <template>
-  <div
-    class="questionnairesCard"
-    @click="
-      $router.push({
-        name: `${type}-serialno`,
-        params: { serialno: value.serialno }
-      })
-    "
-  >
+  <div class="questionnairesCard" @click="$emit('click')">
     <span
       class="questionnairesCard__circle"
       :class="{

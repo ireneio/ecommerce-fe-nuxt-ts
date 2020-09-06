@@ -19,12 +19,8 @@
           />
         </div>
         <div class="visitStoreCard__pricebox" v-if="cardType === 'coupon'">
-          <div class="visitStoreCard__ogPrice">
-            原價 ${{ originalPrice.toLocaleString('en') }}
-          </div>
-          <div class="visitStoreCard__newPrice">
-            ${{ salePrice.toLocaleString('en') }}
-          </div>
+          <div class="visitStoreCard__ogPrice">原價 ${{ originalPrice.toLocaleString('en') }}</div>
+          <div class="visitStoreCard__newPrice">${{ salePrice.toLocaleString('en') }}</div>
         </div>
       </div>
     </div>
@@ -129,6 +125,7 @@ export default class VisitStoreCard extends Vue {
   border-radius: 4px;
   border: 1px solid $greyOne;
   cursor: pointer;
+  &:focus,
   &:hover {
     box-shadow: 0 0 7px 3px rgba(0, 0, 0, 0.1);
   }

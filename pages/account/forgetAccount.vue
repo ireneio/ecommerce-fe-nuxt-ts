@@ -2,9 +2,7 @@
   <div>
     <div v-show="currentTab === 0">
       <h2 class="login__title">協助您找回帳號</h2>
-      <p class="login__subtext">
-        請輸入手機號碼以確認身份，我們會協助您找回帳號
-      </p>
+      <p class="login__subtext">請輸入手機號碼以確認身份，我們會協助您找回帳號</p>
     </div>
     <div v-show="currentTab === 1">
       <h2 class="login__title">{{ username }}，您好</h2>
@@ -14,30 +12,30 @@
       <p class="login__subtitle">請稍候，我們正將您導至STAYFUN登入頁</p>
     </div>
     <div>
-      <ValidationObserver>
+      <validation-observer>
         <b-container>
           <b-row v-show="currentTab === 0">
             <b-col cols="24">
-              <ValidationProvider rules="required" v-slot="{ errors }">
-                <BaseLabel
+              <validation-provider rules="required" v-slot="{ errors }">
+                <base-label
                   :hint="{
                     text: errors.length ? errors[0] : '',
                     type: 'warning'
                   }"
                   :valid="!errors.length"
                 >
-                  <BaseSelect
+                  <base-select
                     :options="countryCodeList"
                     v-model="phoneNumberPrefix"
                     placeholder="請選擇國碼"
                     :valid="!errors.length"
-                  ></BaseSelect>
-                </BaseLabel>
-              </ValidationProvider>
+                  ></base-select>
+                </base-label>
+              </validation-provider>
             </b-col>
             <b-col cols="8" class="loginInputMarginTop">
-              <BaseLabel>
-                <BaseInput
+              <base-label>
+                <base-input
                   type="text"
                   id="phoneNumberPrefix"
                   :value="phoneNumberPrefix"
@@ -45,10 +43,10 @@
                   :valid="true"
                   :center="true"
                 />
-              </BaseLabel>
+              </base-label>
             </b-col>
             <b-col cols="16" class="loginInputMarginTop">
-              <ValidationProvider
+              <validation-provider
                 :rules="`required|numeric|${
                   phoneNumberPrefix === '+886'
                     ? 'taiwanPhone'
@@ -58,14 +56,14 @@
                 }`"
                 v-slot="{ errors }"
               >
-                <BaseLabel
+                <base-label
                   :hint="{
                     text: errors.length ? errors[0] : '',
                     type: 'warning'
                   }"
                   :valid="!errors.length"
                 >
-                  <BaseInput
+                  <base-input
                     type="text"
                     placeholder="請輸入電話號碼"
                     id="phoneNumber"
@@ -73,14 +71,14 @@
                     :value="form.phoneNumber"
                     :valid="!errors.length"
                   />
-                </BaseLabel>
-              </ValidationProvider>
+                </base-label>
+              </validation-provider>
             </b-col>
             <b-col cols="24" v-show="phoneNumberError">
               <p class="login__generalError">{{ phoneNumberError }}</p>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
+              <base-button
                 :type="
                   form.phoneNumber === '' || form.phoneNumberPrefix === ''
                     ? 'greyOne'
@@ -92,8 +90,7 @@
                 "
                 size="lg"
                 @click="handleSubmit"
-                >確認
-              </BaseButton>
+              >確認</base-button>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
               <p
@@ -107,62 +104,43 @@
                   show: toolTipStatus,
                   trigger: 'manual'
                 }"
-              >
-                您的帳戶未開通/未認證嗎？
-              </p>
+              >您的帳戶未開通/未認證嗎？</p>
             </b-col>
           </b-row>
           <b-row v-show="currentTab === 1">
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
-                type="primary"
-                display="block"
-                @click="handleSendRecovery(0)"
-              >
+              <base-button type="primary" display="block" @click="handleSendRecovery(0)">
                 <div class="login__recoverBtn">
-                  <fa
-                    :icon="['fas', 'comment-dots']"
-                    class="login__recoverIcon"
-                  ></fa>
+                  <fa :icon="['fas', 'comment-dots']" class="login__recoverIcon"></fa>
                   <span class="login__recoverText">傳送簡訊至 {{ phone }}</span>
                 </div>
-              </BaseButton>
+              </base-button>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
-                type="primary"
-                display="block"
-                @click="handleSendRecovery(1)"
-              >
+              <base-button type="primary" display="block" @click="handleSendRecovery(1)">
                 <div class="login__recoverBtn">
                   <fa :icon="['far', 'envelope']"></fa>
-                  <span class="login__recoverText">
-                    傳送Email至 {{ email }}
-                  </span>
+                  <span class="login__recoverText">傳送Email至 {{ email }}</span>
                 </div>
-              </BaseButton>
+              </base-button>
             </b-col>
           </b-row>
           <b-row v-show="currentTab === 2">
             <b-col cols="24">
               <div class="login__mainpic"></div>
-              <p class="login__maintitle">
-                已傳送帳號至您的{{ recoverMethod === 0 ? '號碼' : ' Email' }}
-              </p>
+              <p class="login__maintitle">已傳送帳號至您的{{ recoverMethod === 0 ? '號碼' : ' Email' }}</p>
               <p class="login__mainsubtitle">請前往查看STAYFUN帳號資訊</p>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
+              <base-button
                 type="primary"
                 display="block"
                 @click=";(currentTab = 0), $router.push('/account')"
-              >
-                前往登入頁
-              </BaseButton>
+              >前往登入頁</base-button>
             </b-col>
           </b-row>
         </b-container>
-      </ValidationObserver>
+      </validation-observer>
     </div>
   </div>
 </template>

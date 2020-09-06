@@ -18,7 +18,7 @@ export default class GiftModule extends VuexModule {
 
   @Mutation
   setHasShowed(payload: boolean) {
-    this.notTakenOut = payload
+    this.hasShowed = payload
   }
 
   @Action({ commit: 'setNotTakenOut' })

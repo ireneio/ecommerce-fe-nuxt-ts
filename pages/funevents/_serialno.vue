@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DefaultMainContainer
+    <default-main-container
       title="返回瘋活動"
       :clickableTitle="true"
       route="funevents"
@@ -10,7 +10,7 @@
         <div class="funEventsDetailHeader">
           <div class="funEventsDetailHeader__carousel">
             <client-only>
-              <VueSlickCarousel v-bind="carouselSetting">
+              <vue-slick-carousel v-bind="carouselSetting">
                 <div
                   class="cardBox funEventsDetailHeader__img"
                   v-if="!eventImages.length"
@@ -27,7 +27,7 @@
                 <template #nextArrow>
                   <div class="carouselArrowRight"></div>
                 </template>
-              </VueSlickCarousel>
+              </vue-slick-carousel>
             </client-only>
           </div>
           <div class="funEventsDetailHeader__text">
@@ -42,15 +42,29 @@
                 :icon="['far', 'clock']"
                 class="funEventsDetailHeader__icon"
               ></fa>
-              <span
-                >活動時間：{{
-                  `${new Date(
-                    eventInfo.activeBegindate
-                  ).toLocaleString()} ~ ${new Date(
-                    eventInfo.activeEnddate
-                  ).toLocaleString()}`
-                }}</span
-              >
+              <span>
+                活動時間：{{
+                  `${new Date(eventInfo.activeBegindate).toLocaleString(
+                    'zh-TW',
+                    {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }
+                  )} ~ ${new Date(eventInfo.activeEnddate).toLocaleString(
+                    'zh-TW',
+                    {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }
+                  )}`
+                }}
+              </span>
             </p>
             <p class="funEventsDetailHeader__subtext">
               <fa
@@ -74,17 +88,26 @@
                 協辦單位：{{ eventInfo.activeCoOrganized }}
               </span>
             </p>
-            <div class="funEventsDetailHeader__btn">
-              <BaseButton
-                :type="eventInfo.ButtonText === '' ? 'primary' : 'greyTwo'"
-                @click="handleApply"
-                :disabled="eventInfo.ButtonText !== ''"
-                >{{
-                  eventInfo.ButtonText === ''
-                    ? '立即報名'
-                    : eventInfo.ButtonText
+            <p class="funEventsDetailHeader__subtext">
+              <fa
+                :icon="['fas', 'user']"
+                class="funEventsDetailHeader__icon"
+              ></fa>
+              <span>
+                {{
+                  totalSpots === null
+                    ? '報名額度無上限'
+                    : `報名額度上限 ${totalSpots} 人 / 剩餘 ${totalAvailableSpots} 人`
                 }}
-              </BaseButton>
+              </span>
+            </p>
+            <div class="funEventsDetailHeader__btn">
+              <base-button
+                :type="purchaseBtnStatus === '立即報名' ? 'primary' : 'greyOne'"
+                @click="handleApply"
+                :disabled="purchaseBtnStatus !== '立即報名'"
+                >{{ purchaseBtnStatus }}</base-button
+              >
             </div>
             <div class="funEventsDetailHeader__alertbox">
               <div
@@ -100,9 +123,9 @@
                 v-if="eventInfo.isEnableWaitingList"
               >
                 <fa :icon="['fas', 'exclamation-circle']"></fa>
-                <span>
-                  活動名額有限，請盡快報名，進入備取名單後請靜候主辦單位通知遞補結果。
-                </span>
+                <span
+                  >活動名額有限，請盡快報名，進入備取名單後請靜候主辦單位通知遞補結果。</span
+                >
               </div>
             </div>
           </div>
@@ -118,18 +141,52 @@
         </section>
         <section class="funEventsDetailSection">
           <h4 class="funEventsDetailSection__title">票價資訊</h4>
+          <p
+            class="funEventsDetailHeader__subtext"
+            v-if="
+              eventInfo.SalesCountLimit !== -2147483648 &&
+              eventInfo.SalesCountLimit !== null
+            "
+          >
+            <fa
+              :icon="['fas', 'ticket-alt']"
+              class="funEventsDetailHeader__icon"
+            ></fa>
+            <span>{{
+              `票券數量上限 ${totalCoupons} 張 / 剩餘 ${totalAvailableCoupons} 張`
+            }}</span>
+          </p>
           <div class="funEventsDetailSection__body">
             <client-only>
-              <vue-good-table :columns="tableFields" :rows="eventCouponList">
-                <div slot="emptystate">
-                  This will show up when there are no rows
-                </div>
+              <vue-good-table
+                :columns="tableFields"
+                :rows="eventCouponList"
+                :sort-options="{
+                  enabled: false
+                }"
+              >
+                <div slot="emptystate">無</div>
                 <template slot="table-row" slot-scope="props">
                   <span v-if="props.column.field == 'couponAvailableDate'">
                     <div class="funEventsTable__tableRow">
                       <div class="funEventsTable__couponDate">
                         {{
-                          `${props.row.couponBegindate} ~ ${props.row.couponEnddate}`
+                          `${props.row.couponBegindate.toLocaleString('zh-TW', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })} ~ ${props.row.couponEnddate.toLocaleString(
+                            'zh-TW',
+                            {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }
+                          )}`
                         }}
                       </div>
                     </div>
@@ -162,43 +219,44 @@
             </client-only>
           </div>
           <div class="funEventsDetailSection__btn">
-            <BaseButton
-              :type="eventInfo.ButtonText === '' ? 'primary' : 'greyTwo'"
+            <base-button
+              :type="purchaseBtnStatus === '立即報名' ? 'primary' : 'greyOne'"
               @click="handleApply"
-              :disabled="eventInfo.ButtonText !== ''"
-              >{{
-                eventInfo.ButtonText === '' ? '立即報名' : eventInfo.ButtonText
-              }}
-            </BaseButton>
+              :disabled="purchaseBtnStatus !== '立即報名'"
+              >{{ purchaseBtnStatus }}</base-button
+            >
           </div>
         </section>
       </div>
       <div class="funEventsDetail" v-show="currentTab !== 0">
-        <div class="funEventsCheckoutHeader__alertbox" v-show="currentTab >= 2">
+        <div
+          class="funEventsCheckoutHeader__alertbox"
+          v-show="currentTab === 1"
+        >
           <p class="funEventsCheckoutHeader__alert">
             貼心提醒 : 點選下一步後， 需於15分內完成報名
-            {{ `${Math.floor(timer / 60)}:${Math.ceil(timer % 60)}` }}
+          </p>
+        </div>
+        <div class="funEventsCheckoutHeader__alertbox" v-show="currentTab >= 2">
+          <p class="funEventsCheckoutHeader__alert">
+            貼心提醒 : 此張訂單報名時間尚餘
+            {{ ` ${Math.floor(timer / 60)}:${Math.ceil(timer % 60)}` }}
           </p>
         </div>
         <div class="funEventsCheckoutHeader">
           <h3 class="funEventsCheckoutHeader__title">活動結帳流程</h3>
-          <div class="funEventsCheckoutHeader__steps">
+          <!-- <div class="funEventsCheckoutHeader__steps">
             <BaseSelect
               v-model="currentTab"
               :options="tabs"
               :selectable="
                 (option) => {
-                  if (
-                    isFilled.includes(option.value) ||
-                    option.value - 1 === isFilled[isFilled.length - 1]
-                  ) {
-                    return option
-                  }
+                  return tabAllowed(option.value)
                 }
               "
               :valid="true"
             />
-          </div>
+          </div>-->
           <div class="funEventsCheckoutBody">
             <h4 class="funEventsCheckoutBody__title">
               {{ eventInfo.activeName }}
@@ -209,15 +267,29 @@
                   :icon="['far', 'clock']"
                   class="funEventsDetailHeader__icon"
                 ></fa>
-                <span
-                  >活動時間：{{
-                    `${new Date(
-                      eventInfo.activeBegindate
-                    ).toLocaleString()} ~ ${new Date(
-                      eventInfo.activeEnddate
-                    ).toLocaleString()}`
-                  }}</span
-                >
+                <span>
+                  活動時間：{{
+                    `${new Date(eventInfo.activeBegindate).toLocaleString(
+                      'zh-TW',
+                      {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }
+                    )} ~ ${new Date(eventInfo.activeEnddate).toLocaleString(
+                      'zh-TW',
+                      {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }
+                    )}`
+                  }}
+                </span>
               </p>
               <p class="funEventsDetailHeader__subtext">
                 <fa
@@ -227,224 +299,274 @@
                 <span>活動地點：{{ eventInfo.activePlace }}</span>
               </p>
             </div>
-            <div
-              class="funEventsCheckoutStepOne__body"
-              v-show="currentTab === 1"
-            >
-              <client-only>
-                <vue-good-table
-                  :columns="checkoutTableFields"
-                  :rows="eventCouponList"
-                  :sort-options="{
-                    enabled: false
-                  }"
-                >
-                  <div slot="emptystate">
-                    This will show up when there are no rows
-                  </div>
-                  <template slot="table-row" slot-scope="props">
-                    <span v-if="props.column.field == 'couponName'">
-                      <div
-                        class="funEventsTable__tableRow funEventsTable__couponTitle"
-                        :class="{
-                          'funEventsTable__tableRow--disabled':
-                            props.row.couponStatus !== '販售中' &&
-                            props.row.remainingTicket <= 0
-                        }"
-                      >
+            <validation-observer>
+              <div
+                class="funEventsCheckoutStepOne__body"
+                v-show="currentTab === 1"
+              >
+                <client-only>
+                  <vue-good-table
+                    :columns="couponListTableFields"
+                    :rows="eventCouponList"
+                    :sort-options="{
+                      enabled: false
+                    }"
+                  >
+                    <div slot="emptystate">無</div>
+                    <template slot="table-row" slot-scope="props">
+                      <span v-if="props.column.field == 'couponName'">
                         <div
-                          class="funEventsTable__couponName"
+                          class="funEventsTable__tableRow funEventsTable__couponTitle"
                           :class="{
                             'funEventsTable__tableRow--disabled':
-                              props.row.couponStatus !== '販售中' &&
-                              props.row.remainingTicket <= 0
+                              props.row.remainingTicket <= 0 &&
+                              props.row.remainingTicket !== -2147483648
                           }"
                         >
-                          <div>{{ props.row.couponName }}</div>
-                          <div>
-                            販售時間：{{
-                              `${props.row.couponBegindate} ~ ${props.row.couponEnddate}`
-                            }}
+                          <div
+                            class="funEventsTable__couponName"
+                            :class="{
+                              'funEventsTable__tableRow--disabled':
+                                props.row.remainingTicket <= 0 &&
+                                props.row.remainingTicket !== -2147483648
+                            }"
+                          >
+                            <div>{{ props.row.couponName }}</div>
+                            <div>
+                              販售時間：{{
+                                `${props.row.couponBegindate} ~ ${props.row.couponEnddate}`
+                              }}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </span>
-                    <span v-if="props.column.field == 'couponQuantity'">
-                      <div
-                        class="funEventsTable__tableRow funEventsTable__couponQty"
-                        :class="{
-                          'funEventsTable__tableRow--disabled':
-                            props.row.couponStatus !== '販售中' &&
-                            props.row.remainingTicket <= 0
-                        }"
-                      >
-                        <div class="funEventsTable__quantitySelector">
-                          <button
-                            class="funEventsTable__quantityBtn"
-                            :class="{
-                              'funEventsTable__quantityBtn--disabled':
-                                props.row.couponStatus !== '販售中' &&
-                                props.row.remainingTicket <= 0
-                            }"
-                            :disabled="
-                              (props.row.couponStatus !== '販售中' &&
-                                props.row.remainingTicket <= 0) ||
-                              couponOrder[
-                                eventCouponList.findIndex(
-                                  (item) =>
-                                    item.couponName === props.row.couponName
+                      </span>
+                      <span v-if="props.column.field == 'couponQuantity'">
+                        <div
+                          class="funEventsTable__tableRow funEventsTable__couponQty"
+                          :class="{
+                            'funEventsTable__tableRow--disabled':
+                              props.row.remainingTicket <= 0 &&
+                              props.row.remainingTicket !== -2147483648
+                          }"
+                        >
+                          <div class="funEventsTable__quantitySelector">
+                            <button
+                              class="funEventsTable__quantityBtn"
+                              :class="{
+                                'funEventsTable__quantityBtn--disabled':
+                                  props.row.remainingTicket <= 0 &&
+                                  props.row.remainingTicket !== -2147483648
+                              }"
+                              :disabled="
+                                (props.row.remainingTicket <= 0 &&
+                                  props.row.remainingTicket !== -2147483648) ||
+                                couponOrder[
+                                  eventCouponList.findIndex(
+                                    (item) =>
+                                      item.serialno === props.row.serialno
+                                  )
+                                ] <= 0
+                              "
+                              @click="
+                                handleOrderDecrement(
+                                  eventCouponList.findIndex(
+                                    (item) =>
+                                      item.serialno === props.row.serialno
+                                  ),
+                                  props.row.couponSaleUnit
                                 )
-                              ] === 0
-                            "
-                            @click="
-                              handleOrderDecrement(
-                                eventCouponList.findIndex(
-                                  (item) =>
-                                    item.couponName === props.row.couponName
+                              "
+                            >
+                              -
+                            </button>
+                            <span class="funEventsTable__quantityText">
+                              <validation-provider
+                                :rules="`oneOf:0,${props.row.couponPurchaseRange}`"
+                              >
+                                <label :for="'inc' + props.row.serialno">
+                                  {{
+                                    couponOrder[
+                                      eventCouponList.findIndex(
+                                        (item) =>
+                                          item.serialno === props.row.serialno
+                                      )
+                                    ]
+                                  }}
+                                  <input
+                                    :id="'inc' + props.row.serialno"
+                                    type="number"
+                                    v-model="
+                                      couponOrder[
+                                        eventCouponList.findIndex(
+                                          (item) =>
+                                            item.serialno === props.row.serialno
+                                        )
+                                      ]
+                                    "
+                                    :min="props.row.couponBuyLow"
+                                    :max="props.row.couponbuyhigh"
+                                    :disabled="
+                                      props.row.remainingTicket <= 0 &&
+                                      props.row.remainingTicket !== -2147483648
+                                    "
+                                    :class="{
+                                      'funEventsTable__tableRow--disabled':
+                                        props.row.remainingTicket <= 0 &&
+                                        props.row.remainingTicket !==
+                                          -2147483648
+                                    }"
+                                  />
+                                </label>
+                              </validation-provider>
+                            </span>
+                            <button
+                              class="funEventsTable__quantityBtn"
+                              :class="{
+                                'funEventsTable__quantityBtn--disabled':
+                                  props.row.remainingTicket <= 0 &&
+                                  props.row.remainingTicket !== -2147483648
+                              }"
+                              :disabled="
+                                (props.row.remainingTicket <= 0 &&
+                                  props.row.remainingTicket !== -2147483648) ||
+                                couponOrder[
+                                  eventCouponList.findIndex(
+                                    (item) =>
+                                      item.serialno === props.row.serialno
+                                  )
+                                ] >= props.row.couponbuyhigh
+                              "
+                              @click="
+                                handleOrderIncrement(
+                                  eventCouponList.findIndex(
+                                    (item) =>
+                                      item.serialno === props.row.serialno
+                                  ),
+                                  props.row.couponSaleUnit
                                 )
-                              )
-                            "
-                          >
-                            -
-                          </button>
-                          <span class="funEventsTable__quantityText">
-                            <label :for="'inc' + props.row.couponName">
-                              {{
+                              "
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </span>
+                      <span v-if="props.column.field == 'couponPrice'">
+                        <div
+                          class="funEventsTable__tableRow funEventsTable__couponPrice"
+                          :class="{
+                            'funEventsTable__tableRow--disabled':
+                              props.row.remainingTicket <= 0 &&
+                              props.row.remainingTicket !== -2147483648
+                          }"
+                        >
+                          ${{
+                            (
+                              Number(
                                 couponOrder[
                                   eventCouponList.findIndex(
                                     (item) =>
                                       item.couponName === props.row.couponName
                                   )
                                 ]
-                              }}
-                              <input
-                                :id="'inc' + props.row.couponName"
-                                type="number"
-                                v-model="
-                                  couponOrder[
-                                    eventCouponList.findIndex(
-                                      (item) =>
-                                        item.couponName === props.row.couponName
-                                    )
-                                  ]
-                                "
-                                min="0"
-                                :max="eventInfo.couponOrderCount"
-                                :disabled="
-                                  props.row.couponStatus !== '販售中' &&
-                                  props.row.remainingTicket <= 0
-                                "
-                                :class="{
-                                  'funEventsTable__tableRow--disabled':
-                                    props.row.couponStatus !== '販售中' &&
-                                    props.row.remainingTicket <= 0
-                                }"
-                              />
-                            </label>
-                          </span>
-                          <button
-                            class="funEventsTable__quantityBtn"
-                            :class="{
-                              'funEventsTable__quantityBtn--disabled':
-                                props.row.couponStatus !== '販售中' &&
-                                props.row.remainingTicket <= 0
-                            }"
-                            :disabled="
-                              (props.row.couponStatus !== '販售中' &&
-                                props.row.remainingTicket <= 0) ||
-                              couponOrder[
-                                eventCouponList.findIndex(
-                                  (item) =>
-                                    item.couponName === props.row.couponName
-                                )
-                              ] === eventInfo.couponOrderCount
-                            "
-                            @click="
-                              handleOrderIncrement(
-                                eventCouponList.findIndex(
-                                  (item) =>
-                                    item.couponName === props.row.couponName
-                                )
-                              )
-                            "
-                          >
-                            +
-                          </button>
+                              ) *
+                              Number(props.row.couponPrice.split(',').join(''))
+                            ).toLocaleString('en')
+                          }}
                         </div>
+                      </span>
+                      <span v-if="props.column.field == 'couponStatus'">
+                        <div
+                          class="funEventsTable__tableRow funEventsTable__couponTitle"
+                          :class="{
+                            'funEventsTable__tableRow--disabled':
+                              props.row.remainingTicket <= 0 &&
+                              props.row.remainingTicket !== -2147483648
+                          }"
+                        >
+                          <div
+                            class="funEventsTable__couponStatus"
+                            :class="{
+                              'funEventsTable__tableRow--disabled':
+                                props.row.remainingTicket <= 0 &&
+                                props.row.remainingTicket !== -2147483648
+                            }"
+                          >
+                            <div>{{ props.row.couponStatus }}</div>
+                          </div>
+                        </div>
+                      </span>
+                    </template>
+                    <template slot="table-column" slot-scope="props">
+                      <div class="funEventsTable__label">
+                        {{ props.column.label }}
                       </div>
-                    </span>
-                    <span v-if="props.column.field == 'couponPrice'">
-                      <div
-                        class="funEventsTable__tableRow funEventsTable__couponPrice"
-                        :class="{
-                          'funEventsTable__tableRow--disabled':
-                            props.row.couponStatus !== '販售中' &&
-                            props.row.remainingTicket <= 0
-                        }"
-                      >
-                        ${{
-                          (
-                            Number(
-                              couponOrder[
-                                eventCouponList.findIndex(
-                                  (item) =>
-                                    item.couponName === props.row.couponName
-                                )
-                              ]
-                            ) *
-                            Number(props.row.couponPrice.split(',').join(''))
-                          ).toLocaleString('en')
-                        }}
-                      </div>
-                    </span>
-                  </template>
-
-                  <template slot="table-column" slot-scope="props">
-                    <div class="funEventsTable__label">
-                      {{ props.column.label }}
-                    </div>
-                  </template>
-                </vue-good-table>
-              </client-only>
-              <div class="funEventsCheckoutBody__box">
-                <BaseCheckbox
-                  v-model="agreePrivacy"
-                  id="agreePrivacy1"
-                  :value="agreePrivacy"
-                  >同意STAYFUN
-                  <a
-                    href="/privacy"
-                    class="funEventsCheckoutBody__box__link"
-                    target="_blank"
-                    >隱私權條款
-                  </a>
-                </BaseCheckbox>
-                <BaseCheckbox
-                  v-model="agreePrivacy2"
-                  id="agreePrivacy2"
-                  :value="agreePrivacy2"
-                  v-if="eventInfo.activePsTitle"
-                  >同意
-                  <a
-                    href="/privacy"
-                    class="funEventsCheckoutBody__box__link"
-                    target="_blank"
-                    >活動報名條款
-                  </a>
-                </BaseCheckbox>
+                    </template>
+                  </vue-good-table>
+                </client-only>
+                <div class="funEventsCheckoutBody__box">
+                  <base-checkbox
+                    v-model="agreePrivacy"
+                    id="agreePrivacy1"
+                    :value="agreePrivacy"
+                  >
+                    同意STAYFUN
+                    <a
+                      href="/privacy"
+                      class="funEventsCheckoutBody__box__link"
+                      target="_blank"
+                      >隱私權條款</a
+                    >
+                  </base-checkbox>
+                  <base-checkbox
+                    v-model="agreePrivacy2"
+                    id="agreePrivacy2"
+                    :value="agreePrivacy2"
+                    v-if="eventInfo.activePsTitle"
+                  >
+                    同意
+                    <a
+                      href="/privacy"
+                      class="funEventsCheckoutBody__box__link"
+                      target="_blank"
+                      >活動報名條款</a
+                    >
+                  </base-checkbox>
+                </div>
               </div>
-            </div>
-            <div
-              class="funEventsCheckoutStepTwo__body"
-              v-show="currentTab === 2"
-            >
-              <div class="funEventsCheckoutStepTwo__inputbox">
-                <ValidationObserver>
-                  <ValidationProvider
+              <div class="funEventsCheckout__btnbox" v-show="currentTab === 1">
+                <base-button
+                  type="greyTwoOutline"
+                  @click="currentTab = 0"
+                  class="funEventsCheckout__btn"
+                  >取消</base-button
+                >
+                <base-button
+                  :type="
+                    (eventInfo.activePsTitle && !agreePrivacy2) || !agreePrivacy
+                      ? 'greyOne'
+                      : 'greyTwo'
+                  "
+                  @click="handleCreateActivity"
+                  class="funEventsCheckout__btn"
+                  :disabled="
+                    (eventInfo.activePsTitle && !agreePrivacy2) || !agreePrivacy
+                  "
+                  >下一步</base-button
+                >
+              </div>
+            </validation-observer>
+            <validation-observer v-slot="{ invalid }">
+              <div
+                class="funEventsCheckoutStepTwo__body"
+                v-show="currentTab === 2"
+              >
+                <div class="funEventsCheckoutStepTwo__inputbox">
+                  <validation-provider
                     v-slot="{ errors }"
                     rules="max:50|required"
                   >
-                    <BaseLabel
+                    <base-label
                       text="姓名"
                       required
                       :valid="!errors.length"
@@ -453,18 +575,18 @@
                         type: 'warning'
                       }"
                     >
-                      <BaseInput
+                      <base-input
                         v-model="form.name"
                         @blur="initialzied = true"
                         :valid="!errors.length"
                       />
-                    </BaseLabel>
-                  </ValidationProvider>
-                  <ValidationProvider
+                    </base-label>
+                  </validation-provider>
+                  <validation-provider
                     v-slot="{ errors }"
                     rules="max:50|required"
                   >
-                    <BaseLabel
+                    <base-label
                       text="聯絡電話"
                       required
                       :valid="!errors.length"
@@ -473,74 +595,96 @@
                         type: 'warning'
                       }"
                     >
-                      <BaseInput
+                      <base-input
                         v-model="form.phone"
                         @blur="initialzied = true"
                         :valid="!errors.length"
                       />
-                    </BaseLabel>
-                  </ValidationProvider>
-                </ValidationObserver>
-              </div>
-              <div class="funEventsCheckoutStepTwo__subtotalbox">
-                <div
-                  class="funEventsCheckoutStepTwo__subtotalitem"
-                  v-for="(item, i) in couponOrder"
-                  v-show="item > 0"
-                  :key="i"
-                >
-                  <div class="funEventsCheckoutStepTwo__subtotalitemtitle">
-                    {{
-                      eventCouponList.find((item, index) => index === i)
-                        .couponName
-                    }}
-                  </div>
-                  <div class="funEventsCheckoutStepTwo__subtotalitemcontent">
-                    <div>
-                      <span>x {{ item }}</span>
-                    </div>
-                    <div>
-                      <span>
-                        ${{
-                          (
-                            Number(item) *
-                            Number(
-                              eventCouponList
-                                .find((item, index) => index === i)
-                                .couponPrice.split(',')
-                                .join('')
-                            )
-                          ).toLocaleString('en')
-                        }}
-                      </span>
-                    </div>
-                  </div>
+                    </base-label>
+                  </validation-provider>
                 </div>
-                <div class="funEventsCheckoutStepTwo__subtotalqty">
-                  <span>金額小計 : </span>
-                  <span>
-                    ${{
-                      eventCouponList
-                        .reduce(
-                          (prev, curr, index) =>
-                            (prev +=
+                <div class="funEventsCheckoutStepTwo__subtotalbox">
+                  <div
+                    class="funEventsCheckoutStepTwo__subtotalitem"
+                    v-for="(item, i) in couponOrder"
+                    v-show="item > 0"
+                    :key="i"
+                  >
+                    <div class="funEventsCheckoutStepTwo__subtotalitemtitle">
+                      {{
+                        eventCouponList.find((item, index) => index === i)
+                          .couponName
+                      }}
+                    </div>
+                    <div class="funEventsCheckoutStepTwo__subtotalitemcontent">
+                      <div>
+                        <span>x {{ item }}</span>
+                      </div>
+                      <div>
+                        <span>
+                          ${{
+                            (
+                              Number(item) *
                               Number(
-                                couponOrder.find((item, i) => i === index)
-                              ) * Number(curr.couponPrice.split(',').join(''))),
-                          0
-                        )
-                        .toLocaleString('en')
-                    }}
-                  </span>
+                                eventCouponList
+                                  .find((item, index) => index === i)
+                                  .couponPrice.split(',')
+                                  .join('')
+                              )
+                            ).toLocaleString('en')
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="funEventsCheckoutStepTwo__subtotalqty">
+                    <span>金額小計 :</span>
+                    <span>
+                      ${{
+                        eventCouponList
+                          .reduce(
+                            (prev, curr, index) =>
+                              (prev +=
+                                Number(
+                                  couponOrder.find((item, i) => i === index)
+                                ) *
+                                Number(curr.couponPrice.split(',').join(''))),
+                            0
+                          )
+                          .toLocaleString('en')
+                      }}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div
-              class="funEventsCheckoutStepThree__body"
-              v-show="currentTab === 3"
-            >
-              <div class="funEventsCheckoutStepThree__inputbox">
-                <ValidationObserver>
+              <div class="funEventsCheckout__btnbox" v-show="currentTab === 2">
+                <base-button
+                  type="greyTwoOutline"
+                  @click="currentTab = 0"
+                  class="funEventsCheckout__btn"
+                  >取消</base-button
+                >
+                <base-button
+                  type="greyTwo"
+                  @click="currentTab = 1"
+                  class="funEventsCheckout__btn"
+                  >上一步</base-button
+                >
+                <base-button
+                  :type="invalid ? 'greyOne' : 'greyTwo'"
+                  @click="currentTab = 3"
+                  class="funEventsCheckout__btn"
+                  :disabled="invalid"
+                  >下一步</base-button
+                >
+              </div>
+            </validation-observer>
+            <validation-observer v-slot="{ invalid }">
+              <div
+                class="funEventsCheckoutStepThree__body"
+                v-show="currentTab === 3"
+              >
+                <div class="funEventsCheckoutStepThree__inputbox">
                   <div v-for="(item, index) in formDataDetail" :key="index">
                     <div class="funEventsCheckoutStepThree__inputGroup">
                       <h5 class="funEventsCheckoutStepThree__inputTitle">
@@ -554,226 +698,453 @@
                         v-show="key !== 'couponName'"
                       >
                         <div v-if="key === 'contactaddress'">
-                          <ValidationProvider
+                          <validation-provider
                             v-slot="{ errors }"
                             rules="required"
                           >
-                            <BaseLabel
+                            <base-label
                               :text="formList[key] ? formList[key].label : ''"
                               :valid="!errors.length"
                               :hint="{
                                 text: errors.length ? errors[0] : '',
                                 type: 'warning'
                               }"
+                              :required="
+                                formDataDetail[index][key] &&
+                                formDataDetail[index][key].details.isRequired
+                              "
                             >
-                              <BaseSelect
+                              <base-select
                                 :options="areaList"
-                                @input="formData[index][key].areaId = $event"
-                                :value="formData[index][key].areaId"
+                                @input="
+                                  formDataDetail[index][key].areaId = $event
+                                "
+                                :value="formDataDetail[index][key].areaId"
                                 :valid="!errors.length"
                               />
-                              <BaseSelect
-                                :options="areaList"
-                                @input="formData[index][key].countyId = $event"
-                                :value="formData[index][key].countyId"
+                              <base-select
+                                :options="countyList(index)"
+                                @input="
+                                  formDataDetail[index][key].countyId = $event
+                                "
+                                :value="formDataDetail[index][key].countyId"
                                 :valid="!errors.length"
+                                :disabled="
+                                  formDataDetail[index][key].areaId.length === 0
+                                "
                               />
-                              <BaseInput
+                              <base-input
                                 type="text"
-                                @input="formData[index][key].address = $event"
-                                :value="formData[index][key].address"
+                                @input="
+                                  formDataDetail[index][key].address = $event
+                                "
+                                :value="formDataDetail[index][key].address"
                                 max="50"
-                                min="0"
+                                min="1"
                                 :valid="!errors.length"
                               />
-                            </BaseLabel>
-                          </ValidationProvider>
+                            </base-label>
+                          </validation-provider>
                         </div>
-                        <ValidationProvider
-                          v-slot="{ errors }"
-                          :rules="`max:50${
-                            key.details
-                              ? key.details.isRequired
-                                ? '|required'
-                                : ''
-                              : ''
-                          }`"
+                        <div
                           v-if="
-                            key !== 'couponName' && key !== 'contactaddress'
+                            key !== 'couponName' &&
+                            key !== 'contactaddress' &&
+                            key !== 'customText1' &&
+                            key !== 'customText2' &&
+                            key !== 'customDropDownList1' &&
+                            key !== 'customDropDownList2' &&
+                            key !== 'customDropDownList3'
                           "
                         >
-                          <BaseLabel
-                            :text="formList[key] ? formList[key].label : ''"
-                            :valid="!errors.length"
-                            :hint="{
-                              text: errors.length ? errors[0] : '',
-                              type: 'warning'
-                            }"
+                          <validation-provider
+                            v-slot="{ errors }"
+                            :rules="`max:50${
+                              formDataDetail[index][key]
+                                ? formDataDetail[index][key].details.isRequired
+                                  ? '|required'
+                                  : ''
+                                : ''
+                            }`"
                           >
-                            {{ index }}
-                            <BaseInput
-                              :id="index.toString()"
-                              :type="formList[key] ? formList[key].type : ''"
-                              v-if="
-                                formList[key] &&
-                                (formList[key].type === 'text' ||
-                                  formList[key].type === 'number')
-                              "
-                              @input="formData[index][key] = $event"
-                              :value="formData[index][key]"
-                              :max="
-                                formList[key] &&
-                                formList[key].label === 'departmentHeadCount'
-                                  ? '5'
-                                  : '50'
-                              "
-                              :min="
-                                formList[key] && formList[key].type === 'number'
-                                  ? '1'
-                                  : null
-                              "
+                            <base-label
+                              :text="formList[key] ? formList[key].label : ''"
                               :valid="!errors.length"
-                            />
-                            <BaseDatepicker
-                              type="date"
-                              v-if="
-                                formList[key] && formList[key].type === 'date'
-                              "
-                              :valid="!errors.length"
-                              @input="formData[index][key] = $event"
-                              :value="formData[index][key]"
-                            />
-                            <b-form-radio-group
-                              :id="`${formList[key].label}+${index}`"
-                              @input="formData[index][key] = $event"
-                              :value="formData[index][key]"
-                              :name="`${formList[key].label}+${index}`"
-                              v-if="
-                                formList[key] && formList[key].type === 'radio'
+                              :hint="{
+                                text: errors.length ? errors[0] : '',
+                                type: 'warning'
+                              }"
+                              :required="
+                                formDataDetail[index][key] &&
+                                formDataDetail[index][key].details.isRequired
                               "
                             >
-                              <template
+                              <base-input
+                                :type="
+                                  formList[key].type ? formList[key].type : ''
+                                "
                                 v-if="
-                                  item[key].details &&
-                                  item[key].details.radioList
+                                  formList[key] &&
+                                  (formList[key].type === 'text' ||
+                                    formList[key].type === 'number')
+                                "
+                                @input="handleInput($event, index, key)"
+                                :value="formDataDetail[index][key].value"
+                                :max="
+                                  formList[key] &&
+                                  formList[key].label === 'departmentHeadCount'
+                                    ? '5'
+                                    : '50'
+                                "
+                                :min="
+                                  formList[key] &&
+                                  formList[key].type === 'number'
+                                    ? '1'
+                                    : null
+                                "
+                                :valid="!errors.length"
+                              />
+                              <base-datepicker
+                                type="date"
+                                v-if="
+                                  formList[key] && formList[key].type === 'date'
+                                "
+                                :valid="!errors.length"
+                                @input="handleInput($event, index, key)"
+                                :value="formDataDetail[index][key].value"
+                                format="YYYY-MM-DD"
+                              />
+                              <b-form-radio-group
+                                :id="`${formList[key].label}+${index}`"
+                                @input="handleInput($event, index, key)"
+                                :value="formDataDetail[index][key].value"
+                                :name="`${formList[key].label}+${index}`"
+                                v-if="
+                                  formList[key] &&
+                                  formList[key].type === 'radio'
                                 "
                               >
-                                <b-form-radio
-                                  :value="item.columnValue"
-                                  v-for="(item, j) in item[key].details
-                                    .radioList"
-                                  :key="j"
+                                <template
+                                  v-if="
+                                    item[key].details &&
+                                    item[key].details.radioList
+                                  "
                                 >
-                                  {{ item.columnText }}
-                                </b-form-radio>
-                              </template>
-                            </b-form-radio-group>
-                          </BaseLabel>
-                        </ValidationProvider>
+                                  <b-form-radio
+                                    :value="item.columnValue"
+                                    v-for="(item, j) in item[key].details
+                                      .radioList"
+                                    :key="j"
+                                    >{{ item.columnText }}</b-form-radio
+                                  >
+                                </template>
+                              </b-form-radio-group>
+                            </base-label>
+                          </validation-provider>
+                        </div>
+                        <div
+                          v-if="
+                            key === 'customText1' ||
+                            key === 'customText2' ||
+                            key === 'customDropDownList1' ||
+                            key === 'customDropDownList2' ||
+                            key === 'customDropDownList3'
+                          "
+                        >
+                          <validation-provider
+                            v-slot="{ errors }"
+                            :rules="`max:50${
+                              key.details
+                                ? key.details.isRequired
+                                  ? '|required'
+                                  : ''
+                                : ''
+                            }`"
+                          >
+                            <base-label
+                              :text="
+                                formDataDetail[index][key]
+                                  ? formDataDetail[index][key].details
+                                      .customColumnName
+                                  : ''
+                              "
+                              :valid="!errors.length"
+                              :hint="{
+                                text: errors.length ? errors[0] : '',
+                                type: 'warning'
+                              }"
+                              :required="
+                                formDataDetail[index][key] &&
+                                formDataDetail[index][key].details.isRequired
+                              "
+                            >
+                              <base-input
+                                :type="
+                                  formList[key].type ? formList[key].type : ''
+                                "
+                                v-if="
+                                  formList[key] &&
+                                  (formList[key].type === 'text' ||
+                                    formList[key].type === 'number')
+                                "
+                                @input="handleInput($event, index, key)"
+                                :value="formDataDetail[index][key].value"
+                                :max="
+                                  formList[key] &&
+                                  formList[key].label === 'departmentHeadCount'
+                                    ? '5'
+                                    : '50'
+                                "
+                                :min="
+                                  formList[key] &&
+                                  formList[key].type === 'number'
+                                    ? '1'
+                                    : null
+                                "
+                                :valid="!errors.length"
+                              />
+                              <base-select
+                                :options="
+                                  formDataDetail[index][
+                                    key
+                                  ].details.customColumnOptions
+                                    .split(',')
+                                    .map((item) => ({
+                                      label: item,
+                                      value: item
+                                    }))
+                                "
+                                @input="handleInput($event, index, key)"
+                                :value="formDataDetail[index][key].value"
+                                :valid="!errors.length"
+                                v-if="
+                                  formList[key] &&
+                                  formList[key].type === 'select'
+                                "
+                              />
+                            </base-label>
+                          </validation-provider>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </ValidationObserver>
-              </div>
-              <div class="funEventsCheckoutStepTwo__subtotalbox">
-                <div
-                  class="funEventsCheckoutStepTwo__subtotalitem"
-                  v-for="(item, i) in couponOrder"
-                  v-show="item > 0"
-                  :key="i"
-                >
-                  <div class="funEventsCheckoutStepTwo__subtotalitemtitle">
-                    {{
-                      eventCouponList.find((item, index) => index === i)
-                        .couponName
-                    }}
-                  </div>
-                  <div class="funEventsCheckoutStepTwo__subtotalitemcontent">
-                    <div>
-                      <span>x {{ item }}</span>
-                    </div>
-                    <div>
-                      <span>
-                        ${{
-                          (
-                            Number(item) *
-                            Number(
-                              eventCouponList
-                                .find((item, index) => index === i)
-                                .couponPrice.split(',')
-                                .join('')
-                            )
-                          ).toLocaleString('en')
-                        }}
-                      </span>
-                    </div>
-                  </div>
                 </div>
-                <div class="funEventsCheckoutStepTwo__subtotalqty">
-                  <span>金額小計 : </span>
-                  <span>
-                    ${{
-                      eventCouponList
-                        .reduce(
-                          (prev, curr, index) =>
-                            (prev +=
+                <div class="funEventsCheckoutStepTwo__subtotalbox">
+                  <div
+                    class="funEventsCheckoutStepTwo__subtotalitem"
+                    v-for="(item, i) in couponOrder"
+                    v-show="item > 0"
+                    :key="i"
+                  >
+                    <div class="funEventsCheckoutStepTwo__subtotalitemtitle">
+                      {{
+                        eventCouponList.find((item, index) => index === i)
+                          .couponName
+                      }}
+                    </div>
+                    <div class="funEventsCheckoutStepTwo__subtotalitemcontent">
+                      <div>
+                        <span>x {{ item }}</span>
+                      </div>
+                      <div>
+                        <span>
+                          ${{
+                            (
+                              Number(item) *
                               Number(
-                                couponOrder.find((item, i) => i === index)
-                              ) * Number(curr.couponPrice.split(',').join(''))),
-                          0
-                        )
-                        .toLocaleString('en')
-                    }}
-                  </span>
+                                eventCouponList
+                                  .find((item, index) => index === i)
+                                  .couponPrice.split(',')
+                                  .join('')
+                              )
+                            ).toLocaleString('en')
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="funEventsCheckoutStepTwo__subtotalqty">
+                    <span>金額小計 :</span>
+                    <span>
+                      ${{
+                        eventCouponList
+                          .reduce(
+                            (prev, curr, index) =>
+                              (prev +=
+                                Number(
+                                  couponOrder.find((item, i) => i === index)
+                                ) *
+                                Number(curr.couponPrice.split(',').join(''))),
+                            0
+                          )
+                          .toLocaleString('en')
+                      }}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+              <div class="funEventsCheckout__btnbox" v-show="currentTab === 3">
+                <base-button
+                  type="greyTwoOutline"
+                  @click="currentTab = 0"
+                  class="funEventsCheckout__btn"
+                  >取消</base-button
+                >
+                <base-button
+                  type="greyTwo"
+                  @click="currentTab = 2"
+                  class="funEventsCheckout__btn"
+                  >上一步</base-button
+                >
+                <base-button
+                  :type="invalid ? 'greyOne' : 'greyTwo'"
+                  @click="handleCreateUserInfo"
+                  class="funEventsCheckout__btn"
+                  :disabled="invalid"
+                  >下一步</base-button
+                >
+              </div>
+            </validation-observer>
             <div
               class="funEventsCheckoutStepFour__body"
               v-show="currentTab === 4"
             >
-              <div class="funEventsCheckoutStepFour__table"></div>
-              <div class="funEventsCheckoutStepFour__paymentType">
-                付款方式: <span></span>
+              <div class="funEventsCheckoutStepFour__table">
+                <client-only>
+                  <vue-good-table
+                    :columns="checkoutTableFields"
+                    :rows="checkoutList"
+                    :sort-options="{
+                      enabled: false
+                    }"
+                  >
+                    <div slot="emptystate">無</div>
+                    <template slot="table-row" slot-scope="props">
+                      <span v-if="props.column.field == 'couponQuantity'">
+                        <div class="funEventsTable__tableRow">
+                          {{ props.row.couponQuantity }}
+                        </div>
+                      </span>
+                      <span v-if="props.column.field == 'couponName'">
+                        <div class="funEventsTable__tableRow">
+                          <div class="funEventsTable__couponName">
+                            {{ props.row.couponName }}
+                          </div>
+                        </div>
+                      </span>
+                      <span v-if="props.column.field == 'couponPrice'">
+                        <div class="funEventsTable__tableRow">
+                          {{ props.row.couponPrice }}
+                        </div>
+                      </span>
+                    </template>
+
+                    <template slot="table-column" slot-scope="props">
+                      <div class="funEventsTable__label">
+                        {{ props.column.label }}
+                      </div>
+                    </template>
+                    <div slot="table-actions-bottom">
+                      <div class="funEventsTable__bottom">
+                        <div class="funEventsTable__bottomRow">
+                          <div class="funEventsTable__bottomRowText">
+                            總金額
+                          </div>
+                          <div class="funEventsTable__bottomRowValue">
+                            ${{ totalPrice.toLocaleString('en') }}
+                          </div>
+                        </div>
+                        <div class="funEventsTable__bottomRow">
+                          <div class="funEventsTable__bottomRowText">
+                            享樂金折抵
+                          </div>
+                          <div
+                            class="funEventsTable__bottomRowValue funEventsTable__bottomRowValue--emphasized"
+                          >
+                            ${{ discount.toLocaleString('en') }}
+                          </div>
+                        </div>
+                        <div class="funEventsTable__bottomRow">
+                          <div class="funEventsTable__bottomRowText">
+                            應付金額
+                          </div>
+                          <div class="funEventsTable__bottomRowValue">
+                            ${{ totalPriceAfterDiscount.toLocaleString('en') }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </vue-good-table>
+                </client-only>
               </div>
-              <div class="funEventsCheckoutStepFour__paymentForm"></div>
+              <div class="funEventsCheckoutStepFour__paymentType">
+                <span>付款方式</span>
+                <span>{{
+                  eventInfo.activityPayType === 1
+                    ? '由主辦單位另行收取費用'
+                    : '信用卡/其他'
+                }}</span>
+              </div>
+              <div
+                class="funEventsCheckoutStepFour__paymentType"
+                v-if="eventInfo.activityPayType === 1"
+              >
+                <span>發票類型</span>
+                <span>請洽主辦單位</span>
+              </div>
+              <div
+                class="funEventsCheckoutStepFour__paymentType"
+                v-if="eventInfo.activityPayType === 0"
+              >
+                <div class="funEventsCheckoutStepFour__title">發票類型</div>
+                <div class="funEventsCheckoutStepFour__paymentSelector">
+                  <default-receipt-selector
+                    @input="handleReceiptTypeUpdate"
+                    @address-area-update="handleGetCounty"
+                    @form-update="receiptInfo = $event"
+                    :areaOptions="areaList"
+                    :countyOptions="county"
+                  />
+                </div>
+              </div>
             </div>
-            <div class="funEventsCheckout__btnbox">
-              <BaseButton
+            <div class="funEventsCheckout__btnbox" v-show="currentTab === 4">
+              <base-button
                 type="greyTwoOutline"
                 @click="currentTab = 0"
                 class="funEventsCheckout__btn"
-                >取消
-              </BaseButton>
-              <BaseButton
-                type="greyTwo"
-                v-show="currentTab > 1"
-                @click="currentTab -= 1"
+                >取消</base-button
+              >
+              <base-button
+                :type="
+                  eventInfo.activityPayType === 0 && receiptType === ''
+                    ? 'greyOne'
+                    : 'primary'
+                "
+                @click="handleCreateOrder"
                 class="funEventsCheckout__btn"
-                >上一步
-              </BaseButton>
-              <BaseButton
-                type="greyTwo"
-                v-show="currentTab < 4"
-                @click="handleVerifyTab(currentTab)"
-                class="funEventsCheckout__btn"
-                >下一步
-              </BaseButton>
+                :disabled="
+                  eventInfo.activityPayType === 0 && receiptType === ''
+                "
+                >送出</base-button
+              >
             </div>
           </div>
         </div>
       </div>
-    </DefaultMainContainer>
-    <DefaultDialog
-      :active="dialogState"
-      @cancel="handleDialogClose"
-      @accept="handleDialogClose"
-      @confirm="handleDialogConfirm"
-      :message="dialogContent.message"
-      :title="dialogContent.title"
-      :type="dialogContent.type"
-      :icon="dialogContent.icon"
-    ></DefaultDialog>
+    </default-main-container>
+    <client-only>
+      <default-dialog
+        :active="dialogState"
+        @cancel="handleDialogClose"
+        @accept="handleDialogClose"
+        @confirm="handleDialogConfirm"
+        :message="dialogContent.message"
+        :title="dialogContent.title"
+        :type="dialogContent.type"
+        :icon="dialogContent.icon"
+      />
+    </client-only>
   </div>
 </template>
 
@@ -781,6 +1152,8 @@
 import { Component, Vue, Watch } from 'nuxt-property-decorator'
 import VueSlickCarousel from 'vue-slick-carousel'
 import { ValidationObserver, ValidationProvider } from 'vee-validate'
+import { ProxyRequestObject, ResponseObject } from 'Http'
+import { $axios } from '~/utils/api'
 import DefaultMainContainer from '~/components/DefaultMainContainer.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import BaseSelect from '~/components/BaseSelect.vue'
@@ -789,7 +1162,8 @@ import BaseInput from '~/components/BaseInput.vue'
 import BaseDatepicker from '~/components/BaseDatepicker.vue'
 import BaseLabel from '~/components/BaseLabel.vue'
 import DefaultDialog from '~/components/DefaultDialog.vue'
-import { funEventsStore, dialogStore, commonStore } from '~/store'
+import DefaultReceiptSelector from '~/components/DefaultReceiptSelector.vue'
+import { funEventsStore, dialogStore, commonStore, pointStore } from '~/store'
 
 interface TableData {
   couponPrice: string
@@ -822,15 +1196,278 @@ interface TableField {
     BaseButton,
     VueSlickCarousel,
     DefaultDialog,
+    DefaultReceiptSelector,
     BaseSelect,
     BaseCheckbox,
     BaseDatepicker,
     BaseInput,
     ValidationObserver,
     ValidationProvider
-  }
+  },
+  scrollToTop: true
 })
 export default class FunEventsDetail extends Vue {
+  public async handleCreateOrder() {
+    try {
+      this.$nuxt.$loading.start()
+      await this.sendCreateOrderRequest()
+      dialogStore.setContent({
+        title: '訂單建立成功！',
+        message: '請至會員專區查看訂單',
+        type: 'accept',
+        initializer: 'fun-event-order-success'
+      })
+      dialogStore.setMaskActive(true)
+      dialogStore.setActive(true)
+    } catch (e) {
+      dialogStore.setContent({
+        title: '請注意',
+        icon: true,
+        message: e.message,
+        type: 'accept'
+      })
+      dialogStore.setMaskActive(true)
+      dialogStore.setActive(true)
+    } finally {
+      this.$nuxt.$loading.finish()
+    }
+  }
+
+  public async handleCreateUserInfo() {
+    try {
+      this.$nuxt.$loading.start()
+      await this.sendCreateActivityUserInfoRequest()
+      await this.sendGetPointDiscountRequest()
+      this.currentTab = 4
+    } catch (e) {
+      // error
+      dialogStore.setContent({
+        title: '請注意',
+        message: '您的請求無法被進行，請稍後再試',
+        icon: true
+      })
+      dialogStore.setMaskActive(true)
+      dialogStore.setActive(true)
+    } finally {
+      this.$nuxt.$loading.finish()
+    }
+  }
+
+  get discount(): number {
+    let discount = 0
+    if (pointStore.pointDiscount && pointStore.pointDiscount.length) {
+      discount = pointStore.pointDiscount.reduce((prev: number, curr: any) => {
+        if (curr.pointType.toString() === '點數折抵') {
+          return (prev += curr.pointAmount)
+        } else {
+          return prev
+        }
+      }, 0)
+    }
+    return discount
+  }
+
+  get totalPriceAfterDiscount(): number {
+    return this.totalPrice - this.discount
+  }
+
+  get totalPrice(): number {
+    return this.checkoutList.reduce(
+      (prev, curr) => (prev += Number(curr.couponPrice.split(',').join(''))),
+      0
+    )
+  }
+
+  public orderNumber: string = ''
+
+  public paymentDetailList: Array<any> = []
+
+  get userPaymentInfoList(): Array<any> {
+    // Data Structure:
+    // getUserInfoList: [
+    //   {
+    //     couponSerialno: this.paymentDetailList,
+    //     paymentSerialno: 'string',
+    //     keyValueList: [
+    //       {
+    //         columnName: 'string',
+    //         columnValue: 'string',
+    //         customColumnName: 'string',
+    //         sequence: 0
+    //       }
+    //     ]
+    //   }
+    // ]
+
+    let currentTraversedIndex = 0
+    let result: Array<any> = []
+    const formDetail = this.formDataDetail.map((item: any) => {
+      return Object.keys(item)
+        .filter((key: string) => key !== 'couponName')
+        .map((key: string) => {
+          if (
+            key === 'customText1' ||
+            key === 'customText2' ||
+            key === 'customDropDownList1' ||
+            key === 'customDropDownList2' ||
+            key === 'customDropDownList3'
+          ) {
+            return {
+              columnName: key,
+              customColumnName: key,
+              columnValue: item[key].value
+            }
+          } else if (key === 'contactaddress') {
+            return {
+              columnName: 'contactaddress',
+              columnValue:
+                item[key].areaId.toString() +
+                item[key].countyId.toString() +
+                item[key].address.toString(),
+              customColumnName: ''
+            }
+          } else {
+            return {
+              columnName: key,
+              columnValue: item[key].value,
+              customColumnName: ''
+            }
+          }
+        })
+    })
+    this.paymentDetailList.forEach((coupon: any) => {
+      coupon.paymentList.forEach((payment: any) => {
+        result = [
+          ...result,
+          {
+            couponSerialno: coupon.couponSerialno,
+            paymentSerialno: payment.paymentSerialno,
+            keyValueList: formDetail[currentTraversedIndex]
+          }
+        ]
+        currentTraversedIndex += 1
+      })
+    })
+
+    return result
+  }
+
+  get county() {
+    return commonStore.countyList.length
+      ? commonStore.countyList.map((item: any) => ({
+          label: item.area,
+          value: item.area,
+          zipcode: item.zipCode
+        }))
+      : []
+  }
+
+  public receiptType: '1' | '2' | '3' | '4' | '5' | '' = ''
+
+  public receiptInfo: any = {}
+
+  public async handleReceiptTypeUpdate(val: '1' | '2' | '3' | '4' | '5') {
+    if (this.receiptType !== '2' && this.receiptType !== '5') {
+      if (val === '2' || val === '5') {
+        await this.sendGetAreasRequest()
+      }
+    }
+    this.receiptType = val
+  }
+
+  public async handleGetCounty(val: string) {
+    await this.sendGetCountyRequest(val)
+  }
+
+  public async handleCreateActivity() {
+    try {
+      const result = await this.sendSignUpActivityRequest()
+      this.orderNumber = result.orderNumber
+      this.paymentDetailList = result.paymentDetailList
+
+      this.currentTab = 2
+    } catch (e) {
+      // join activity error
+      dialogStore.setContent({
+        icon: true,
+        // title: '請選擇票種',
+        title: e.message,
+        type: 'accept'
+      })
+      dialogStore.setMaskActive(true)
+      dialogStore.setActive(true)
+    }
+  }
+
+  get tabAllowed() {
+    return (tab: number) => {
+      if (this.isFilled.length) {
+        const maxTab = this.isFilled.reduce(function (a, b) {
+          return Math.max(a, b)
+        })
+        return tab < maxTab
+      } else {
+        return tab === 1
+      }
+    }
+  }
+
+  get totalAvailableSpots() {
+    return this.eventInfo.AccountCountLimit - this.eventInfo.TotalActivityCount
+  }
+
+  get totalSpots() {
+    return this.eventInfo.AccountCountLimit
+  }
+
+  get totalAvailableCoupons() {
+    return (
+      this.eventInfo.SalesCountLimit +
+      this.eventInfo.salesWaitingListCount -
+      this.eventInfo.signupCount
+    )
+  }
+
+  get totalCoupons() {
+    return this.eventInfo.SalesCountLimit + this.eventInfo.salesWaitingListCount
+  }
+
+  get purchaseBtnStatus(): string {
+    const remainingTickets = this.eventCouponList.reduce(
+      (prev: number, curr: any) => {
+        if (Number(curr.remainingTicket) !== -2147483648) {
+          return (prev += Number(curr.remainingTicket))
+        } else {
+          return prev
+        }
+      },
+      0
+    )
+    const hasInfiniteTickets = this.eventCouponList.find(
+      (item: any) => item.remainingTicket === -2147483648
+    )
+    if (
+      (this.eventInfo.ButtonText !== '' &&
+        !this.eventInfo.isEnableWaitingList) ||
+      this.totalAvailableSpots <= 0
+    ) {
+      return '已額滿'
+    } else if (new Date(this.eventInfo.activeEnddate) < new Date()) {
+      return '已結束'
+    } else if (new Date(this.eventInfo.activeBegindate) > new Date()) {
+      return '尚未開始報名'
+    } else if (this.eventCouponList.length === 0) {
+      return '尚無可購買之票券'
+    }
+    if (
+      (remainingTickets <= 0 && !hasInfiniteTickets) ||
+      this.totalAvailableCoupons <= 0
+    ) {
+      return '已售空'
+    }
+    return '立即報名'
+  }
+
   public formList: any = {
     accountname: { label: '姓名', type: 'text' },
     accountid: { label: '工號', type: 'text' },
@@ -848,7 +1485,12 @@ export default class FunEventsDetail extends Vue {
     departmentHeadCount: { label: '部門人數', type: 'number' },
     gender: { label: '性別', type: 'radio' },
     clothSize: { label: '衣服尺寸', type: 'text' },
-    dietaryPreference: { label: '飲食偏好', type: 'radio' }
+    dietaryPreference: { label: '飲食偏好', type: 'radio' },
+    customText1: { label: 'customColumnName', type: 'text' },
+    customText2: { label: 'customColumnName', type: 'text' },
+    customDropDownList1: { label: 'customColumnName', type: 'select' },
+    customDropDownList2: { label: 'customColumnName', type: 'select' },
+    customDropDownList3: { label: 'customColumnName', type: 'select' }
   }
 
   public initialzied: boolean = false
@@ -866,7 +1508,7 @@ export default class FunEventsDetail extends Vue {
 
   public formCreated: boolean = false
 
-  public getFormData() {
+  public getFormData(): Array<any> {
     let obj: any = {}
     let res: any = []
     for (let i = 0; i < this.couponOrder.length; i++) {
@@ -885,7 +1527,19 @@ export default class FunEventsDetail extends Vue {
           }
           for (let k = 0; k < arr.length; k++) {
             const inputName = arr[k].columnName
-            obj = { ...obj, [inputName]: { value: '', details: arr[k] } }
+            if (inputName === 'contactaddress') {
+              obj = {
+                ...obj,
+                [inputName]: {
+                  areaId: '',
+                  countyId: '',
+                  address: '',
+                  details: arr[k]
+                }
+              }
+            } else {
+              obj = { ...obj, [inputName]: { value: '', details: arr[k] } }
+            }
           }
           res = [...res, { ...obj, couponName: name }]
         }
@@ -894,50 +1548,50 @@ export default class FunEventsDetail extends Vue {
     return res
   }
 
+  public handleInput(value: string | number, index: number, key: string): void {
+    this.formDataDetail[index][key].value = value
+  }
+
   @Watch('currentTab')
-  onTabUpdate(newVal: number) {
-    // dynamically generate form
+  private onTabUpdate(newVal: number, oldVal: number): void {
+    window.scrollTo(0, 0)
+    // Dynamically generate form
     if (newVal === 3 && !this.formCreated) {
       const form = this.getFormData()
-      console.log(form)
-      this.formData = Array(form.length).fill({})
-      this.formDataDetail = Array(form.length).fill({})
-      form.forEach((item: any, index: number) => {
-        Object.keys(item).forEach((key: any) => {
-          if (key !== 'couponName' && key !== 'contactaddress') {
-            this.$set(this.formData[index], key, '')
-            this.$set(this.formDataDetail[index], key, {})
-            this.$set(this.formDataDetail[index][key], 'value', '')
-            this.$set(
-              this.formDataDetail[index][key],
-              'details',
-              item[key].details
-            )
-          } else if (key === 'contactaddress') {
-            this.$set(this.formData[index], key, {
-              // areaId: '',
-              // countyId: '',
-              // address: ''
-            })
-            this.$set(this.formData[index][key], 'areaId', '')
-            this.$set(this.formData[index][key], 'countyId', '')
-            this.$set(this.formData[index][key], 'address', '')
-            this.$set(this.formDataDetail[index], key, {})
-            this.$set(this.formDataDetail[index][key], 'value', '')
-            this.$set(
-              this.formDataDetail[index][key],
-              'details',
-              item[key].details
-            )
-          } else {
-            this.$set(this.formDataDetail[index], key, item[key])
-          }
-        })
-      })
+      this.formDataDetail = form
       this.formCreated = true
     }
+    if (newVal === 1) {
+      this.initialzied = false
+    }
+    // Reset all user-filled details
+    if (newVal === 0) {
+      this.formDataDetail = []
+      this.form = {
+        phone: '',
+        name: ''
+      }
+      this.couponOrder = this.couponOrder.map(() => 0)
+      this.agreePrivacy = false
+      this.agreePrivacy2 = false
+      this.formCreated = false
+      this.initialzied = false
+      this.receiptInfo = {}
+      this.orderNumber = ''
+      this.paymentDetailList = []
+    }
     if (newVal === 2 && !this.initialzied) {
-      this.timer = 15 * 60
+      dialogStore.setContent({
+        title: '請注意',
+        icon: true,
+        message: '開始報名後請在 15 分鐘內完成!',
+        type: 'accept'
+      })
+      dialogStore.setMaskActive(true)
+      dialogStore.setActive(true)
+
+      clearTimeout(this.interval)
+      this.timer = 15 * 60 - 1
       this.interval = setInterval(() => {
         if (this.timer > 0) {
           this.timer -= 1
@@ -949,8 +1603,8 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  @Watch('formData', { deep: true })
-  onValueChange(newVal: any) {
+  @Watch('formDataDetail', { deep: true })
+  private onValueChange(newVal: any): void {
     newVal.forEach(async (item: any, index: number) => {
       const areaName = this.areaList
         .filter((areaObj: any) => {
@@ -965,94 +1619,29 @@ export default class FunEventsDetail extends Vue {
     return commonStore.areaList.length
       ? commonStore.areaList.map((item: any) => ({
           label: item.area,
-          value: item.areaId
+          value: item.area
         }))
       : []
   }
 
   get countyList() {
-    return commonStore.countyList.length
-      ? commonStore.countyList.map((item: any) => ({
-          label: item.area,
-          value: item.areaId
-        }))
-      : []
-  }
-
-  public handleVerifyTab(currentTab: number): void {
-    if (currentTab === 1) {
-      if (!this.tabOneVerification()) {
-        return
-      }
-    }
-    if (currentTab === 2) {
-      if (!this.tabTwoVerification()) {
-        return
-      }
-    }
-    if (currentTab === 3) {
-      if (!this.tabThreeVerification()) {
-        return
-      }
-    }
-    if (!this.isFilled.includes(this.currentTab)) {
-      this.isFilled = [...this.isFilled, this.currentTab]
-    }
-    this.currentTab += 1
-  }
-
-  public tabOneVerification(): boolean {
-    if (this.couponOrder.filter((item: any) => item > 0).length === 0) {
-      dialogStore.setContent({
-        title: '請注意',
-        type: 'accept',
-        message: '請選擇票種'
-      })
-      dialogStore.setMaskActive(true)
-      dialogStore.setActive(true)
-      return false
-    } else if (!this.agreePrivacy) {
-      dialogStore.setContent({
-        title: '請注意',
-        type: 'accept',
-        message: '請同意 STAYFUN 隱私權條款'
-      })
-      dialogStore.setMaskActive(true)
-      dialogStore.setActive(true)
-      return false
-    } else if (this.eventInfo.activePsTitle && !this.agreePrivacy2) {
-      dialogStore.setContent({
-        title: '請注意',
-        type: 'accept',
-        message: '請同意 STAYFUN 活動報名條款'
-      })
-      dialogStore.setMaskActive(true)
-      dialogStore.setActive(true)
-      return false
-    }
-    return true
-  }
-
-  public tabTwoVerification(): boolean {
-    this.initialzied = true
-    if (this.form.phone === '' || this.form.name === '') {
-      return false
-    }
-    return true
-  }
-
-  public tabThreeVerification(): boolean {
-    this.formData.forEach((item: any, i: number) => {
-      Object.keys(item).forEach((key) => {
-        if (
-          this.formDataDetail[i][key].details.isRequired &&
-          !this.formData[i][key]
-        ) {
-          return false
+    return (index: number) => {
+      if (commonStore.countyListForFunEvents.length) {
+        const match = commonStore.countyListForFunEvents.find(
+          (subarr: any) => subarr[subarr.length - 1] === index
+        )
+        if (match) {
+          return match.map((item: any) => ({
+            label: item.area,
+            value: item.area
+          }))
+        } else {
+          return Array(0)
         }
-      })
-    })
-    return true
+      } else {
+        return Array(0)
+      }
+    }
   }
 
   public currentTab: number = 0
@@ -1082,7 +1671,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public handleDialogConfirm() {
+  public handleDialogConfirm(): void {
     if (dialogStore.content.initializer === 'funevents-serialno-confirmTab') {
       dialogStore.setMaskActive(false)
       dialogStore.setActive(false)
@@ -1090,12 +1679,15 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public handleDialogClose() {
+  public handleDialogClose(): void {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
+    if (dialogStore.content.initializer === 'fun-event-order-success') {
+      this.$router.push('/funevents')
+    }
   }
 
-  get dialogState() {
+  get dialogState(): boolean {
     return dialogStore.active
   }
 
@@ -1103,11 +1695,24 @@ export default class FunEventsDetail extends Vue {
     return dialogStore.content
   }
 
+  public couponListTableFields: Array<TableField> = [
+    { label: '票種名稱', field: 'couponName' },
+    { label: '數量', field: 'couponQuantity' },
+    { label: '數量', field: 'couponStatus' },
+    { label: '小計($)', field: 'couponPrice' }
+  ]
+
   public tableFields: Array<TableField> = [
     { label: '票種', field: 'couponName' },
     { label: '販售時間', field: 'couponAvailableDate' },
     { label: '狀態', field: 'couponStatus' },
     { label: '票價($)', field: 'couponPrice' }
+  ]
+
+  public checkoutTableFields: Array<TableField> = [
+    { label: '票種名稱', field: 'couponName' },
+    { label: '數量', field: 'couponQuantity' },
+    { label: '小計($)', field: 'couponPrice' }
   ]
 
   public carouselSetting: any = {
@@ -1120,40 +1725,83 @@ export default class FunEventsDetail extends Vue {
     arrows: true
   }
 
+  get checkoutList(): Array<any> {
+    return this.couponOrder
+      .map((item: number, index: number) => {
+        return {
+          serialno: this.eventCouponList[index].serialno,
+          couponName: this.eventCouponList[index].couponName,
+          couponQuantity: item,
+          couponPrice: (
+            Number(
+              this.eventCouponList[index].couponPrice.split(',').join('')
+            ) * item
+          ).toLocaleString('en')
+        }
+      })
+      .filter((item: any) => item.couponQuantity > 0)
+  }
+
+  get couponCheckoutList(): Array<any> {
+    return this.checkoutList.map((item: any) => ({
+      key: item.serialno,
+      value: item.couponQuantity.toString()
+    }))
+  }
+
   get eventCouponList(): Array<any> {
     return Object.keys(funEventsStore.eventDetail).length
-      ? funEventsStore.eventDetail.FunActivityCoupons.map((item: any) => ({
-          ...item,
-          couponBegindate: new Date(item.couponBegindate).toLocaleString(),
-          couponEnddate: new Date(item.couponEnddate).toLocaleString(),
-          couponPrice: item.couponPrice.toLocaleString('en'),
-          couponStatus: this.eventStatus(
-            item.couponBegindate,
-            item.couponEnddate
-          )
-        }))
+      ? funEventsStore.eventDetail.FunActivityCoupons.map((item: any) => {
+          let purchaseRange: Array<number> = []
+          for (let i = item.couponBuyLow; i <= item.couponbuyhigh; i++) {
+            purchaseRange = [...purchaseRange, i]
+          }
+          return {
+            ...item,
+            couponBegindate: new Date(item.couponBegindate).toLocaleString(
+              'zh-TW',
+              {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              }
+            ),
+            couponEnddate: new Date(item.couponEnddate).toLocaleString(
+              'zh-TW',
+              {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              }
+            ),
+            couponPrice: item.couponPrice.toLocaleString('en'),
+            couponStatus: this.eventStatus(
+              item.couponBegindate,
+              item.couponEnddate
+            ),
+            couponPurchaseRange: purchaseRange.join(',')
+          }
+        })
       : []
   }
 
   public couponOrder: Array<number> = []
 
-  public checkoutTableFields: Array<TableField> = [
-    { label: '票種名稱', field: 'couponName' },
-    { label: '數量', field: 'couponQuantity' },
-    { label: '小計', field: 'couponPrice' }
-  ]
-
   @Watch('eventCouponList', { deep: true })
-  onPropertyChange(newVal: Array<TableData>) {
+  private onPropertyChange(newVal: Array<TableData>): void {
     const res = Array(newVal.length).fill(0)
     this.couponOrder = res
   }
 
-  public handleOrderDecrement(index: number): void {
+  public handleOrderDecrement(index: number, value: number): void {
     if (this.couponOrder[index] > 0) {
       const res: Array<number> = this.couponOrder.map((item, i) => {
         if (i === index) {
-          const num = Number(item) - 1
+          const num = Number(item) - value
           item = num
           return item
         } else {
@@ -1164,10 +1812,10 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public handleOrderIncrement(index: number): void {
+  public handleOrderIncrement(index: number, value: number): void {
     const res: Array<number> = this.couponOrder.map((item, i) => {
       if (i === index) {
-        const num = Number(item) + 1
+        const num = Number(item) + value
         item = num
         return item
       } else {
@@ -1181,7 +1829,7 @@ export default class FunEventsDetail extends Vue {
 
   public agreePrivacy2: boolean = false
 
-  public eventStatus(s: string, e: string) {
+  public eventStatus(s: string, e: string): string {
     const today = new Date()
     const startDate = new Date(s)
     const endDate = new Date(e)
@@ -1192,6 +1840,7 @@ export default class FunEventsDetail extends Vue {
     } else if (today > endDate) {
       return '已結束'
     }
+    return ''
   }
 
   get alertText(): string {
@@ -1206,13 +1855,13 @@ export default class FunEventsDetail extends Vue {
       : {}
   }
 
-  get eventDescription() {
+  get eventDescription(): string {
     return Object.keys(funEventsStore.eventDetail).length
       ? funEventsStore.eventDetail.description
       : ''
   }
 
-  get eventImages() {
+  get eventImages(): Array<any> {
     return Object.keys(funEventsStore.eventDetail).length
       ? funEventsStore.eventDetail.FunActivityImages.slice().sort(
           (a: any, b: any) => a.sortNum - b.sortNum
@@ -1228,6 +1877,13 @@ export default class FunEventsDetail extends Vue {
       })
     } catch (e) {
       // error
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '資料加載錯誤，請刷新再試。',
+        icon: true,
+        type: 'accept'
+      })
     }
   }
 
@@ -1239,12 +1895,149 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async sendGetCountyRequest(areaName: string, index: number) {
+  public async sendGetCountyRequest(areaName: string, index?: number) {
     try {
       await commonStore.getCounty({
         token: this.$cookies.get('accessToken'),
         areaName,
         index
+      })
+    } catch (e) {
+      // error
+    }
+  }
+
+  public async sendSignUpActivityRequest() {
+    const requestBody: ProxyRequestObject = {
+      endpoint: '/api/FunActivity/ToSignUpActivity',
+      key: process.env.apiKey,
+      data: {
+        funActivitySerialno: this.eventInfo.serialno,
+        itemList: [...this.couponCheckoutList]
+      },
+      method: 'post',
+      token: this.$cookies.get('accessToken')
+    }
+    try {
+      const result: ResponseObject = await $axios.post('/api', requestBody)
+      switch (Number(result.data.syscode)) {
+        case 200:
+          return result.data.data
+        case 400:
+          throw new Error(result.data.sysmsg)
+        case 404:
+          throw new Error('Failed to Join Activity')
+        default:
+          return null
+      }
+    } catch (e) {
+      throw new Error(e)
+    }
+  }
+
+  public async sendCreateActivityUserInfoRequest() {
+    const requestBody: ProxyRequestObject = {
+      endpoint: '/api/FunActivity/ToCreateFunActivityUserInfo',
+      key: process.env.apiKey,
+      data: {
+        orderData: {
+          funActivitySerialno: this.eventInfo.serialno,
+          orderNumber: this.orderNumber
+        },
+        getUserInfoList: [...this.userPaymentInfoList]
+      },
+      method: 'post',
+      token: this.$cookies.get('accessToken')
+    }
+    try {
+      const result: ResponseObject = await $axios.post('/api', requestBody)
+      switch (Number(result.data.syscode)) {
+        case 200:
+          return result.data.data
+        case 400:
+          throw new Error(result.data.sysmsg)
+        case 404:
+          throw new Error('Failed to Create User Info')
+        default:
+          return null
+      }
+    } catch (e) {
+      throw new Error(`Backend Error: ${e}`)
+    }
+  }
+
+  public async sendGetAreasRequest() {
+    try {
+      await commonStore.getAreas({ token: this.$cookies.get('accessToken') })
+    } catch (e) {
+      // error
+    }
+  }
+
+  public async sendCreateOrderRequest() {
+    const requestBody: ProxyRequestObject = {
+      endpoint: '/api/FunActivity/Order',
+      key: process.env.apiKey,
+      data: {
+        OrderNumber: this.orderNumber,
+        FunActivitySerialNo: this.$route.params.serialno,
+        amount: this.totalPrice,
+        invoiceType:
+          Number(this.receiptType) === 0 ? 1 : Number(this.receiptType),
+        isIE: false,
+        IsGiftOrder: false
+      },
+      method: 'post',
+      token: this.$cookies.get('accessToken')
+    }
+    // 會員載具
+    if (this.receiptType === '2') {
+      requestBody.data.buyerName = this.receiptInfo.receiver.toString()
+      requestBody.data.buyerAddress =
+        this.receiptInfo.addressZipCode.toString() +
+        this.receiptInfo.addressArea.toString() +
+        this.receiptInfo.addressCounty.toString() +
+        this.receiptInfo.addressLine.toString()
+    }
+    // 手機載具 || 自然人憑證
+    if (this.receiptType === '3' || this.receiptType === '4') {
+      requestBody.data.carrierId = this.receiptInfo.barcode.toString()
+    }
+    // 三聯式發票
+    if (this.receiptType === '5') {
+      requestBody.data.buyerName = this.receiptInfo.receiver.toString()
+      requestBody.data.buyerAddress =
+        this.receiptInfo.addressZipCode.toString() +
+        this.receiptInfo.addressArea.toString() +
+        this.receiptInfo.addressCounty.toString() +
+        this.receiptInfo.addressLine.toString()
+      requestBody.data.buyerID = this.receiptInfo.identification.toString()
+    }
+    try {
+      const result: ResponseObject = await $axios.post('/api', requestBody)
+      switch (Number(result.data.syscode)) {
+        case 200:
+          return result.data.data
+        case 40002:
+        case 60007:
+          throw new Error(result.data.sysmsg)
+
+        case 400:
+        case 500:
+          throw new Error('Failed to Create Fun Activity Order')
+        default:
+          return null
+      }
+    } catch (e) {
+      throw new Error(e)
+    }
+  }
+
+  public async sendGetPointDiscountRequest() {
+    try {
+      await pointStore.getDiscountAmount({
+        token: this.$cookies.get('accessToken'),
+        amount: this.totalPrice
       })
     } catch (e) {
       // error
@@ -1279,29 +2072,35 @@ export default class FunEventsDetail extends Vue {
 @import '../../assets/scss/utils/media';
 
 .funEventsDetailHeader {
-  display: flex;
-  flex-wrap: wrap;
+  &::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
   &__carousel {
-    flex: 0 0 100%;
+    float: left;
+    width: 100%;
+    height: 380px;
     margin-bottom: $spacing-m;
     @include grid-lg {
-      flex: 0 0 30%;
+      width: 40%;
     }
     @include grid-xl {
       margin-bottom: 0;
     }
   }
   &__img {
-    width: 70vw;
-    height: 300px;
+    width: 100%;
+    height: 380px;
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
   }
   &__text {
-    flex: 0 0 100%;
+    float: left;
+    width: 100%;
     @include grid-lg {
-      flex: 0 0 calc(65% - 50px);
+      width: calc(60% - 58px);
       padding-left: 50px;
     }
   }
@@ -1413,8 +2212,6 @@ export default class FunEventsDetail extends Vue {
     }
   }
   &__couponName {
-    // max-width: 300px;
-    // width: 300px;
     width: 300px;
     > div {
       padding: $spacing-l 0;
@@ -1422,8 +2219,6 @@ export default class FunEventsDetail extends Vue {
   }
   &__couponDate {
     width: 200px;
-  }
-  &__couponTitle {
   }
   &__couponPrice {
     width: 80px;
@@ -1451,16 +2246,38 @@ export default class FunEventsDetail extends Vue {
     border-bottom: 1px solid $greyOne;
     padding: $spacing-xs;
     &--disabled {
-      > input {
+      input {
         color: $whiteOne;
       }
     }
     input {
       display: none;
     }
-    > label {
+    label {
       width: 25px;
       text-align: center;
+    }
+  }
+  &__bottom {
+    padding: $spacing-xxl 0;
+  }
+  &__bottomRow {
+    display: flex;
+    justify-content: flex-end;
+    padding: $spacing-s;
+  }
+  &__bottomRowText {
+    flex: 0 0 30%;
+    font-weight: bold;
+    color: $greyThree;
+  }
+  &__bottomRowValue {
+    flex: 0 0 16%;
+    font-weight: bold;
+    color: $greyThree;
+    &--emphasized {
+      color: $primary;
+      font-size: $fz-xl;
     }
   }
 }
@@ -1478,7 +2295,10 @@ export default class FunEventsDetail extends Vue {
     }
   }
   &__btn {
-    margin: $spacing-m;
+    margin: $spacing-s;
+  }
+  &__subtitlebox {
+    text-align: center;
   }
 }
 .funEventsCheckoutHeader {
@@ -1487,7 +2307,7 @@ export default class FunEventsDetail extends Vue {
   &__alertbox {
     background-color: $orangeLighter;
     color: $greyThree;
-    padding: $spacing-m 0;
+    padding: $spacing-m $spacing-m;
     text-align: center;
     font-size: $fz-m;
     font-weight: bold;
@@ -1592,9 +2412,14 @@ export default class FunEventsDetail extends Vue {
     flex-wrap: wrap;
     align-items: flex-start;
   }
+  &__input {
+    padding: $spacing-s 0;
+  }
   &__inputbox {
     flex: 0 0 100%;
     order: 2;
+    max-height: 600px;
+    overflow: auto;
     margin-top: $spacing-l;
     padding-right: $spacing-xxl;
     @include grid-md {
@@ -1610,6 +2435,7 @@ export default class FunEventsDetail extends Vue {
     font-size: $fz-s;
     border-bottom: 1px solid $primary;
     // padding-bottom: $spacing-s;
+    font-weight: bold;
     margin-bottom: $spacing-s;
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -1618,6 +2444,27 @@ export default class FunEventsDetail extends Vue {
     text-overflow: ellipsis;
     max-width: 100%;
     text-align: left;
+  }
+}
+.funEventsCheckoutStepFour {
+  &__paymentType {
+    font-weight: bold;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    color: $greyThree;
+    margin-top: $spacing-xl;
+    border-top: 1px solid $whiteOne;
+    border-bottom: 1px solid $whiteOne;
+    padding: $spacing-xl 0;
+  }
+  &__paymentSelector {
+    flex: 0 0 100%;
+  }
+  &__title {
+    font-weight: bold;
+    color: $greyThree;
+    padding-bottom: $spacing-xl;
   }
 }
 </style>

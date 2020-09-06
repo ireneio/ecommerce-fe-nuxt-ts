@@ -2,47 +2,41 @@
   <div>
     <div v-show="currentTab === 0">
       <h2 class="login__title">協助您重置密碼</h2>
-      <p class="login__subtext">
-        請輸入STAYFUN帳號以確認身份，我們會協助您重新設定密碼
-      </p>
+      <p class="login__subtext">請輸入STAYFUN帳號以確認身份，我們會協助您重新設定密碼</p>
     </div>
     <div v-show="currentTab === 1 || currentTab === 1.5">
       <h2 class="login__title">{{ username }}，您好</h2>
-      <p class="login__subtext" v-show="currentTab === 1">
-        請選擇您要將重置密碼信寄送至哪個服務做查看？
-      </p>
-      <p class="login__subtext" v-show="currentTab === 1.5">
-        請輸入您綁定的手機末４碼以確認身份，我們會協助您重新設定密碼
-      </p>
+      <p class="login__subtext" v-show="currentTab === 1">請選擇您要將重置密碼信寄送至哪個服務做查看？</p>
+      <p class="login__subtext" v-show="currentTab === 1.5">請輸入您綁定的手機末４碼以確認身份，我們會協助您重新設定密碼</p>
     </div>
     <div v-show="currentTab === 1.75">
       <h2 class="login__title">手機號碼驗證中...</h2>
       <p class="login__subtext">您的驗證碼簡訊已發送至 {{ phone }}</p>
       <p class="login__subtext">
         請於
-        <span>{{
+        <span>
+          {{
           `${Math.floor(expireTimer / 60)}:${
-            2 > (expireTimer % 60).toString().length
-              ? '0' + (expireTimer % 60).toString()
-              : expireTimer % 60
+          2 > (expireTimer % 60).toString().length
+          ? '0' + (expireTimer % 60).toString()
+          : expireTimer % 60
           }`
-        }}</span>
+          }}
+        </span>
         內輸入驗證碼完成驗證
       </p>
-      <p class="login__titleAlert" v-show="expireTimer <= 0">
-        驗證碼已失效，請重新發送
-      </p>
+      <p class="login__titleAlert" v-show="expireTimer <= 0">驗證碼已失效，請重新發送</p>
     </div>
     <div v-show="currentTab === 2">
       <p class="login__subtitle">請稍候，我們正將您導至STAYFUN登入頁</p>
     </div>
     <div>
-      <ValidationObserver>
+      <validation-observer>
         <b-container>
           <b-row v-show="currentTab === 0">
             <b-col cols="24" class="loginInputMarginTop">
-              <ValidationProvider rules="required|max:50" v-slot="{ errors }">
-                <BaseLabel
+              <validation-provider rules="required|max:50" v-slot="{ errors }">
+                <base-label
                   text="帳號"
                   :hint="{
                     text: errors.length ? errors[0] : keywordError,
@@ -50,7 +44,7 @@
                   }"
                   :valid="!errors.length && !keywordError.length"
                 >
-                  <BaseInput
+                  <base-input
                     type="text"
                     placeholder="請輸入您的 STAYFUN 帳號或 Email"
                     id="email"
@@ -58,42 +52,30 @@
                     :value="form.keyword"
                     :valid="!errors.length"
                   />
-                </BaseLabel>
-              </ValidationProvider>
+                </base-label>
+              </validation-provider>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
+              <base-button
                 :type="form.keyword === '' ? 'greyOne' : 'primary'"
                 display="block"
                 :disabled="form.keyword === ''"
                 size="lg"
                 @click="handleSubmit"
-                >確認</BaseButton
-              >
+              >確認</base-button>
             </b-col>
           </b-row>
           <b-row v-show="currentTab === 1">
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
-                type="primary"
-                display="block"
-                @click="currentTab = 1.5"
-              >
+              <base-button type="primary" display="block" @click="currentTab = 1.5">
                 <div class="login__recoverBtn">
-                  <fa
-                    :icon="['fas', 'comment-dots']"
-                    class="login__recoverIcon"
-                  ></fa>
+                  <fa :icon="['fas', 'comment-dots']" class="login__recoverIcon"></fa>
                   <span class="login__recoverText">傳送簡訊至 {{ phone }}</span>
                 </div>
-              </BaseButton>
+              </base-button>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
-                type="primary"
-                display="block"
-                @click="handleSendRecovery(1)"
-              >
+              <base-button type="primary" display="block" @click="handleSendRecovery(1)">
                 <div class="login__recoverBtn">
                   <fa :icon="['far', 'envelope']"></fa>
                   <span class="login__recoverText">
@@ -101,24 +83,18 @@
                     <span>{{ email }}</span>
                   </span>
                 </div>
-              </BaseButton>
+              </base-button>
             </b-col>
           </b-row>
           <b-row v-show="currentTab === 1.5">
             <b-col cols="8" class="loginInputMarginTop">
-              <BaseLabel>
-                <BaseInput
-                  type="text"
-                  value="****"
-                  :valid="true"
-                  :disabled="true"
-                  :center="true"
-                />
-              </BaseLabel>
+              <base-label>
+                <base-input type="text" value="****" :valid="true" :disabled="true" :center="true" />
+              </base-label>
             </b-col>
             <b-col cols="8" class="loginInputMarginTop">
-              <BaseLabel>
-                <BaseInput
+              <base-label>
+                <base-input
                   type="text"
                   value="**"
                   :valid="true"
@@ -126,12 +102,12 @@
                   :disabled="true"
                   :center="true"
                 />
-              </BaseLabel>
+              </base-label>
             </b-col>
             <b-col cols="8" class="loginInputMarginTop">
-              <ValidationProvider rules="required|max:4" v-slot="{ errors }">
-                <BaseLabel :valid="!errors.length">
-                  <BaseInput
+              <validation-provider rules="required|max:4" v-slot="{ errors }">
+                <base-label :valid="!errors.length">
+                  <base-input
                     type="text"
                     placeholder="****"
                     id="email"
@@ -141,21 +117,19 @@
                     max="4"
                     :center="true"
                   />
-                </BaseLabel>
-              </ValidationProvider>
+                </base-label>
+              </validation-provider>
             </b-col>
             <b-col cols="24" v-show="keywordError">
               <p class="login__generalError">{{ keywordError }}</p>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
+              <base-button
                 :type="phoneLastFour.length !== 4 ? 'greyOne' : 'primary'"
                 display="block"
                 :disabled="phoneLastFour.length !== 4"
                 @click="handleSendSms"
-              >
-                確認
-              </BaseButton>
+              >確認</base-button>
             </b-col>
           </b-row>
           <b-row v-show="currentTab === 1.75">
@@ -165,9 +139,9 @@
               v-for="(value, key) of phoneSixDigit"
               :key="key"
             >
-              <ValidationProvider rules="required|max:1" v-slot="{ errors }">
-                <BaseLabel :valid="!errors.length">
-                  <BaseInput
+              <validation-provider rules="required|max:1" v-slot="{ errors }">
+                <base-label :valid="!errors.length">
+                  <base-input
                     type="text"
                     placeholder="0"
                     @input="phoneSixDigit[key] = $event"
@@ -176,8 +150,8 @@
                     :center="true"
                     maxlength="1"
                   />
-                </BaseLabel>
-              </ValidationProvider>
+                </base-label>
+              </validation-provider>
             </b-col>
             <b-col cols="24" v-show="keywordError && expireTimer > 0">
               <p class="login__generalError">{{ keywordError }}</p>
@@ -191,30 +165,29 @@
                   :class="{ 'login__resend--active': timer === 0 }"
                   v-show="timer <= 0"
                   @click="handleSendSms"
-                  >重新發送
-                </span>
-                <span v-show="timer > 0">{{
+                >重新發送</span>
+                <span v-show="timer > 0">
+                  {{
                   `00:${
-                    2 > timer.toString().length ? '0' + timer.toString() : timer
+                  2 > timer.toString().length ? '0' + timer.toString() : timer
                   }`
-                }}</span>
+                  }}
+                </span>
               </p>
-              <BaseButton
+              <base-button
                 :type="!isPhoneVerificationAllowed ? 'greyOne' : 'primary'"
                 display="block"
                 :disabled="!isPhoneVerificationAllowed"
                 size="lg"
                 @click="handleSendChallengeCode"
-                >確認
-              </BaseButton>
-              <BaseButton
+              >確認</base-button>
+              <base-button
                 type="greyTwoOutline"
                 display="block"
                 size="lg"
                 @click="currentTab = 1.5"
                 class="loginInputMarginTop"
-                >上一步
-              </BaseButton>
+              >上一步</base-button>
             </b-col>
           </b-row>
           <b-row v-show="currentTab === 2">
@@ -222,25 +195,24 @@
               <div class="login__mainpic"></div>
               <p class="login__maintitle">
                 已傳送重置密碼信至您的{{
-                  recoverMethod === 0 ? '號碼' : ' Email'
+                recoverMethod === 0 ? '號碼' : ' Email'
                 }}
               </p>
               <p class="login__mainsubtitle">
-                請於<span> 10 </span>分鐘內完成重置密碼
+                請於
+                <span>10</span>分鐘內完成重置密碼
               </p>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
-              <BaseButton
+              <base-button
                 type="primary"
                 display="block"
                 @click=";(currentTab = 0), $router.push('/account')"
-              >
-                前往登入頁
-              </BaseButton>
+              >前往登入頁</base-button>
             </b-col>
           </b-row>
         </b-container>
-      </ValidationObserver>
+      </validation-observer>
     </div>
   </div>
 </template>

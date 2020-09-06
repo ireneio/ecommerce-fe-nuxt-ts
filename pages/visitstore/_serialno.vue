@@ -1,6 +1,6 @@
 <template>
   <div>
-    <VisitStoreContainer>
+    <visit-store-container>
       <main class="visitstoredetail">
         <b-container>
           <b-row>
@@ -16,8 +16,8 @@
                       storeData.description !== ''
                         ? storeData.description
                         : '無圖片說明...'
-                    }}</span
-                  >
+                    }}
+                  </span>
                 </div>
               </div>
             </b-col>
@@ -30,7 +30,7 @@
                         ? storeData.imageUrl
                         : 'https://hnstayfuntst.blob.core.windows.net/store/Storelogo.png'
                     "
-                    alt=""
+                    alt
                   />
                 </div>
                 <div class="visitstoredetailtitlebox__desc">
@@ -51,9 +51,9 @@
                 </article>
               </div>
               <div class="visitstoredetailbuttonbox">
-                <BaseButton type="primary" @click="handleDownloadApp">
+                <base-button type="primary" @click="handleDownloadApp">
                   下載APP享優惠
-                </BaseButton>
+                </base-button>
               </div>
             </b-col>
             <b-col cols="24" class="mt-4 mt-lg-0">
@@ -174,9 +174,9 @@
                       此特約商家無法使用嗎？
                     </div>
                   </div>
-                  <BaseButton type="primary" @click="handleReport">
+                  <base-button type="primary" @click="handleReport">
                     立即通報
-                  </BaseButton>
+                  </base-button>
                 </div>
                 <div class="visitstoredetaildetails__line"></div>
               </div>
@@ -306,8 +306,8 @@
                       </div>
                     </div>
                     <div class="visitstoredetaildetails__row">
-                      <div class="visitstoredetaildetails__map">
-                        <no-ssr>
+                      <client-only>
+                        <div class="visitstoredetaildetails__map">
                           <l-map
                             :zoom="12"
                             :center="[
@@ -325,8 +325,8 @@
                               ]"
                             ></l-marker>
                           </l-map>
-                        </no-ssr>
-                      </div>
+                        </div>
+                      </client-only>
                     </div>
                   </div>
                 </div>
@@ -335,8 +335,8 @@
           </b-row>
         </b-container>
       </main>
-    </VisitStoreContainer>
-    <DefaultModal :active="modalState" @click="handleModalClose">
+    </visit-store-container>
+    <default-modal :active="modalState" @click="handleModalClose">
       <template #title>
         <div class="modalTitleArea" v-if="modalType === 0">
           <h4>店家異常通報</h4>
@@ -349,10 +349,10 @@
           <p>STAYFUN將會盡快查證並更新資料</p>
         </div>
       </template>
-      <ValidationObserver v-slot="{ invalid }" v-if="modalType === 0">
+      <validation-observer v-slot="{ invalid }" v-if="modalType === 0">
         <form @submit.prevent="handleSubmitReport">
-          <ValidationProvider rules="required" v-slot="{ errors }">
-            <BaseLabel
+          <validation-provider rules="required" v-slot="{ errors }">
+            <base-label
               text="問題類型"
               :valid="!errors.length"
               required
@@ -361,7 +361,7 @@
                 text: errors.length ? errors[0] : ''
               }"
             >
-              <BaseSelect
+              <base-select
                 placeholder="請選擇問題類型"
                 v-model="reportForm.problemType"
                 :options="[
@@ -374,10 +374,10 @@
                 ]"
                 :valid="!errors.length"
               />
-            </BaseLabel>
-          </ValidationProvider>
-          <ValidationProvider rules="required" v-slot="{ errors }">
-            <BaseLabel
+            </base-label>
+          </validation-provider>
+          <validation-provider rules="required" v-slot="{ errors }">
+            <base-label
               text="消費日期/時間"
               required
               class="formRange"
@@ -387,14 +387,14 @@
                 text: errors.length ? errors[0] : ''
               }"
             >
-              <BaseDatepicker
+              <base-datepicker
                 v-model="reportForm.problemDate"
                 format="YYYY-MM-DD"
                 :valid="!errors.length"
               />
-            </BaseLabel>
-          </ValidationProvider>
-          <BaseLabel text="是否告知為STAYFUN用戶？" required class="formRange">
+            </base-label>
+          </validation-provider>
+          <base-label text="是否告知為STAYFUN用戶？" required class="formRange">
             <b-form-radio-group
               id="radio-group-1"
               v-model="reportForm.isStayfunUser"
@@ -403,8 +403,8 @@
               <b-form-radio :value="true">是</b-form-radio>
               <b-form-radio :value="false">否</b-form-radio>
             </b-form-radio-group>
-          </BaseLabel>
-          <BaseLabel
+          </base-label>
+          <base-label
             text="是否出示STAYFUN電子識別證？"
             required
             class="formRange"
@@ -417,9 +417,9 @@
               <b-form-radio :value="true">是</b-form-radio>
               <b-form-radio :value="false">否</b-form-radio>
             </b-form-radio-group>
-          </BaseLabel>
-          <ValidationProvider v-slot="{ errors }" rules="required|max:500">
-            <BaseLabel
+          </base-label>
+          <validation-provider v-slot="{ errors }" rules="required|max:500">
+            <base-label
               text="使用經過"
               required
               class="formRange"
@@ -429,13 +429,13 @@
                 type: 'warning'
               }"
             >
-              <BaseTextarea
+              <base-textarea
                 v-model="reportForm.problemDesc"
                 :valid="!errors.length"
               />
-            </BaseLabel>
-          </ValidationProvider>
-          <BaseButton
+            </base-label>
+          </validation-provider>
+          <base-button
             :type="
               invalid ||
               reportForm.problemDesc.length <= 0 ||
@@ -452,13 +452,12 @@
               reportForm.problemType.length === 0 ||
               reportForm.problemDate.length === 0
             "
+            >確定</base-button
           >
-            確定
-          </BaseButton>
         </form>
-      </ValidationObserver>
-    </DefaultModal>
-    <DefaultDialog
+      </validation-observer>
+    </default-modal>
+    <default-dialog
       :active="dialogState"
       @cancel="handleDialogClose"
       @accept="handleDialogClose"
@@ -467,7 +466,7 @@
       :title="dialogContent.title"
       :type="dialogContent.type"
       :icon="dialogContent.icon"
-    ></DefaultDialog>
+    ></default-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -713,14 +712,35 @@ export default class VisitStoreDetails extends Vue {
   }
 
   public async fetch() {
-    await this.sendGetStoreDetailRequest()
+    try {
+      await this.sendGetStoreDetailRequest()
+    } catch (e) {
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '資料加載錯誤，請刷新再試。',
+        icon: true,
+        type: 'accept'
+      })
+    }
   }
 
   public activated() {
     this.$nextTick(async () => {
-      this.$nuxt.$loading.start()
-      await this.sendGetStoreDetailRequest()
-      this.$nuxt.$loading.finish()
+      try {
+        this.$nuxt.$loading.start()
+        await this.sendGetStoreDetailRequest()
+      } catch (e) {
+        dialogStore.setActive(true)
+        dialogStore.setMaskActive(true)
+        dialogStore.setContent({
+          title: '資料加載錯誤，請刷新再試。',
+          icon: true,
+          type: 'accept'
+        })
+      } finally {
+        this.$nuxt.$loading.finish()
+      }
     })
   }
 }

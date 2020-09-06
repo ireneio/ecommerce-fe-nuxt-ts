@@ -26,69 +26,80 @@ export default ({ store, app }) => {
     })
   }
 
-  if (process.client) {
-    window.addEventListener('load', async function () {
-      await createZopimElement(document, 'script')
+  // if (process.client) {
+  //   window.addEventListener('load', async function () {
+  //     await createZopimElement(document, 'script')
 
-      // Wait for Zopim to Load
-      const waitForZopim = setInterval(function () {
-        if (
-          window.$zopim === undefined ||
-          window.$zopim.livechat === undefined
-        ) {
-          return
-        }
-        $zopim(async function () {
-          $zopim.livechat.window.hide()
-          console.log($zopim)
+  //     // Wait for Zopim to Load
+  //     const waitForZopim = setInterval(function () {
+  //       if (
+  //         window.$zopim === undefined ||
+  //         window.$zopim.livechat === undefined
+  //       ) {
+  //         return
+  //       }
+  //       // $zopim(async function () {
+  //       //   $zopim.livechat.window.hide()
+  //       //   console.log($zopim)
 
-          // location.href = 'https://uat-stayfun.mayohr.com/Zendesk/GetJwt'
-          // $axios
-          //   .get('https://uat-stayfun.mayohr.com/Zendesk/GetJwt')
-          //   .then((res) => console.log(res))
-          // Get Jwt
-          // const result = await store.dispatch('zendesk/getZendeskJwt', {
-          //   token: app.$cookies.get('accessToken'),
-          //   userToken: app.$cookies.get('accessToken')
-          // })
-          // console.log(result)
+  //       //   // location.href = 'https://uat-stayfun.mayohr.com/Zendesk/GetJwt'
+  //       //   // $axios
+  //       //   //   .get('https://uat-stayfun.mayohr.com/Zendesk/GetJwt')
+  //       //   //   .then((res) => console.log(res))
+  //       //   // Get Jwt
+  //       //   // const result = await store.dispatch('zendesk/getZendeskJwt', {
+  //       //   //   token: app.$cookies.get('accessToken'),
+  //       //   //   userToken: app.$cookies.get('accessToken')
+  //       //   // })
+  //       //   // console.log(result)
 
-          // store.commit('zendesk/setZendeskJwt')
+  //       //   // const xhr = new XMLHttpRequest()
+  //       //   // xhr.open('get', 'https://uat-stayfun.mayohr.com/Zendesk/GetJwt')
+  //       //   // xhr.onload = function (res) {
+  //       //   //   console.log(res)
+  //       //   //   console.log(res.responseText)
+  //       //   // }
+  //       //   // xhr.onerror = function (err) {
+  //       //   //   console.log(err)
+  //       //   // }
+  //       //   // xhr.send()
 
-          $zopim.livechat.authenticate({
-            // Authenticate Zendesk
-            jwtFn: function (cb) {
-              // store
-            }
-          })
-        })
-        clearInterval(waitForZopim)
-      }, 100)
-    })
+  //       //   // store.commit('zendesk/setZendeskJwt')
 
-    // $(function () {
-    //   $zopim(function () {
-    //     $zopim.livechat.window.hide()
+  //       //   $zopim.livechat.authenticate({
+  //       //     // Authenticate Zendesk
+  //       //     jwtFn: function (cb) {
+  //       //       // store
+  //       //     }
+  //       //   })
+  //       // })
+  //       clearInterval(waitForZopim)
+  //     }, 100)
+  //   })
 
-    //     $zopim.livechat.authenticate({
-    //       // Authenticate zendesk
-    //     })
-    //     $zopim.livechat.setNotes('人員ID：@loginInfo.serialno')
-    //     //$zopim.livechat.addTags("tag1", "tag2");
+  //   // $(function () {
+  //   //   $zopim(function () {
+  //   //     $zopim.livechat.window.hide()
 
-    //     $('#zensesk_btn').show()
-    //     $('#zensesk_btn')
-    //       .unbind('click')
-    //       .bind('click', function () {
-    //         if ($zopim.livechat.window.getDisplay() == false) {
-    //           $zopim.livechat.window.show()
-    //         } else {
-    //           $zopim.livechat.window.hide()
-    //         }
-    //       })
-    //   })
-    // })
-  }
+  //   //     $zopim.livechat.authenticate({
+  //   //       // Authenticate zendesk
+  //   //     })
+  //   //     $zopim.livechat.setNotes('人員ID：@loginInfo.serialno')
+  //   //     //$zopim.livechat.addTags("tag1", "tag2");
+
+  //   //     $('#zensesk_btn').show()
+  //   //     $('#zensesk_btn')
+  //   //       .unbind('click')
+  //   //       .bind('click', function () {
+  //   //         if ($zopim.livechat.window.getDisplay() == false) {
+  //   //           $zopim.livechat.window.show()
+  //   //         } else {
+  //   //           $zopim.livechat.window.hide()
+  //   //         }
+  //   //       })
+  //   //   })
+  //   // })
+  // }
 
   // return (function (e, t) {
   //   if (!window.outbound) {

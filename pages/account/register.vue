@@ -6,35 +6,29 @@
       <p class="login__subtext">您的驗證碼簡訊已發送至 {{ phone }}</p>
       <p class="login__subtext">
         請於
-        <span>{{
+        <span>
+          {{
           `${Math.floor(expireTimer / 60)}:${
-            2 > (expireTimer % 60).toString().length
-              ? '0' + (expireTimer % 60).toString()
-              : expireTimer % 60
+          2 > (expireTimer % 60).toString().length
+          ? '0' + (expireTimer % 60).toString()
+          : expireTimer % 60
           }`
-        }}</span>
+          }}
+        </span>
         內輸入驗證碼完成驗證
       </p>
-      <p class="login__titleAlert" v-show="expireTimer <= 0">
-        驗證碼已失效，請重新發送
-      </p>
+      <p class="login__titleAlert" v-show="expireTimer <= 0">驗證碼已失效，請重新發送</p>
     </section>
     <section v-show="currentTab === 2">
       <h2 class="login__title">設定您的Email帳號</h2>
-      <p class="login__subtext">
-        請設定您的Email帳號， 設定完成後將可使用此Email作為帳號登入使用
-      </p>
+      <p class="login__subtext">請設定您的Email帳號， 設定完成後將可使用此Email作為帳號登入使用</p>
     </section>
     <section v-show="currentTab === 3">
       <h2 class="login__title">設定您的新密碼</h2>
-      <p class="login__subtext">
-        請設定您的新密碼，未來請使用此密碼登入
-      </p>
-      <p class="login__subtext">
-        密碼規則：8-12字 包含英文大小寫字母與數字
-      </p>
+      <p class="login__subtext">請設定您的新密碼，未來請使用此密碼登入</p>
+      <p class="login__subtext">密碼規則：8-12字 包含英文大小寫字母與數字</p>
     </section>
-    <ValidationObserver v-slot="{ invalid }">
+    <validation-observer v-slot="{ invalid }">
       <b-container>
         <b-row v-show="currentTab === 0">
           <b-col cols="24">
@@ -44,26 +38,26 @@
             </div>
           </b-col>
           <b-col cols="24">
-            <ValidationProvider rules="required" v-slot="{ errors }">
-              <BaseLabel
+            <validation-provider rules="required" v-slot="{ errors }">
+              <base-label
                 :hint="{
                   text: errors.length ? errors[0] : '',
                   type: 'warning'
                 }"
                 :valid="!errors.length"
               >
-                <BaseSelect
+                <base-select
                   :options="countryCodeList"
                   v-model="phoneNumberPrefix"
                   placeholder="請選擇國碼"
                   :valid="!errors.length"
-                ></BaseSelect>
-              </BaseLabel>
-            </ValidationProvider>
+                ></base-select>
+              </base-label>
+            </validation-provider>
           </b-col>
           <b-col cols="8" class="loginInputMarginTop">
-            <BaseLabel>
-              <BaseInput
+            <base-label>
+              <base-input
                 type="text"
                 id="phoneNumberPrefix"
                 :value="phoneNumberPrefix"
@@ -71,10 +65,10 @@
                 :valid="true"
                 :center="true"
               />
-            </BaseLabel>
+            </base-label>
           </b-col>
           <b-col cols="16" class="loginInputMarginTop">
-            <ValidationProvider
+            <validation-provider
               :rules="`required|numeric|${
                 phoneNumberPrefix === '+886'
                   ? 'taiwanPhone'
@@ -84,14 +78,14 @@
               }`"
               v-slot="{ errors }"
             >
-              <BaseLabel
+              <base-label
                 :hint="{
                   text: errors.length ? errors[0] : '',
                   type: 'warning'
                 }"
                 :valid="!errors.length"
               >
-                <BaseInput
+                <base-input
                   type="text"
                   placeholder="請輸入電話號碼"
                   id="phoneNumber"
@@ -99,24 +93,22 @@
                   :value="form.phoneNumber"
                   :valid="!errors.length"
                 />
-              </BaseLabel>
-            </ValidationProvider>
+              </base-label>
+            </validation-provider>
           </b-col>
           <b-col cols="24" class="loginInputMarginTop">
-            <BaseButton
+            <base-button
               :type="invalid ? 'greyOne' : 'primary'"
               display="block"
               :disabled="invalid"
               size="lg"
               @click="handleGetVerificationCode"
-            >
-              取得驗證碼
-            </BaseButton>
+            >取得驗證碼</base-button>
           </b-col>
         </b-row>
       </b-container>
-    </ValidationObserver>
-    <ValidationObserver v-slot="{ invalid }">
+    </validation-observer>
+    <validation-observer v-slot="{ invalid }">
       <b-container>
         <b-row v-show="currentTab === 1">
           <b-col
@@ -125,12 +117,9 @@
             v-for="(value, key) of phoneSixDigit"
             :key="key"
           >
-            <ValidationProvider
-              rules="required|max:1|numeric"
-              v-slot="{ errors }"
-            >
-              <BaseLabel :valid="!errors.length">
-                <BaseInput
+            <validation-provider rules="required|max:1|numeric" v-slot="{ errors }">
+              <base-label :valid="!errors.length">
+                <base-input
                   type="text"
                   placeholder="0"
                   @input="phoneSixDigit[key] = $event"
@@ -139,8 +128,8 @@
                   :center="true"
                   maxlength="1"
                 />
-              </BaseLabel>
-            </ValidationProvider>
+              </base-label>
+            </validation-provider>
           </b-col>
           <b-col cols="24" v-show="keywordError && expireTimer > 0">
             <p class="login__generalError">{{ keywordError }}</p>
@@ -154,13 +143,14 @@
                 :class="{ 'login__resend--active': timer === 0 }"
                 v-show="timer <= 0"
                 @click="handleGetVerificationCode"
-                >重新發送
-              </span>
-              <span v-show="timer > 0">{{
+              >重新發送</span>
+              <span v-show="timer > 0">
+                {{
                 `00:${
-                  2 > timer.toString().length ? '0' + timer.toString() : timer
+                2 > timer.toString().length ? '0' + timer.toString() : timer
                 }`
-              }}</span>
+                }}
+              </span>
             </p>
             <BaseButton
               :type="
@@ -170,29 +160,24 @@
               :disabled="!isPhoneVerificationAllowed || invalid"
               size="lg"
               @click="handleSendChallengeCode"
-              >確認
-            </BaseButton>
+            >確認</BaseButton>
             <BaseButton
               type="greyTwoOutline"
               display="block"
               size="lg"
               @click="currentTab = 0"
               class="loginInputMarginTop"
-              >上一步
-            </BaseButton>
+            >上一步</BaseButton>
           </b-col>
         </b-row>
       </b-container>
-    </ValidationObserver>
-    <ValidationObserver v-slot="{ invalid }">
+    </validation-observer>
+    <validation-observer v-slot="{ invalid }">
       <b-container>
         <b-row v-show="currentTab === 2">
           <b-col cols="24" class="loginInputMarginTop">
-            <ValidationProvider
-              rules="required|max:50|isEmail"
-              v-slot="{ errors }"
-            >
-              <BaseLabel
+            <validation-provider rules="required|max:50|isEmail" v-slot="{ errors }">
+              <base-label
                 :valid="!errors.length"
                 text="Email 帳號"
                 :hint="{
@@ -200,22 +185,19 @@
                   text: errors.length ? errors[0] : ''
                 }"
               >
-                <BaseInput
+                <base-input
                   type="text"
                   placeholder="請輸入您的 Email"
                   @input="registerForm.email = $event"
                   :value="registerForm.email"
                   :valid="!errors.length"
                 />
-              </BaseLabel>
-            </ValidationProvider>
+              </base-label>
+            </validation-provider>
           </b-col>
           <b-col cols="24" class="loginInputMarginTop">
-            <ValidationProvider
-              rules="required|max:50|isEmail"
-              v-slot="{ errors }"
-            >
-              <BaseLabel
+            <validation-provider rules="required|max:50|isEmail" v-slot="{ errors }">
+              <base-label
                 :valid="
                   !errors.length &&
                   registerForm.confirmEmail === registerForm.email
@@ -229,7 +211,7 @@
                     : ''
                 }"
               >
-                <BaseInput
+                <base-input
                   type="text"
                   placeholder="請再次輸入您的 Email"
                   @input="registerForm.confirmEmail = $event"
@@ -239,8 +221,8 @@
                     registerForm.confirmEmail === registerForm.email
                   "
                 />
-              </BaseLabel>
-            </ValidationProvider>
+              </base-label>
+            </validation-provider>
           </b-col>
           <b-col cols="24" class="loginInputMarginTop">
             <BaseButton
@@ -255,21 +237,17 @@
               "
               size="lg"
               @click="handleEmailRegistration"
-              >確認
-            </BaseButton>
+            >確認</BaseButton>
           </b-col>
         </b-row>
       </b-container>
-    </ValidationObserver>
-    <ValidationObserver v-slot="{ invalid }">
+    </validation-observer>
+    <validation-observer v-slot="{ invalid }">
       <b-container>
         <b-row v-show="currentTab === 3">
           <b-col cols="24" class="loginInputMarginTop">
-            <ValidationProvider
-              rules="required|max:12|min:8|isPassword"
-              v-slot="{ errors }"
-            >
-              <BaseLabel
+            <validation-provider rules="required|max:12|min:8|isPassword" v-slot="{ errors }">
+              <base-label
                 :valid="!errors.length"
                 text="密碼"
                 :hint="{
@@ -277,7 +255,7 @@
                   text: errors.length ? errors[0] : ''
                 }"
               >
-                <BaseInput
+                <base-input
                   :type="showPassword ? 'text' : 'password'"
                   placeholder="請輸入您的密碼"
                   @input="registerForm.password = $event"
@@ -297,16 +275,13 @@
                       />
                     </span>
                   </template>
-                </BaseInput>
-              </BaseLabel>
-            </ValidationProvider>
+                </base-input>
+              </base-label>
+            </validation-provider>
           </b-col>
           <b-col cols="24" class="loginInputMarginTop">
-            <ValidationProvider
-              rules="required|max:12|min:8|isPassword"
-              v-slot="{ errors }"
-            >
-              <BaseLabel
+            <validation-provider rules="required|max:12|min:8|isPassword" v-slot="{ errors }">
+              <base-label
                 :valid="
                   !errors.length &&
                   registerForm.confirmPassword === registerForm.password
@@ -320,7 +295,7 @@
                     : ''
                 }"
               >
-                <BaseInput
+                <base-input
                   :type="showConfirmPassword ? 'text' : 'password'"
                   placeholder="請再次確認您的密碼"
                   @input="registerForm.confirmPassword = $event"
@@ -343,12 +318,12 @@
                       />
                     </span>
                   </template>
-                </BaseInput>
-              </BaseLabel>
-            </ValidationProvider>
+                </base-input>
+              </base-label>
+            </validation-provider>
           </b-col>
           <b-col cols="24" class="loginInputMarginTop">
-            <BaseButton
+            <base-button
               :type="
                 invalid ||
                 registerForm.confirmPassword !== registerForm.password
@@ -362,13 +337,12 @@
               "
               size="lg"
               @click="handlePasswordRegistration"
-              >確認
-            </BaseButton>
+            >確認</base-button>
           </b-col>
         </b-row>
       </b-container>
-    </ValidationObserver>
-    <DefaultDialog
+    </validation-observer>
+    <default-dialog
       :active="dialogState"
       @accept="handleDialogClose"
       @cancel="handleDialogClose"
@@ -377,7 +351,7 @@
       :title="dialogContent.title"
       :type="dialogContent.type"
       :icon="dialogContent.icon"
-    ></DefaultDialog>
+    ></default-dialog>
   </div>
 </template>
 <script lang="ts">
@@ -388,6 +362,7 @@ import { $axios } from '~/utils/api'
 import BaseInput from '~/components/BaseInput.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import BaseSelect from '~/components/BaseSelect.vue'
+import BaseLabel from '~/components/BaseLabel.vue'
 import DefaultDialog from '~/components/DefaultDialog.vue'
 import { authStore, dialogStore } from '~/store'
 
@@ -397,6 +372,7 @@ import { authStore, dialogStore } from '~/store'
     BaseInput,
     BaseButton,
     BaseSelect,
+    BaseLabel,
     ValidationObserver,
     ValidationProvider,
     DefaultDialog

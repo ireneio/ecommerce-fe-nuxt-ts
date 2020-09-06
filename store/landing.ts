@@ -54,13 +54,13 @@ export default class LandingModule extends VuexModule {
       switch (result.data.syscode) {
         case 200:
           return result.data.data
-        case 400:
-          return 400
+        case 500:
+          throw new Error('Timeout')
         default:
           return null
       }
     } catch (e) {
-      return new Error(e)
+      throw new Error(e)
     }
   }
 }

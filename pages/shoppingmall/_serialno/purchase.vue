@@ -1,6 +1,6 @@
 <template>
   <div>
-    <VisitStoreContainer>
+    <visit-store-container>
       <div class="couponPurchase__wrapper">
         <div class="couponPurchase">
           <section class="couponPurchase__banner">
@@ -65,25 +65,19 @@
                 </div>
               </div>
               <div class="couponPurchaseOrder__subtext">
-                <h6 class="couponPurchaseOrder__subtextTitle">
-                  總金額
-                </h6>
+                <h6 class="couponPurchaseOrder__subtextTitle">總金額</h6>
                 <div class="couponPurchaseOrder__subtextContent">
                   ${{ form.amount }}
                 </div>
               </div>
               <div class="couponPurchaseOrder__subtext">
-                <h6 class="couponPurchaseOrder__subtextTitle">
-                  享樂金折抵
-                </h6>
+                <h6 class="couponPurchaseOrder__subtextTitle">享樂金折抵</h6>
                 <div class="couponPurchaseOrder__subtextContent">
                   ${{ discount }}
                 </div>
               </div>
               <div class="couponPurchaseOrder__footer">
-                <h6 class="couponPurchaseOrder__footerTitle">
-                  應付金額
-                </h6>
+                <h6 class="couponPurchaseOrder__footerTitle">應付金額</h6>
                 <div class="couponPurchaseOrder__footerContent">
                   ${{ subtotal }}
                 </div>
@@ -103,15 +97,13 @@
                 class="couponPurchaseReceipt__receiptbox"
                 v-show="subtotal > 0"
               >
-                <div class="couponPurchaseReceipt__title">
-                  發票類型
-                </div>
+                <div class="couponPurchaseReceipt__title">發票類型</div>
               </div>
               <div
                 class="couponPurchaseReceipt__receiptbox"
                 v-show="subtotal > 0"
               >
-                <DefaultReceiptSelector
+                <default-receipt-selector
                   @input="handleReceiptTypeUpdate"
                   @address-area-update="handleGetCounty"
                   @form-update="receiptInfo = $event"
@@ -122,34 +114,35 @@
             </div>
           </section>
           <div class="couponPurchase__btn">
-            <BaseButton
-              :type="receiptInfo.isValid ? 'primary' : 'greyOne'"
+            <base-button
+              :type="
+                receiptInfo.isValid || subtotal === 0 ? 'primary' : 'greyOne'
+              "
               display="block"
               @click="handlePurchase"
-              :disabled="!receiptInfo.isValid"
-            >
-              立即購買
-            </BaseButton>
+              :disabled="!receiptInfo.isValid && subtotal > 0"
+              >立即購買
+            </base-button>
           </div>
           <section class="couponPurchase__footer">
             <p>
-              兌換說明 *使用時請先告知使用平台兌換券。<br />
-              *每人每次僅可使用單一手機兌換本商品，不接受第二隻以上行動裝置同時進行兌換。<br />
-              *本票券不得與店家其他優惠合併使用，恕無法兌換現金及找零，實際使用方式依店家規定為準。<br />
-              *因店家狀況難以隨時掌握，建議您使用前先以電話確認營業狀況並預約，以免向隅。<br />
-              *未持優惠券而共同前往之消費者，依店家規定支付店內最低消費額。<br />
-              *若該次消費超過兌換券面額，依店家規定補足其差額。<br />
-              *消費品項依店家實際提供為主，照片僅供參考。<br />
-              *為保障您的權益，請於兌換時出示行動裝置之認證頁面，並在店家面前完成核銷掃描。<br />
-              *兌換截止日請參考票券說明。
-              *若兌換券逾期未使用，按平台規則辦理。<br />
-              *若有其他疑問，請洽STAYFUN客服中心(02)6617-7100。
+              兌換說明 *使用時請先告知使用平台兌換券。
+              <br />*每人每次僅可使用單一手機兌換本商品，不接受第二隻以上行動裝置同時進行兌換。
+              <br />*本票券不得與店家其他優惠合併使用，恕無法兌換現金及找零，實際使用方式依店家規定為準。
+              <br />*因店家狀況難以隨時掌握，建議您使用前先以電話確認營業狀況並預約，以免向隅。
+              <br />*未持優惠券而共同前往之消費者，依店家規定支付店內最低消費額。
+              <br />*若該次消費超過兌換券面額，依店家規定補足其差額。
+              <br />*消費品項依店家實際提供為主，照片僅供參考。
+              <br />*為保障您的權益，請於兌換時出示行動裝置之認證頁面，並在店家面前完成核銷掃描。
+              <br />*兌換截止日請參考票券說明。
+              *若兌換券逾期未使用，按平台規則辦理。
+              <br />*若有其他疑問，請洽STAYFUN客服中心(02)6617-7100。
             </p>
           </section>
         </div>
       </div>
-    </VisitStoreContainer>
-    <DefaultDialog
+    </visit-store-container>
+    <default-dialog
       :active="dialogState"
       @cancel="handleDialogClose"
       @accept="handleDialogClose"
@@ -158,7 +151,7 @@
       :title="dialogContent.title"
       :type="dialogContent.type"
       :icon="dialogContent.icon"
-    ></DefaultDialog>
+    ></default-dialog>
   </div>
 </template>
 
@@ -170,6 +163,7 @@ import { $axios } from '~/utils/api'
 import VisitStoreContainer from '~/components/VisitStoreContainer.vue'
 import BaseButton from '~/components/BaseButton.vue'
 import DefaultReceiptSelector from '~/components/DefaultReceiptSelector.vue'
+import DefaultDialog from '~/components/DefaultDialog.vue'
 import { visitStore, commonStore, dialogStore, pointStore } from '~/store'
 
 @Component({
@@ -179,7 +173,8 @@ import { visitStore, commonStore, dialogStore, pointStore } from '~/store'
     VisitStoreContainer,
     BaseButton,
     VueSlickCarousel,
-    DefaultReceiptSelector
+    DefaultReceiptSelector,
+    DefaultDialog
   }
 })
 export default class ShoppingMallPurchase extends Vue {
@@ -331,6 +326,7 @@ export default class ShoppingMallPurchase extends Vue {
       })
     } catch (e) {
       // error
+      throw new Error(e)
     }
   }
 
@@ -342,6 +338,7 @@ export default class ShoppingMallPurchase extends Vue {
       })
     } catch (e) {
       // error
+      throw new Error(e)
     }
   }
 
@@ -417,21 +414,42 @@ export default class ShoppingMallPurchase extends Vue {
   }
 
   public async fetch() {
-    await this.sendGetCouponDetailRequest()
-    this.form.amount = this.couponDetail.salePrice
-    await this.sendGetPointDiscountRequest()
+    try {
+      await this.sendGetCouponDetailRequest()
+      this.form.amount = this.couponDetail.salePrice
+      await this.sendGetPointDiscountRequest()
+    } catch (e) {
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '資料加載錯誤，請刷新再試。',
+        icon: true,
+        type: 'accept'
+      })
+    }
   }
 
   public activated() {
     this.$nextTick(async () => {
-      this.$nuxt.$loading.start()
-      await this.sendGetCouponDetailRequest()
-      this.form.amount = this.couponDetail.salePrice
-      if (this.form.amount > 0) {
-        this.form.paymentType = '信用卡/其他'
+      try {
+        this.$nuxt.$loading.start()
+        await this.sendGetCouponDetailRequest()
+        this.form.amount = this.couponDetail.salePrice
+        if (this.form.amount > 0) {
+          this.form.paymentType = '信用卡/其他'
+        }
+        await this.sendGetPointDiscountRequest()
+      } catch (e) {
+        dialogStore.setActive(true)
+        dialogStore.setMaskActive(true)
+        dialogStore.setContent({
+          title: '資料加載錯誤，請刷新再試。',
+          icon: true,
+          type: 'accept'
+        })
+      } finally {
+        this.$nuxt.$loading.finish()
       }
-      await this.sendGetPointDiscountRequest()
-      this.$nuxt.$loading.finish()
     })
   }
 }

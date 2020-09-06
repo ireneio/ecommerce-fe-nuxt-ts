@@ -1,20 +1,13 @@
 <template>
   <a href="javascript:;" class="landingPageCard" @click="$emit('click')">
-    <div
-      class="landingPageCard__img"
-      :style="{ 'background-image': `url(${detail.imageUrl})` }"
-    ></div>
+    <div class="landingPageCard__img" :style="{ 'background-image': `url(${detail.imageUrl})` }"></div>
     <div class="landingPageCard__desc">
       <p class="landingPageCard__notif" v-if="hasNotif || hasNotifIcon">
         <span class="landingPageCard__notifIcon" v-if="hasNotifIcon"></span>
         <span v-if="hasNotif">{{ detail.description }}</span>
       </p>
-      <h3 class="landingPageCard__title">
-        {{ detail.name }}
-      </h3>
-      <h4 class="landingPageCard__subtitle" v-if="hasSubtitle">
-        {{ detail.description }}
-      </h4>
+      <h3 class="landingPageCard__title">{{ detail.name }}</h3>
+      <h4 class="landingPageCard__subtitle" v-if="hasSubtitle">{{ detail.description }}</h4>
       <div class="landingPageCard__info">
         <div class="landingPageCard__priceSection">
           <p class="landingPageCard__distance" v-if="hasDistance">2.65km</p>
@@ -26,7 +19,7 @@
           </p>
         </div>
         <div class="landingPageCard__btnbox" v-if="hasButton">
-          <BaseButton type="orangeDark">立即開團</BaseButton>
+          <base-button type="orangeDark">立即開團</base-button>
         </div>
         <div class="landingPageCard__like" v-if="hasLike"></div>
       </div>

@@ -6,16 +6,15 @@
       </span>
       <div
         class="funEventsCard__img"
-        :style="{ 'background-image': `url(${value.imageUrl})` }"
+        :style="{ 'background-image': `url(${valueReformatForImageUrl.imageUrl})` }"
       ></div>
     </div>
     <div class="funEventsCard__text">
-      <h3 class="funEventsCard__title">
-        {{ value.name }}
-      </h3>
-      <p class="funEventsCard__date">
-        {{ `${value.startDateTime} ~ ${value.endDateTime}` }}
-      </p>
+      <div class="funEventsCard__badge" v-if="valueReformatForImageUrl.isNew">new</div>
+      <h3 class="funEventsCard__title">{{ valueReformatForImageUrl.name }}</h3>
+      <p
+        class="funEventsCard__date"
+      >{{ `${valueReformatForImageUrl.startDateTime} ~ ${valueReformatForImageUrl.endDateTime}` }}</p>
     </div>
   </div>
 </template>
@@ -43,6 +42,16 @@ export default class FunEventsCard extends Vue {
     }
   })
   readonly value!: FunEventsCardProps
+
+  get valueReformatForImageUrl() {
+    return {
+      ...this.value,
+      imageUrl:
+        this.value.imageUrl === '' || this.value.imageUrl === null
+          ? '/img/store_preparing.jpg'
+          : this.value.imageUrl
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -54,6 +63,15 @@ export default class FunEventsCard extends Vue {
   height: 450px;
   box-shadow: 0px 2px 8px 5px rgba($color: #000000, $alpha: 0.1);
   cursor: pointer;
+  &__badge {
+    border-radius: 40px;
+    background-color: $primary;
+    color: #fff;
+    font-size: $fz-xs;
+    padding: 2px $spacing-s;
+    width: 40px;
+    margin-bottom: $spacing-s;
+  }
   &__imgbox {
     position: relative;
     overflow: hidden;
@@ -106,7 +124,7 @@ export default class FunEventsCard extends Vue {
   }
   &:focus,
   &:hover {
-    background-color: $whiteThree;
+    box-shadow: 0 0 7px 3px rgba(0, 0, 0, 0.1);
     .funEventsCard__img {
       transform: scale(1.3);
     }

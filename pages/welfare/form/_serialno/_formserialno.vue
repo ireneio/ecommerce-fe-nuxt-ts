@@ -1,11 +1,31 @@
 <template>
   <div>
-    <welfare-container>
+    <welfare-container :isAuthorized="authorized">
       <template v-slot:header>
         <header class="welfareFormHeader">
           <h4 class="welfareFormHeader__title">{{ formInfo.sheetName }}</h4>
-          <h5 class="welfareFormHeader__subtitle">{{ formInfo.documentNumber }}</h5>
-          <span class="welfareFormHeader__date">更新時間：{{ latestUpdatedDateTime }}</span>
+          <div
+            v-if="formStatus !== 0"
+            class="welfareFormHeader__badge"
+            :style="{
+              'background-color':
+                formStatus === 5
+                  ? '#e8eef4'
+                  : formStatus === 4 || formStatus === 2
+                  ? '#fabf13'
+                  : formStatus === 1
+                  ? '#5ab9d1'
+                  : ''
+            }"
+          >
+            {{ formStrStatus }}
+          </div>
+          <h5 class="welfareFormHeader__subtitle">
+            {{ formInfo.documentNumber }}
+          </h5>
+          <span class="welfareFormHeader__date">
+            更新時間：{{ latestUpdatedDateTime }}
+          </span>
           <p class="welfareFormHeader__desc">{{ formInfo.description }}</p>
         </header>
       </template>
@@ -14,7 +34,10 @@
           <b-container fluid>
             <b-row>
               <b-col cols="24" lg="12" class="mb-5">
-                <validation-provider v-slot="{ errors }" rules="max:50|required">
+                <validation-provider
+                  v-slot="{ errors }"
+                  rules="max:50|required"
+                >
                   <base-label
                     text="填表人"
                     required
@@ -30,7 +53,7 @@
                       v-model="basicInfo.creatorChineseName"
                       placeholder="請輸入真實姓名"
                       :valid="!errors.length"
-                      :disabled="formInfo.isPublished"
+                      :disabled="formStatus !== 0"
                     />
                   </base-label>
                 </validation-provider>
@@ -41,7 +64,10 @@
                 </base-label>
               </b-col>
               <b-col cols="24" lg="12" class="mb-5">
-                <validation-provider v-slot="{ errors }" rules="max:50|required">
+                <validation-provider
+                  v-slot="{ errors }"
+                  rules="max:50|required"
+                >
                   <base-label
                     text="申請人帳號"
                     required
@@ -57,14 +83,19 @@
                       v-model="basicInfo.applicantId"
                       placeholder="請輸入真實帳號"
                       :valid="!errors.length"
-                      :disabled="formInfo.isPublished"
+                      :disabled="formStatus !== 0"
                     />
                   </base-label>
                 </validation-provider>
               </b-col>
               <b-col cols="24" lg="12" class="mb-5">
                 <base-label text="補助金額">
-                  <base-input type="text" required readonly :value="baseAllowance" />
+                  <base-input
+                    type="text"
+                    required
+                    readonly
+                    :value="baseAllowance"
+                  />
                 </base-label>
               </b-col>
               <b-col
@@ -79,7 +110,10 @@
                 :key="col.columnId"
                 v-show="col.isDisplay"
               >
-                <validation-provider v-slot="{ errors }" rules="max:50|required">
+                <validation-provider
+                  v-slot="{ errors }"
+                  rules="max:50|required"
+                >
                   <base-label
                     :text="col.columnName"
                     :required="col.isRequired"
@@ -104,7 +138,7 @@
                       v-model="form[col.columnId]"
                       :placeholder="col.placeholder ? col.placeholder : ''"
                       :valid="!errors.length"
-                      :disabled="formInfo.isPublished"
+                      :disabled="formStatus !== 0"
                     />
                   </base-label>
                 </validation-provider>
@@ -140,7 +174,7 @@
                             : (date) => false
                           : (date) => false
                       "
-                      :disabled="formInfo.isPublished"
+                      :disabled="formStatus !== 0"
                       v-if="col.type === 'date'"
                     />
                     <base-file
@@ -149,7 +183,7 @@
                       id="file"
                       @change="handleFileInput($event, form[col.columnId])"
                       v-if="col.type === 'files'"
-                      :disabled="formInfo.isPublished"
+                      :disabled="formStatus !== 0"
                     />
                     <div
                       v-if="col.type === 'files' && formFiles.length > 0"
@@ -159,12 +193,25 @@
                         class="welfareForm__filedownloadBtn"
                         v-for="item in formFiles"
                         :key="item.fileId"
-                        @click="handleFileDownload(item.fileUrl)"
+                        @click="
+                          handleFileAction($event, item.fileUrl, item.fileId)
+                        "
                       >
-                        <span class="welfareForm__filedownloadBtnText">{{ item.fileName }}</span>
-                        <span
-                          class="welfareForm__filedownloadBtnTime"
-                        >{{ new Date(item.createDateTime).toLocaleString({ hour: '2-digit', minute: '2-digit', month: '2-digit', day: '2-digit', year: 'numeric'}) }}</span>
+                        <span class="welfareForm__filedownloadRemove">
+                          X
+                        </span>
+                        <span class="welfareForm__filedownloadBtnText">
+                          {{ item.fileName }}
+                        </span>
+                        <span class="welfareForm__filedownloadBtnTime">{{
+                          new Date(item.createDateTime).toLocaleString({
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            month: '2-digit',
+                            day: '2-digit',
+                            year: 'numeric'
+                          })
+                        }}</span>
                       </button>
                     </div>
                     <b-form-radio-group
@@ -172,12 +219,15 @@
                       v-model="form[col.columnId]"
                       :name="col.columnId"
                       v-if="col.type === 'radio'"
+                      :disabled="formStatus !== 0"
                     >
                       <b-form-radio
                         :value="value"
                         v-for="(value, key) in colsMap[col.columnId].values"
                         :key="key"
-                      >{{ key }}</b-form-radio>
+                      >
+                        {{ key }}
+                      </b-form-radio>
                     </b-form-radio-group>
                     <base-select
                       v-if="col.type === 'select'"
@@ -204,6 +254,38 @@
                       v-model="form[col.columnId]"
                       :placeholder="col.placeholder ? col.placeholder : ''"
                       :valid="!errors.length"
+                      :disabled="formStatus !== 0"
+                    />
+                  </base-label>
+                </validation-provider>
+              </b-col>
+            </b-row>
+            <b-row class="mt-5">
+              <b-col cols="24" v-if="formStatus !== 0">
+                <validation-provider
+                  v-slot="{ errors }"
+                  rules="max:1000|required"
+                >
+                  <base-label
+                    text="意見回饋"
+                    :required="true"
+                    :valid="!errors.length"
+                    :hint="{
+                      text: errors.length ? errors[0] : '',
+                      type: 'warning'
+                    }"
+                  >
+                    <div class="signingLabel">
+                      簽核⼈員（{{ signingDateTime }}）
+                    </div>
+                    <base-textarea
+                      @input="signingComment = $event"
+                      placeholder="請輸入您的意見回覆"
+                      :value="
+                        formStatus === 1 ? signingComment : signingOpinions
+                      "
+                      :valid="!errors.length"
+                      :disabled="formStatus !== 1"
                     />
                   </base-label>
                 </validation-provider>
@@ -213,27 +295,78 @@
               <b-col cols="24" lg="12" xl="9">
                 <div class="welfareForm__btngroup">
                   <span class="welfareForm__btn">
-                    <base-button type="greyTwoOutline" @click="handleDelete">刪除</base-button>
+                    <base-button
+                      type="greyTwoOutline"
+                      @click="handleDelete"
+                      v-if="formStatus === 0"
+                    >
+                      刪除
+                    </base-button>
                   </span>
                   <span class="welfareForm__btn">
-                    <base-button type="greyTwo" @click="handlePrint">列印</base-button>
+                    <base-button type="greyTwo" @click="handlePrint">
+                      列印
+                    </base-button>
                   </span>
-                  <span class="welfareForm__btn">
+                  <span class="welfareForm__btn" v-if="formStatus === 0">
                     <base-button
                       :type="confirmDisabled ? 'greyOne' : 'greyTwo'"
                       @click="handleSubmit(0)"
                       :disabled="confirmDisabled"
-                    >暫存</base-button>
+                    >
+                      暫存
+                    </base-button>
+                  </span>
+                  <span class="welfareForm__btn" v-if="formStatus === 1">
+                    <base-button
+                      :type="signingDisabled ? 'greyOne' : 'greyTwo'"
+                      @click="handleConfirmSigning(2)"
+                      :disabled="signingDisabled"
+                    >
+                      需補件
+                    </base-button>
+                  </span>
+                  <span class="welfareForm__btn" v-if="formStatus === 1">
+                    <base-button
+                      :type="signingDisabled ? 'greyOne' : 'greyTwo'"
+                      @click="handleConfirmSigning(5)"
+                      :disabled="signingDisabled"
+                    >
+                      駁回
+                    </base-button>
                   </span>
                 </div>
               </b-col>
-              <b-col cols="24" lg="12" xl="15" class="mt-5 mt-lg-0">
+              <b-col
+                cols="24"
+                lg="12"
+                xl="15"
+                class="mt-5 mt-lg-0"
+                v-if="formStatus === 0"
+              >
                 <base-button
                   :type="submitDisabled ? 'greyOne' : 'primary'"
                   display="block"
                   @click="handleSubmit(1)"
                   :disabled="submitDisabled"
-                >送出</base-button>
+                >
+                  送出
+                </base-button>
+              </b-col>
+              <b-col
+                cols="24"
+                lg="12"
+                xl="15"
+                class="mt-5 mt-lg-0"
+                v-if="formStatus === 1"
+              >
+                <base-button
+                  type="primary"
+                  display="block"
+                  @click="handleConfirmSigning(4)"
+                >
+                  同意
+                </base-button>
               </b-col>
             </b-row>
           </b-container>
@@ -254,7 +387,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, Watch } from 'nuxt-property-decorator'
 import { ProxyRequestObject, ResponseObject } from 'Http'
 import { ValidationObserver, ValidationProvider } from 'vee-validate'
 import WelfareContainer from '~/components/WelfareContainer.vue'
@@ -286,6 +419,80 @@ import { welfareStore, dialogStore } from '~/store'
   }
 })
 export default class WelfareForm extends Vue {
+  private signingComment: string = ''
+
+  get signingDisabled(): boolean {
+    return this.signingComment === ''
+  }
+
+  get signingDateTime(): string {
+    return Object.keys(welfareStore.formNew).length
+      ? new Date(welfareStore.formNew.signingDateTime).toLocaleString('zh-tw', {
+          month: '2-digit',
+          day: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      : ''
+  }
+
+  get signingOpinions(): string {
+    return Object.keys(welfareStore.formNew).length
+      ? welfareStore.formNew.opinions.reduce(
+          (prev: string, curr: any) => prev.concat(curr.opinionWithStatus),
+          ''
+        )
+      : ''
+  }
+
+  private handleConfirmSigning(status: number) {
+    dialogStore.setActive(true)
+    dialogStore.setMaskActive(true)
+    dialogStore.setContent({
+      title: '確定要送出？',
+      message: '送出後無法再修改，請問是否需送出？',
+      icon: true,
+      type: 'confirm',
+      initializer: 'welfare-signing-confirm'
+    })
+    dialogStore.setConfirmAction({ status })
+  }
+
+  private async handleSigning(status: number) {
+    try {
+      this.$nuxt.$loading.start()
+      await this.sendSigningRequest(status)
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '已完成簽核',
+        message: '如需查看簽核紀錄，請前往我的簽核',
+        icon: true,
+        type: 'accept',
+        initializer: 'welfare-signing-success'
+      })
+      await this.sendGetLatestRequest()
+    } catch (e) {
+      // error
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '系統異常！',
+        message: e.message,
+        icon: true,
+        type: 'accept',
+        initializer: 'welfare-error'
+      })
+    } finally {
+      this.$nuxt.$loading.finish()
+    }
+  }
+
+  get authorized(): boolean {
+    return welfareStore.authorized
+  }
+
   get dialogState() {
     return dialogStore.active
   }
@@ -315,15 +522,47 @@ export default class WelfareForm extends Vue {
       } finally {
         this.$nuxt.$loading.finish()
       }
+    } else if (dialogStore.content.initializer === 'welfare-signing-confirm') {
+      const { status } = dialogStore.confirmAction
+      await this.handleSigning(status)
     }
   }
 
   public handleDialogClose() {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
-
     if (dialogStore.content.initializer === 'welfare-submit-success') {
       this.$router.push('/welfare/reportlist')
+    } else if (dialogStore.content.initializer === 'welfare-signing-success') {
+      this.$router.push('/welfare/authorize')
+    }
+  }
+
+  private async handleFileAction(e: any, url: string, fileId: string) {
+    console.log(e.target.classList)
+    const classList = Array.from(e.target.classList)
+    if (classList.includes('welfareForm__filedownloadRemove')) {
+      await this.handleFileRemove(fileId)
+    } else {
+      this.handleFileDownload(url)
+    }
+  }
+
+  private async handleFileRemove(fileId: string) {
+    try {
+      await this.sendFileDeleteRequest(fileId)
+      await this.sendGetLatestRequest()
+    } catch (e) {
+      // error
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '系統異常！',
+        message: '請聯絡 STAYFUN 客服人員。',
+        icon: true,
+        type: 'accept',
+        initializer: 'welfare-error'
+      })
     }
   }
 
@@ -394,7 +633,7 @@ export default class WelfareForm extends Vue {
     ElegiacCoupletArrivedDate: { type: 'date', placeholder: '請輸入日期' },
     DeceasedName: { type: 'text', placeholder: '請輸入真實姓名' },
     DeceasedAge: { type: 'text', placeholder: '請輸入真實年齡' },
-    DeceasedGender: { type: 'radio', values: { 男: true, 女: false } },
+    DeceasedGender: { type: 'radio', values: { 男: 1, 女: 0 } },
     ContactName: { type: 'text', placeholder: '請輸入真實姓名' },
     ContactPhone: { type: 'text', placeholder: '請輸入電話號碼' },
     ContactAddress: { type: 'text', placeholder: '請輸入完整地址' },
@@ -514,7 +753,34 @@ export default class WelfareForm extends Vue {
     return welfareStore.latestUpdatedDateTime
   }
 
-  public async sendFileUploadRequest() {
+  get formStatus(): number | undefined {
+    return welfareStore.formNew.status
+  }
+
+  get formStrStatus(): string | undefined {
+    return welfareStore.formNew.strStatus
+  }
+
+  private async sendFileDeleteRequest(fileId: string) {
+    const requestBody: any = {
+      endpoint: `/api/Welfare/ApplicationForm/DeleteFile?fileId=${fileId}`,
+      method: 'get',
+      token: this.$cookies.get('accessToken')
+    }
+    const result: ResponseObject = await $axios.post('/api', requestBody)
+    switch (result.data.syscode) {
+      case 200:
+        return result.data.data
+      case 4037:
+        throw new Error('Not Found')
+      case 500:
+        throw new Error('Server Error')
+      default:
+        return null
+    }
+  }
+
+  private async sendFileUploadRequest() {
     this.form.RelatedFiles.append('FormId', this.$route.params.formserialno)
     const requestBody: any = {
       endpoint: '/api/welfare/applicationForm/insertFiles',
@@ -549,7 +815,7 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public async sendSaveRequest(status: 0 | 1) {
+  private async sendSaveRequest(status: 0 | 1) {
     const requestBody: ProxyRequestObject = {
       endpoint: `/api/welfare/apply/${this.$route.params.formserialno}`,
       key: process.env.apiKey,
@@ -586,7 +852,7 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public async sendDeleteFormRequest() {
+  private async sendDeleteFormRequest() {
     const requestBody: ProxyRequestObject = {
       endpoint: `/api/welfare/applicationForm/delete?id=${this.formId}`,
       key: process.env.apiKey,
@@ -607,7 +873,7 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public async sendGetFormDataRequest() {
+  private async sendGetFormDataRequest() {
     try {
       await welfareStore.getFormData({
         serialno: this.$route.params.serialno,
@@ -618,7 +884,7 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public async sendAuthorizeRequest() {
+  private async sendAuthorizeRequest() {
     try {
       await welfareStore.getAuthorized({
         token: this.$cookies.get('accessToken')
@@ -637,7 +903,7 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public async sendGetLatestRequest() {
+  private async sendGetLatestRequest() {
     try {
       await welfareStore.getLatest({
         serialno: this.$route.params.formserialno,
@@ -649,7 +915,37 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public async fetch() {
+  private async sendSigningRequest(status: number) {
+    const requestBody: ProxyRequestObject = {
+      endpoint: '/api/Welfare/ApplicationForm/Signing',
+      key: process.env.apiKey,
+      data: {
+        id: this.$route.params.formserialno,
+        singingStatus: status,
+        opinion: this.signingComment
+      },
+      method: 'post',
+      token: this.$cookies.get('accessToken')
+    }
+
+    const result: ResponseObject = await $axios.post('/api', requestBody)
+    switch (result.data.syscode) {
+      case 200:
+        return result.data.data
+      case 6002:
+        throw new Error(
+          '此表單的申請次數已達上限，請⾄申請紀錄查看過去提交紀錄。'
+        )
+      case 4037:
+        throw new Error(result.data.sysmsg)
+      case 500:
+        throw new Error('Server Error')
+      default:
+        return null
+    }
+  }
+
+  private async fetch() {
     try {
       await this.sendAuthorizeRequest()
       await this.sendGetFormDataRequest()
@@ -681,7 +977,7 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public activated() {
+  private activated() {
     this.$nextTick(async () => {
       this.$nuxt.$loading.start()
 
@@ -719,7 +1015,7 @@ export default class WelfareForm extends Vue {
   }
 
   // @typescript-eslint/no-unused-vars
-  public beforeRouteEnter(to: any, from: any, next: any) {
+  private beforeRouteEnter(to: any, from: any, next: any) {
     if (
       to.params.serialno === '' ||
       to.params.serialno === undefined ||
@@ -769,10 +1065,27 @@ export default class WelfareForm extends Vue {
     font-size: $fz-xs;
     color: $greyTwo;
   }
+  &__filedownloadRemove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-xs;
+    font-weight: bold;
+    line-height: 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: $whiteOne;
+    margin-right: $spacing-s;
+    &:hover,
+    &:focus {
+      outline: 2px solid $secondary;
+    }
+  }
 }
 .welfareFormHeader {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   flex-wrap: wrap;
   background-color: $whiteTwo;
   padding: $spacing-xl;
@@ -783,6 +1096,14 @@ export default class WelfareForm extends Vue {
     color: $greyThree;
     font-weight: bold;
     font-size: $fz-l;
+  }
+  &__badge {
+    color: #fff;
+    padding: $spacing-xs $spacing-s;
+    border-radius: 40px;
+    margin-left: $spacing-s;
+    font-size: $fz-xs;
+    font-weight: bold;
   }
   &__subtitle {
     flex: 0 0 100%;
@@ -802,8 +1123,6 @@ export default class WelfareForm extends Vue {
     order: 4;
     font-size: $fz-s;
     margin-top: $spacing-m;
-    // background-color: #fff;
-    // margin: 0 -$spacing-xl;
   }
   &__date {
     flex: 0 0 100%;

@@ -6,6 +6,8 @@
     "dev": "cross-env NUXT_ENV_PROXY_URL=http://localhost:8081 NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP nuxt-ts",
     "build": "cross-env NUXT_ENV_PROXY_URL=http://localhost:8081 NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP nuxt-ts build",
     "start": "cross-env NUXT_ENV_PROXY_URL=http://localhost:8081 NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP nuxt-ts start",
+    "build:docker": "nuxt-ts build",
+    "start:docker": "nuxt-ts start",
     "generate": "cross-env NUXT_ENV_PROXY_URL=http://localhost:8081 NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP nuxt-ts generate",
     "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "lint": "npm run lint:js",

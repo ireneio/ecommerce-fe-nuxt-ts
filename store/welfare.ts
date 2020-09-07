@@ -14,6 +14,7 @@ export default class WelfareModule extends VuexModule {
   public latest: any = {}
   public formNew: any = {}
   public appliedList: any = {}
+  public signingList: any = {}
 
   get formInfo() {
     return this.form.info
@@ -77,6 +78,14 @@ export default class WelfareModule extends VuexModule {
     return this.appliedList.recordsTotal
   }
 
+  get signingListData() {
+    return this.signingList.data
+  }
+
+  get signingListDataLength() {
+    return this.signingList.recordsTotal
+  }
+
   @Mutation
   setSheets(payload: any) {
     this.sheets = payload
@@ -108,8 +117,13 @@ export default class WelfareModule extends VuexModule {
     this.appliedList = payload
   }
 
+  @Mutation
+  public setSigningList(payload: any) {
+    this.signingList = payload
+  }
+
   @Action({ commit: 'setSheets' })
-  async getSheets({ token }: any) {
+  public async getSheets({ token }: any) {
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/welfare/apply/sheets',
       key: process.env.apiKey,
@@ -129,7 +143,7 @@ export default class WelfareModule extends VuexModule {
   }
 
   @Action({ commit: 'setFormNew' })
-  async getForm({ serialno, token }: any) {
+  public async getForm({ serialno, token }: any) {
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/welfare/apply/new',
       key: process.env.apiKey,
@@ -152,7 +166,7 @@ export default class WelfareModule extends VuexModule {
   }
 
   @Action({ commit: 'setAuthorized' })
-  async getAuthorized({ token }: any) {
+  public async getAuthorized({ token }: any) {
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/welfare/permission/authorize',
       key: process.env.apiKey,
@@ -176,7 +190,7 @@ export default class WelfareModule extends VuexModule {
   }
 
   @Action({ commit: 'setForm' })
-  async getFormData({ serialno, token }: any) {
+  public async getFormData({ serialno, token }: any) {
     const requestBody: ProxyRequestObject = {
       endpoint: `/api/welfare/sheets/${serialno}`,
       key: process.env.apiKey,
@@ -201,7 +215,7 @@ export default class WelfareModule extends VuexModule {
   }
 
   @Action({ commit: 'setLatest' })
-  async getLatest({ serialno, token }: any) {
+  public async getLatest({ serialno, token }: any) {
     const requestBody: ProxyRequestObject = {
       endpoint: `/api/welfare/applicationForm/get?id=${serialno}`,
       key: process.env.apiKey,
@@ -226,7 +240,7 @@ export default class WelfareModule extends VuexModule {
   }
 
   @Action({ commit: 'setAppliedList' })
-  async getAppliedList({
+  public async getAppliedList({
     token,
     start,
     length,
@@ -256,6 +270,46 @@ export default class WelfareModule extends VuexModule {
       case 403:
       case 404:
       case 4037:
+        throw new Error('Not Found')
+      case 500:
+        throw new Error('Server Error')
+      default:
+        return null
+    }
+  }
+
+  @Action({ commit: 'setSigningList' })
+  public async getSigningList({
+    token,
+    start,
+    length,
+    ApplicationStartDate,
+    ApplicationEndDate,
+    SearchText,
+    SearchStatus
+  }: any) {
+    const requestBody: ProxyRequestObject = {
+      endpoint: '/api/Welfare/ApplicationForm/GetSigningList',
+      data: {
+        start,
+        length,
+        ApplicationStartDate,
+        ApplicationEndDate,
+        SearchText,
+        SearchStatus
+      },
+      method: 'post',
+      token
+    }
+
+    const result: ResponseObject = await $axios.post('/api', requestBody)
+    switch (Number(result.data.syscode)) {
+      case 200:
+        return result.data
+      case 400:
+      case 403:
+      case 404:
+      case 417:
         throw new Error('Not Found')
       case 500:
         throw new Error('Server Error')

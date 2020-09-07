@@ -25,14 +25,12 @@ export default async function ({ app, store, redirect, route }: any) {
         store.commit('auth/setUser', result.data.data)
         const { isfirstlogin } = result.data.data
 
-        if (route.name === 'account') {
+        if (isfirstlogin) {
+          redirect('/account/register')
+        } else if (route.name === 'account') {
           redirect('/')
         } else if (route.name === 'account-forgetPassword') {
           redirect('/account')
-        } else {
-          if (isfirstlogin) {
-            redirect('/account/register')
-          }
         }
       }
     } catch (e) {

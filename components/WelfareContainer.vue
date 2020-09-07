@@ -6,59 +6,61 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col cols="24" xl="4">
-        <div class="welfaremenu">
-          <h3 class="welfaremenu__title">
-            <img src="/img/ic-welfare.svg" alt />
-            <span>津貼中心</span>
-          </h3>
-          <ul class="welfaremenu__list">
-            <li class="welfaremenu__listitem" v-if="!isAuthorized">
-              <nuxt-link
-                to="/welfare/authorize"
-                class="welfaremenu__link"
-                :class="{
-                  'welfaremenu__link--active':
-                    $route.name === 'welfare-authorize'
-                }"
-                >審核紀錄
-              </nuxt-link>
-            </li>
-            <li class="welfaremenu__listitem">
-              <nuxt-link
-                to="/welfare/reportlist"
-                class="welfaremenu__link"
-                :class="{
-                  'welfaremenu__link--active':
-                    $route.name === 'welfare-reportlist'
-                }"
-                >申請紀錄
-              </nuxt-link>
-            </li>
-            <li>
-              <nuxt-link
-                to="/welfare"
-                class="welfaremenu__link"
-                :class="{
-                  'welfaremenu__link--active': $route.name === 'welfare'
-                }"
-                >表單申請
-              </nuxt-link>
-            </li>
-          </ul>
-        </div>
-      </b-col>
+      <client-only>
+        <b-col cols="24" xl="4">
+          <div class="welfaremenu">
+            <h3 class="welfaremenu__title">
+              <img src="/img/ic-welfare.svg" alt />
+              <span>津貼中心</span>
+            </h3>
+            <ul class="welfaremenu__list">
+              <li class="welfaremenu__listitem" v-if="isAuthorized">
+                <nuxt-link
+                  to="/welfare/authorize"
+                  class="welfaremenu__link"
+                  :class="{
+                    'welfaremenu__link--active':
+                      $route.name === 'welfare-authorize'
+                  }"
+                  >我的簽核
+                </nuxt-link>
+              </li>
+              <li class="welfaremenu__listitem">
+                <nuxt-link
+                  to="/welfare/reportlist"
+                  class="welfaremenu__link"
+                  :class="{
+                    'welfaremenu__link--active':
+                      $route.name === 'welfare-reportlist'
+                  }"
+                  >申請紀錄
+                </nuxt-link>
+              </li>
+              <li>
+                <nuxt-link
+                  to="/welfare"
+                  class="welfaremenu__link"
+                  :class="{
+                    'welfaremenu__link--active': $route.name === 'welfare'
+                  }"
+                  >表單申請
+                </nuxt-link>
+              </li>
+            </ul>
+          </div>
+        </b-col>
+      </client-only>
       <b-col cols="24" xl="20" class="mt-5 mt-xl-0">
         <header
           class="welfareheader"
           :class="{
-            'welfareheader--dark': title === '申請紀錄' || title === '審核紀錄',
+            'welfareheader--dark': title === '申請紀錄' || title === '我的簽核',
             'welfareheader--light': title === '表單申請'
           }"
           v-if="title"
         >
           <h3 class="welfareheader__title">{{ title }}</h3>
-          <div class="welfareheader__search" v-if="title === '申請紀錄'">
+          <div class="welfareheader__search" v-if="title === '我的簽核'">
             <default-search-bar
               placeholder="輸入關鍵字"
               @input="$emit('input', $event)"

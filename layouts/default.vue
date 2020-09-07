@@ -178,7 +178,16 @@ export default class DefaultLayout extends Vue {
   }
 
   public mounted() {
-    if (!giftStore.hasShowed) {
+    const validRoutes: Array<string> = [
+      'announcements',
+      'funevents',
+      'joinclub',
+      'questionnaires',
+      'shoppingmall',
+      'visitstore'
+    ]
+    const route: string = this.$route.name || ''
+    if (!giftStore.hasShowed && validRoutes.includes(route)) {
       this.timer = setTimeout(async () => {
         await this.sendGetGiftRequest()
         if (this.gifts.length) {

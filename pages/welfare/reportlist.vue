@@ -15,30 +15,34 @@
             :line-numbers="true"
             :total-rows="appliedListDataLength"
             :pagination-options="{
-            enabled: true,
-            mode: 'remote',
-            perPage: pagination.length,
-            position: 'bottom',
-            perPageDropdown: [5, 10, 15, 20],
-            dropdownAllowAll: false,
-            setCurrentPage: pagination.start / pagination.length + 1,
-            nextLabel: '下一頁',
-            prevLabel: '上一頁',
-            rowsPerPageLabel: '每頁筆數',
-            ofLabel: '共',
-            pageLabel: '', // for 'pages' mode
-            allLabel: '全部'
-          }"
+              enabled: true,
+              mode: 'remote',
+              perPage: pagination.length,
+              position: 'bottom',
+              perPageDropdown: [5, 10, 15, 20],
+              dropdownAllowAll: false,
+              setCurrentPage: pagination.start / pagination.length + 1,
+              nextLabel: '下一頁',
+              prevLabel: '上一頁',
+              rowsPerPageLabel: '每頁筆數',
+              ofLabel: '共',
+              pageLabel: '', // for 'pages' mode
+              allLabel: '全部'
+            }"
             @on-page-change="handlePageUpdate"
             @on-per-page-change="handlePageLengthUpdate"
             @on-row-click="handleRowClick"
           >
-            <div slot="emptystate">This will show up when there are no rows</div>
+            <div slot="emptystate">
+              This will show up when there are no rows
+            </div>
             <template slot="table-row" slot-scope="props">
               <span v-if="props.column.field == 'application'">
                 <div class="welfareRecord__tablerow">
                   <p class="welfareRecord__text">{{ props.row.application }}</p>
-                  <p class="welfareRecord__subtext">{{ props.row.applicationId }}</p>
+                  <p class="welfareRecord__subtext">
+                    {{ props.row.applicationId }}
+                  </p>
                 </div>
               </span>
               <span v-if="props.column.field == 'time'">
@@ -53,18 +57,37 @@
               </span>
               <span v-if="props.column.field == 'verification'">
                 <div class="welfareRecord__tablerow">
-                  <p class="welfareRecord__text">{{ props.row.verification }}</p>
+                  <p class="welfareRecord__text">
+                    {{ props.row.verification }}
+                  </p>
                 </div>
               </span>
               <span v-if="props.column.field == 'status'">
                 <div class="welfareRecord__tablerow welfareRecord__rowStatus">
-                  <span class="welfareRecord__badge">{{ props.row.status }}</span>
+                  <span
+                    class="welfareRecord__badge"
+                    :class="{
+                      'welfareRecord__badge--primary':
+                        props.row.status === '暫存' ||
+                        props.row.status === '待補件',
+                      'welfareRecord__badge--secondary':
+                        props.row.status === '待簽核',
+                      'welfareRecord__badge--greyOne':
+                        props.row.status === '駁回',
+                      'welfareRecord__badge--greyTwo':
+                        props.row.status === '同意'
+                    }"
+                  >
+                    {{ props.row.status }}
+                  </span>
                 </div>
               </span>
             </template>
 
             <template slot="table-column" slot-scope="props">
-              <div class="welfareRecord__tableheadingtext">{{ props.column.label }}</div>
+              <div class="welfareRecord__tableheadingtext">
+                {{ props.column.label }}
+              </div>
             </template>
           </vue-good-table>
         </client-only>
@@ -219,9 +242,11 @@ export default class WelfareRecord extends Vue {
     return Object.keys(welfareStore.appliedList).length
       ? welfareStore.appliedListData.map((item: any) => ({
           id: item.id,
-          time: new Date(item.latestUpdateDateTime)
-            .toLocaleString()
-            .split(' ')[0],
+          time: new Date(item.latestUpdateDateTime).toLocaleString('zh-tw', {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric'
+          }),
           application: item.sheetName,
           applicationId: item.caseNumber,
           applier: item.applicantChineseName,
@@ -327,9 +352,20 @@ export default class WelfareRecord extends Vue {
   &__badge {
     padding: $spacing-xs $spacing-xxl;
     border-radius: 40px;
-    background-color: $primary;
     color: #fff;
     font-size: $fz-xs;
+    &--primary {
+      background-color: $primary;
+    }
+    &--secondary {
+      background-color: $secondary;
+    }
+    &--greyOne {
+      background-color: $greyOne;
+    }
+    &--greyTwo {
+      background-color: $greyTwo;
+    }
   }
 }
 </style>

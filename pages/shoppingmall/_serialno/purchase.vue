@@ -87,7 +87,7 @@
           <section class="couponPurchase__receipt">
             <h4 class="couponPurchase__header">付款與發票類型</h4>
             <div class="couponPurchase__body">
-              <div class="couponPurchaseReceipt">
+              <div class="couponPurchaseReceipt" v-show="!receiptLoading">
                 <div class="couponPurchaseReceipt__title">付款方式</div>
                 <div class="couponPurchaseReceipt__titleText">
                   {{ form.paymentType }}
@@ -95,20 +95,29 @@
               </div>
               <div
                 class="couponPurchaseReceipt__receiptbox"
-                v-show="subtotal > 0"
+                v-show="subtotal > 0 && !receiptLoading"
               >
-                <div class="couponPurchaseReceipt__title">發票類型</div>
+                <div class="couponPurchaseReceipt__title">
+                  發票類型
+                </div>
               </div>
-              <div
-                class="couponPurchaseReceipt__receiptbox"
-                v-show="subtotal > 0"
-              >
+              <div class="couponPurchaseReceipt__receiptbox">
+                <div class="couponPurchaseReceipt__spinnerbox">
+                  <fa
+                    :icon="['fas', 'spinner']"
+                    :spin="true"
+                    v-show="receiptLoading"
+                    class="couponPurchaseReceipt__spinner"
+                  />
+                </div>
+
                 <default-receipt-selector
                   @input="handleReceiptTypeUpdate"
                   @address-area-update="handleGetCounty"
                   @form-update="receiptInfo = $event"
                   :areaOptions="area"
                   :countyOptions="county"
+                  v-show="subtotal > 0 && !receiptLoading"
                 />
               </div>
             </div>
@@ -178,9 +187,9 @@ import { visitStore, commonStore, dialogStore, pointStore } from '~/store'
   }
 })
 export default class ShoppingMallPurchase extends Vue {
-  public receiptInfo: any = {}
+  private receiptInfo: any = {}
 
-  public async handlePurchase() {
+  private async handlePurchase() {
     try {
       this.$nuxt.$loading.start()
       const result = await this.sendCouponTransactionRequest()
@@ -219,13 +228,13 @@ export default class ShoppingMallPurchase extends Vue {
     return dialogStore.content
   }
 
-  public handleDialogConfirm() {
+  private handleDialogConfirm() {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
     this.$router.push({ name: dialogStore.confirmAction })
   }
 
-  public handleDialogClose() {
+  private handleDialogClose() {
     const initalizer = dialogStore.content.initializer
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
@@ -238,7 +247,7 @@ export default class ShoppingMallPurchase extends Vue {
     return visitStore.couponDetail
   }
 
-  public form: any = {
+  private form: any = {
     quantity: 1,
     amount: 0,
     invoiceType: 6,
@@ -260,7 +269,7 @@ export default class ShoppingMallPurchase extends Vue {
   }
 
   @Watch('subtotal')
-  public onSubtotalChange(newVal: number) {
+  private onSubtotalChange(newVal: number) {
     if (newVal > 0) {
       this.form.paymentType = '信用卡/其他'
     } else {
@@ -274,9 +283,9 @@ export default class ShoppingMallPurchase extends Vue {
     return total
   }
 
-  public receiptType: '1' | '2' | '3' | '4' | '5' | '' = ''
+  private receiptType: '1' | '2' | '3' | '4' | '5' | '' = ''
 
-  public async handleReceiptTypeUpdate(val: '1' | '2' | '3' | '4' | '5') {
+  private async handleReceiptTypeUpdate(val: '1' | '2' | '3' | '4' | '5') {
     if (this.receiptType !== '2' && this.receiptType !== '5') {
       if (val === '2' || val === '5') {
         await this.sendGetAreasRequest()
@@ -304,21 +313,23 @@ export default class ShoppingMallPurchase extends Vue {
       : []
   }
 
-  public async handleGetCounty(val: number | string) {
+  private async handleGetCounty(val: number | string) {
     await this.sendGetCountyRequest(val)
   }
 
-  public async handleUpdateAmount(val: number) {
+  private receiptLoading: boolean = false
+
+  private async handleUpdateAmount(val: number) {
     if (!(val === -1 && this.form.amount === 0)) {
       this.form.quantity += val
       this.form.amount = this.couponDetail.salePrice * this.form.quantity
     }
-    // this.$nuxt.$loading.start()
+    this.receiptLoading = true
     await this.sendGetPointDiscountRequest()
-    // this.$nuxt.$loading.finish()
+    this.receiptLoading = false
   }
 
-  public async sendGetCouponDetailRequest() {
+  private async sendGetCouponDetailRequest() {
     try {
       await visitStore.getCouponDetail({
         token: this.$cookies.get('accessToken'),
@@ -330,7 +341,7 @@ export default class ShoppingMallPurchase extends Vue {
     }
   }
 
-  public async sendGetPointDiscountRequest() {
+  private async sendGetPointDiscountRequest() {
     try {
       await pointStore.getDiscountAmount({
         token: this.$cookies.get('accessToken'),
@@ -342,7 +353,7 @@ export default class ShoppingMallPurchase extends Vue {
     }
   }
 
-  public async sendCouponTransactionRequest() {
+  private async sendCouponTransactionRequest() {
     const { quantity, amount } = this.form
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/CouponTransaction/Order',
@@ -394,7 +405,7 @@ export default class ShoppingMallPurchase extends Vue {
     }
   }
 
-  public async sendGetAreasRequest() {
+  private async sendGetAreasRequest() {
     try {
       await commonStore.getAreas({ token: this.$cookies.get('accessToken') })
     } catch (e) {
@@ -402,7 +413,7 @@ export default class ShoppingMallPurchase extends Vue {
     }
   }
 
-  public async sendGetCountyRequest(areaName: string | number) {
+  private async sendGetCountyRequest(areaName: string | number) {
     try {
       await commonStore.getCounty({
         token: this.$cookies.get('accessToken'),
@@ -413,7 +424,7 @@ export default class ShoppingMallPurchase extends Vue {
     }
   }
 
-  public async fetch() {
+  private async fetch() {
     try {
       await this.sendGetCouponDetailRequest()
       this.form.amount = this.couponDetail.salePrice
@@ -429,7 +440,7 @@ export default class ShoppingMallPurchase extends Vue {
     }
   }
 
-  public activated() {
+  private activated() {
     this.$nextTick(async () => {
       try {
         this.$nuxt.$loading.start()
@@ -641,7 +652,15 @@ export default class ShoppingMallPurchase extends Vue {
   &__titleText {
   }
   &__receiptbox {
+    min-height: 50px;
     margin-top: $spacing-l;
+  }
+  &__spinnerbox {
+    text-align: center;
+  }
+  &__spinner {
+    font-size: 50px;
+    color: $primary;
   }
 }
 </style>

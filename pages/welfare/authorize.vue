@@ -8,6 +8,18 @@
       @keydown-enter="handleSearch"
     >
       <div class="welfareRecord">
+        <div class="welfareRecord__btnbox">
+          <base-button
+            :type="selected.length ? 'primary' : 'greyOne'"
+            @click="handleVerificationModalOpen"
+            :disabled="!selected.length"
+          >
+            批次簽核
+          </base-button>
+          <span class="welfareRecord__btntext">
+            已勾選 {{ selected.length }} 筆
+          </span>
+        </div>
         <client-only>
           <vue-good-table
             :columns="tableFields"
@@ -34,8 +46,8 @@
               selectOnCheckboxOnly: true, // only select when checkbox is clicked instead of the row
               selectionInfoClass: 'custom-class',
               selectionText: '筆已勾選',
-              clearSelectionText: 'clear',
-              disableSelectInfo: false, // disable the select info panel on top
+              clearSelectionText: '清除',
+              disableSelectInfo: true, // disable the select info panel on top
               selectAllByGroup: true // when used in combination with a grouped table, add a checkbox in the header row to check/uncheck the entire group
             }"
             @on-page-change="handlePageUpdate"
@@ -44,12 +56,7 @@
             @on-selected-rows-change="handleSelectionChanged"
           >
             <div slot="emptystate">
-              This will show up when there are no rows
-            </div>
-            <div slot="selected-row-actions">
-              <base-button type="primary" @click="handleVerificationModalOpen">
-                批次簽核
-              </base-button>
+              無資料
             </div>
             <template slot="table-row" slot-scope="props">
               <span v-if="props.column.field == 'application'">
@@ -228,6 +235,34 @@ interface TableField {
   }
 })
 export default class WelfareRecord extends Vue {
+  private head() {
+    return {
+      title: 'STAYFUN員工福利整合平台 | 我的簽核',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'STAYFUN員工福利整合平台 | 我的簽核'
+        },
+        {
+          hid: 'og:title',
+          name: 'og:title',
+          content: 'STAYFUN員工福利整合平台 | 我的簽核'
+        },
+        {
+          hid: 'og:type',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台'
+        },
+        {
+          hid: 'og:description',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台 | 我的簽核'
+        }
+      ]
+    }
+  }
+
   private modalState: boolean = false
 
   private handleConfirmBatchSigning(): void {
@@ -341,7 +376,6 @@ export default class WelfareRecord extends Vue {
   private selected: Array<any> = []
 
   private handleSelectionChanged({ selectedRows }: any) {
-    console.log(selectedRows)
     const map = selectedRows.map((row: any) => row.id)
     this.selected = [...map]
   }
@@ -546,6 +580,17 @@ export default class WelfareRecord extends Vue {
 @import '../../assets/scss/utils/variables';
 
 .welfareRecord {
+  &__btnbox {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: $spacing-m;
+  }
+  &__btntext {
+    color: $greyThree;
+    font-weight: bold;
+    font-size: $fz-s;
+    margin-left: $spacing-m;
+  }
   &__tablerow {
     padding: $spacing-l 0;
     min-width: 100px;

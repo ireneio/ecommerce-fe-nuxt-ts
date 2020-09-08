@@ -543,14 +543,18 @@
                 >
                 <base-button
                   :type="
-                    (eventInfo.activePsTitle && !agreePrivacy2) || !agreePrivacy
+                    (eventInfo.activePsTitle && !agreePrivacy2) ||
+                    !agreePrivacy ||
+                    !hasCouponInCart
                       ? 'greyOne'
                       : 'greyTwo'
                   "
                   @click="handleCreateActivity"
                   class="funEventsCheckout__btn"
                   :disabled="
-                    (eventInfo.activePsTitle && !agreePrivacy2) || !agreePrivacy
+                    (eventInfo.activePsTitle && !agreePrivacy2) ||
+                    !agreePrivacy ||
+                    !hasCouponInCart
                   "
                   >下一步</base-button
                 >
@@ -1079,11 +1083,15 @@
               </div>
               <div class="funEventsCheckoutStepFour__paymentType">
                 <span>付款方式</span>
-                <span>{{
-                  eventInfo.activityPayType === 1
-                    ? '由主辦單位另行收取費用'
-                    : '信用卡/其他'
-                }}</span>
+                <span>
+                  {{
+                    eventInfo.activityPayType === 1
+                      ? '由主辦單位另行收取費用'
+                      : totalPriceAfterDiscount > 0
+                      ? '信用卡/其他'
+                      : '無須付款'
+                  }}
+                </span>
               </div>
               <div
                 class="funEventsCheckoutStepFour__paymentType"
@@ -1094,7 +1102,9 @@
               </div>
               <div
                 class="funEventsCheckoutStepFour__paymentType"
-                v-if="eventInfo.activityPayType === 0"
+                v-if="
+                  eventInfo.activityPayType === 0 && totalPriceAfterDiscount > 0
+                "
               >
                 <div class="funEventsCheckoutStepFour__title">發票類型</div>
                 <div class="funEventsCheckoutStepFour__paymentSelector">
@@ -1113,21 +1123,29 @@
                 type="greyTwoOutline"
                 @click="currentTab = 0"
                 class="funEventsCheckout__btn"
-                >取消</base-button
               >
+                取消
+              </base-button>
               <base-button
                 :type="
-                  eventInfo.activityPayType === 0 && receiptType === ''
+                  eventInfo.activityPayType === 0 &&
+                  totalPriceAfterDiscount > 0 &&
+                  (receiptType === '' ||
+                    Object.keys(receiptInfo).length === 0 ||
+                    !receiptInfo.isValid)
                     ? 'greyOne'
                     : 'primary'
                 "
                 @click="handleCreateOrder"
                 class="funEventsCheckout__btn"
                 :disabled="
-                  eventInfo.activityPayType === 0 && receiptType === ''
+                  (eventInfo.activityPayType === 0 &&
+                    (totalPriceAfterDiscount > 0 &&
+                    (receiptType === '' || Object.keys(receiptInfo).length === 0 || !receiptInfo.isValid)))
                 "
-                >送出</base-button
               >
+                送出
+              </base-button>
             </div>
           </div>
         </div>
@@ -1207,7 +1225,11 @@ interface TableField {
   scrollToTop: true
 })
 export default class FunEventsDetail extends Vue {
-  public async handleCreateOrder() {
+  private get hasCouponInCart(): boolean {
+    return this.couponOrder.find((item: number) => item > 0) !== undefined
+  }
+
+  private async handleCreateOrder() {
     try {
       this.$nuxt.$loading.start()
       await this.sendCreateOrderRequest()
@@ -1233,7 +1255,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async handleCreateUserInfo() {
+  private async handleCreateUserInfo() {
     try {
       this.$nuxt.$loading.start()
       await this.sendCreateActivityUserInfoRequest()
@@ -1278,9 +1300,9 @@ export default class FunEventsDetail extends Vue {
     )
   }
 
-  public orderNumber: string = ''
+  private orderNumber: string = ''
 
-  public paymentDetailList: Array<any> = []
+  private paymentDetailList: Array<any> = []
 
   get userPaymentInfoList(): Array<any> {
     // Data Structure:
@@ -1362,11 +1384,11 @@ export default class FunEventsDetail extends Vue {
       : []
   }
 
-  public receiptType: '1' | '2' | '3' | '4' | '5' | '' = ''
+  private receiptType: '1' | '2' | '3' | '4' | '5' | '' = ''
 
-  public receiptInfo: any = {}
+  private receiptInfo: any = {}
 
-  public async handleReceiptTypeUpdate(val: '1' | '2' | '3' | '4' | '5') {
+  private async handleReceiptTypeUpdate(val: '1' | '2' | '3' | '4' | '5') {
     if (this.receiptType !== '2' && this.receiptType !== '5') {
       if (val === '2' || val === '5') {
         await this.sendGetAreasRequest()
@@ -1375,11 +1397,11 @@ export default class FunEventsDetail extends Vue {
     this.receiptType = val
   }
 
-  public async handleGetCounty(val: string) {
+  private async handleGetCounty(val: string) {
     await this.sendGetCountyRequest(val)
   }
 
-  public async handleCreateActivity() {
+  private async handleCreateActivity() {
     try {
       const result = await this.sendSignUpActivityRequest()
       this.orderNumber = result.orderNumber
@@ -1468,7 +1490,7 @@ export default class FunEventsDetail extends Vue {
     return '立即報名'
   }
 
-  public formList: any = {
+  private formList: any = {
     accountname: { label: '姓名', type: 'text' },
     accountid: { label: '工號', type: 'text' },
     mobilephone: { label: '手機號碼', type: 'text' },
@@ -1493,22 +1515,22 @@ export default class FunEventsDetail extends Vue {
     customDropDownList3: { label: 'customColumnName', type: 'select' }
   }
 
-  public initialzied: boolean = false
+  private initialzied: boolean = false
 
-  public form: any = {
+  private form: any = {
     phone: '',
     name: ''
   }
 
-  public timer: number = 0
+  private timer: number = 0
 
-  public formDataDetail: any = []
+  private formDataDetail: any = []
 
-  public formData: any = []
+  private formData: any = []
 
-  public formCreated: boolean = false
+  private formCreated: boolean = false
 
-  public getFormData(): Array<any> {
+  private getFormData(): Array<any> {
     let obj: any = {}
     let res: any = []
     for (let i = 0; i < this.couponOrder.length; i++) {
@@ -1548,7 +1570,11 @@ export default class FunEventsDetail extends Vue {
     return res
   }
 
-  public handleInput(value: string | number, index: number, key: string): void {
+  private handleInput(
+    value: string | number,
+    index: number,
+    key: string
+  ): void {
     this.formDataDetail[index][key].value = value
   }
 
@@ -1582,9 +1608,8 @@ export default class FunEventsDetail extends Vue {
     }
     if (newVal === 2 && !this.initialzied) {
       dialogStore.setContent({
-        title: '請注意',
+        title: '開始報名後請在 15 分鐘內完成！',
         icon: true,
-        message: '開始報名後請在 15 分鐘內完成!',
         type: 'accept'
       })
       dialogStore.setMaskActive(true)
@@ -1644,18 +1669,18 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public currentTab: number = 0
+  private currentTab: number = 0
 
-  public tabs: Array<any> = [
+  private tabs: Array<any> = [
     { label: '1 選擇票種', value: 1 },
     { label: '2 會員資料', value: 2 },
     { label: '3 填寫表單', value: 3 },
     { label: '4 付款', value: 4 }
   ]
 
-  public isFilled: Array<number> = []
+  private isFilled: Array<number> = []
 
-  public handleApply(): void {
+  private handleApply(): void {
     if (this.eventInfo.hasToAlert) {
       dialogStore.setMaskActive(true)
       dialogStore.setActive(true)
@@ -1671,7 +1696,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public handleDialogConfirm(): void {
+  private handleDialogConfirm(): void {
     if (dialogStore.content.initializer === 'funevents-serialno-confirmTab') {
       dialogStore.setMaskActive(false)
       dialogStore.setActive(false)
@@ -1679,7 +1704,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public handleDialogClose(): void {
+  private handleDialogClose(): void {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
     if (dialogStore.content.initializer === 'fun-event-order-success') {
@@ -1695,27 +1720,27 @@ export default class FunEventsDetail extends Vue {
     return dialogStore.content
   }
 
-  public couponListTableFields: Array<TableField> = [
+  private couponListTableFields: Array<TableField> = [
     { label: '票種名稱', field: 'couponName' },
     { label: '數量', field: 'couponQuantity' },
     { label: '數量', field: 'couponStatus' },
     { label: '小計($)', field: 'couponPrice' }
   ]
 
-  public tableFields: Array<TableField> = [
+  private tableFields: Array<TableField> = [
     { label: '票種', field: 'couponName' },
     { label: '販售時間', field: 'couponAvailableDate' },
     { label: '狀態', field: 'couponStatus' },
     { label: '票價($)', field: 'couponPrice' }
   ]
 
-  public checkoutTableFields: Array<TableField> = [
+  private checkoutTableFields: Array<TableField> = [
     { label: '票種名稱', field: 'couponName' },
     { label: '數量', field: 'couponQuantity' },
     { label: '小計($)', field: 'couponPrice' }
   ]
 
-  public carouselSetting: any = {
+  private carouselSetting: any = {
     dots: false,
     edgeFriction: 0.35,
     infinite: false,
@@ -1789,7 +1814,7 @@ export default class FunEventsDetail extends Vue {
       : []
   }
 
-  public couponOrder: Array<number> = []
+  private couponOrder: Array<number> = []
 
   @Watch('eventCouponList', { deep: true })
   private onPropertyChange(newVal: Array<TableData>): void {
@@ -1797,7 +1822,7 @@ export default class FunEventsDetail extends Vue {
     this.couponOrder = res
   }
 
-  public handleOrderDecrement(index: number, value: number): void {
+  private handleOrderDecrement(index: number, value: number): void {
     if (this.couponOrder[index] > 0) {
       const res: Array<number> = this.couponOrder.map((item, i) => {
         if (i === index) {
@@ -1812,7 +1837,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public handleOrderIncrement(index: number, value: number): void {
+  private handleOrderIncrement(index: number, value: number): void {
     const res: Array<number> = this.couponOrder.map((item, i) => {
       if (i === index) {
         const num = Number(item) + value
@@ -1825,11 +1850,11 @@ export default class FunEventsDetail extends Vue {
     this.couponOrder = res
   }
 
-  public agreePrivacy: boolean = false
+  private agreePrivacy: boolean = false
 
-  public agreePrivacy2: boolean = false
+  private agreePrivacy2: boolean = false
 
-  public eventStatus(s: string, e: string): string {
+  private eventStatus(s: string, e: string): string {
     const today = new Date()
     const startDate = new Date(s)
     const endDate = new Date(e)
@@ -1869,7 +1894,7 @@ export default class FunEventsDetail extends Vue {
       : []
   }
 
-  public async sendGetEventDetailRequest() {
+  private async sendGetEventDetailRequest() {
     try {
       await funEventsStore.getEventDetail({
         token: this.$cookies.get('accessToken'),
@@ -1887,7 +1912,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async sendGetAddressMenuRequest() {
+  private async sendGetAddressMenuRequest() {
     try {
       await commonStore.getArea({ token: this.$cookies.get('accessToken') })
     } catch (e) {
@@ -1895,7 +1920,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async sendGetCountyRequest(areaName: string, index?: number) {
+  private async sendGetCountyRequest(areaName: string, index?: number) {
     try {
       await commonStore.getCounty({
         token: this.$cookies.get('accessToken'),
@@ -1907,7 +1932,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async sendSignUpActivityRequest() {
+  private async sendSignUpActivityRequest() {
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/FunActivity/ToSignUpActivity',
       key: process.env.apiKey,
@@ -1935,7 +1960,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async sendCreateActivityUserInfoRequest() {
+  private async sendCreateActivityUserInfoRequest() {
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/FunActivity/ToCreateFunActivityUserInfo',
       key: process.env.apiKey,
@@ -1966,7 +1991,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async sendGetAreasRequest() {
+  private async sendGetAreasRequest() {
     try {
       await commonStore.getAreas({ token: this.$cookies.get('accessToken') })
     } catch (e) {
@@ -1974,7 +1999,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async sendCreateOrderRequest() {
+  private async sendCreateOrderRequest() {
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/FunActivity/Order',
       key: process.env.apiKey,
@@ -2033,7 +2058,7 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async sendGetPointDiscountRequest() {
+  private async sendGetPointDiscountRequest() {
     try {
       await pointStore.getDiscountAmount({
         token: this.$cookies.get('accessToken'),
@@ -2044,11 +2069,11 @@ export default class FunEventsDetail extends Vue {
     }
   }
 
-  public async fetch() {
+  private async fetch() {
     await this.sendGetEventDetailRequest()
   }
 
-  public activated() {
+  private activated() {
     this.currentTab = 0
     this.$nextTick(async () => {
       this.$nuxt.$loading.start()
@@ -2058,9 +2083,9 @@ export default class FunEventsDetail extends Vue {
     })
   }
 
-  public interval: any = null
+  private interval: any = null
 
-  public beforeDestroyed() {
+  private beforeDestroyed() {
     clearTimeout(this.interval)
     this.formCreated = false
     this.initialzied = false
@@ -2336,11 +2361,10 @@ export default class FunEventsDetail extends Vue {
     text-align: center;
   }
   &__box {
-    padding-top: 60px;
+    padding-top: $spacing-m;
     display: flex;
     justify-content: center;
     flex-direction: column;
-    align-items: center;
     color: $greyThree;
   }
   &__link {

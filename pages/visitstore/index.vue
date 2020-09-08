@@ -33,7 +33,8 @@
                   display="inline"
                   @click="handlePageUpdate"
                   v-show="storeData.length < storeDataLength"
-                >看更多</base-button>
+                  >看更多</base-button
+                >
               </div>
             </b-col>
           </b-row>
@@ -179,7 +180,8 @@ export default class VisitStoreIndex extends Vue {
     try {
       await this.sendGetCategoriesRequest()
       await this.sendGetAreasRequest()
-      await this.sendStoreSearchRequest()
+      // 預設不查找
+      // await this.sendStoreSearchRequest()
     } catch (e) {
       dialogStore.setActive(true)
       dialogStore.setMaskActive(true)
@@ -197,7 +199,8 @@ export default class VisitStoreIndex extends Vue {
         this.$nuxt.$loading.start()
         await this.sendGetCategoriesRequest()
         await this.sendGetAreasRequest()
-        await this.sendStoreSearchRequest()
+        // 預設不查找
+        // await this.sendStoreSearchRequest()
       } catch (e) {
         dialogStore.setActive(true)
         dialogStore.setMaskActive(true)

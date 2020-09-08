@@ -9,6 +9,7 @@
       prefix-class="xmx"
       :disabled-date="disabledDates"
       :disabled="disabled"
+      :clearable="clearable"
     ></date-picker>
   </label>
 </template>
@@ -53,6 +54,14 @@ export default class BaseDatepicker extends Vue {
     }
   })
   readonly disabled!: boolean
+
+  @Prop({
+    type: Boolean,
+    default() {
+      return false
+    }
+  })
+  readonly clearable!: boolean
 }
 </script>
 <style lang="scss" scoped>

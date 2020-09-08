@@ -6,8 +6,12 @@
           <div class="contact">
             <p class="contact__item">客服專線：(02) 6617-7100</p>
             <p class="contact__item">E-mail：stayfun_service@mayohr.com</p>
-            <p class="contact__item">服務時間：週一至週五9:00~18:00 (不含週六、日與國定例假日)</p>
-            <p class="contact__item">請於服務時間來電，客服人員將盡速為您處理與回覆。</p>
+            <p class="contact__item">
+              服務時間：週一至週五9:00~18:00 (不含週六、日與國定例假日)
+            </p>
+            <p class="contact__item">
+              請於服務時間來電，客服人員將盡速為您處理與回覆。
+            </p>
             <div class="contact__btn">
               <button class="contactBtn">線上客服</button>
             </div>
@@ -28,7 +32,35 @@ import DefaultMainContainer from '~/components/DefaultMainContainer.vue'
     DefaultMainContainer
   }
 })
-export default class Contact extends Vue {}
+export default class Contact extends Vue {
+  private head() {
+    return {
+      title: 'STAYFUN員工福利整合平台 | 聯絡資訊',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'STAYFUN員工福利整合平台 | 聯絡資訊'
+        },
+        {
+          hid: 'og:title',
+          name: 'og:title',
+          content: 'STAYFUN員工福利整合平台 | 聯絡資訊'
+        },
+        {
+          hid: 'og:type',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台'
+        },
+        {
+          hid: 'og:description',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台 | 聯絡資訊'
+        }
+      ]
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 @import '../assets/scss/utils/variables';

@@ -14,7 +14,6 @@ export default {
    ** See https://nuxtjs.org/api/configuration-head
    */
   head: {
-    // title: process.env.npm_package_name || '',
     title: 'STAYFUN員工福利整合平台',
     meta: [
       { charset: 'utf-8' },
@@ -22,9 +21,29 @@ export default {
       {
         hid: 'description',
         name: 'description',
-        // content: process.env.npm_package_description || ''
         content:
           '精選數百件商品、全台優惠折扣票券、特約優惠商店、各式有趣活動資訊，STAYFUN幫你搞定福委大小事！'
+      },
+      {
+        hid: 'og:title',
+        name: 'og:title',
+        content: 'STAYFUN員工福利整合平台'
+      },
+      {
+        hid: 'og:type',
+        name: 'og:type',
+        content: 'STAYFUN員工福利整合平台'
+      },
+      {
+        hid: 'og:description',
+        name: 'og:description',
+        content:
+          '精選數百件商品、全台優惠折扣票券、特約優惠商店、各式有趣活動資訊，STAYFUN幫你搞定福委大小事！'
+      },
+      {
+        hid: 'apple-mobile-web-app-title',
+        name: 'apple-mobile-web-app-title',
+        content: 'STAYFUN員工福利整合平台'
       }
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]

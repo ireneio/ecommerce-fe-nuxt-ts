@@ -1,7 +1,11 @@
 <template>
   <div>
     <welfare-container title="表單申請" :isAuthorized="authorized">
-      <section v-for="item in sheets" :key="item.categoryId" class="welfareApplication">
+      <section
+        v-for="item in sheets"
+        :key="item.categoryId"
+        class="welfareApplication"
+      >
         <h4 class="welfareApplication__title">
           <img src="/img/img-smile.svg" alt="stayfun logo" />
           <span>{{ item.categoryName }}</span>
@@ -9,7 +13,13 @@
         <section class="welfareApplication__content">
           <b-container>
             <b-row>
-              <b-col cols="24" lg="8" v-for="sheet in item.sheets" :key="sheet.id" class="mt-5">
+              <b-col
+                cols="24"
+                lg="8"
+                v-for="sheet in item.sheets"
+                :key="sheet.id"
+                class="mt-5"
+              >
                 <welfare-card
                   :serialno="sheet.documentNumber"
                   :title="sheet.sheetName"
@@ -48,6 +58,34 @@ import { welfareStore, dialogStore } from '~/store'
   }
 })
 export default class WelfareIndex extends Vue {
+  private head() {
+    return {
+      title: 'STAYFUN員工福利整合平台 | 表單申請',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'STAYFUN員工福利整合平台 | 表單申請'
+        },
+        {
+          hid: 'og:title',
+          name: 'og:title',
+          content: 'STAYFUN員工福利整合平台 | 表單申請'
+        },
+        {
+          hid: 'og:type',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台'
+        },
+        {
+          hid: 'og:description',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台 | 表單申請'
+        }
+      ]
+    }
+  }
+
   get dialogState() {
     return dialogStore.active
   }

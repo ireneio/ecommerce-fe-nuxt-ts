@@ -336,137 +336,145 @@
         </b-container>
       </main>
     </visit-store-container>
-    <default-modal :active="modalState" @click="handleModalClose">
-      <template #title>
-        <div class="modalTitleArea" v-if="modalType === 0">
-          <h4>店家異常通報</h4>
-          <p>感謝您的協助，請提供錯誤情況的詳細資訊，</p>
-          <p>STAYFUN將會盡快查證並更新資料</p>
-        </div>
-        <div class="modalTitleArea" v-if="modalType === 1">
-          <h4>您的回報已送出！</h4>
-          <p>感謝您的協助</p>
-          <p>STAYFUN將會盡快查證並更新資料</p>
-        </div>
-      </template>
-      <validation-observer v-slot="{ invalid }" v-if="modalType === 0">
-        <form @submit.prevent="handleSubmitReport">
-          <validation-provider rules="required" v-slot="{ errors }">
-            <base-label
-              text="問題類型"
-              :valid="!errors.length"
-              required
-              :hint="{
-                type: 'warning',
-                text: errors.length ? errors[0] : ''
-              }"
-            >
-              <base-select
-                placeholder="請選擇問題類型"
-                v-model="reportForm.problemType"
-                :options="[
-                  { label: '電話錯誤', value: 0, id: '1' },
-                  { label: '地址錯誤', value: 1, id: '2' },
-                  { label: '優惠項目錯誤', value: 2, id: '3' },
-                  { label: '無法使用特約優惠', value: 3, id: '4' },
-                  { label: '店家已歇業', value: 4, id: '5' },
-                  { label: '其他', value: 5, id: '6' }
-                ]"
+    <client-only>
+      <default-modal :active="modalState" @click="handleModalClose">
+        <template #title>
+          <div class="modalTitleArea" v-if="modalType === 0">
+            <h4>店家異常通報</h4>
+            <p>感謝您的協助，請提供錯誤情況的詳細資訊，</p>
+            <p>STAYFUN將會盡快查證並更新資料</p>
+          </div>
+          <div class="modalTitleArea" v-if="modalType === 1">
+            <h4>您的回報已送出！</h4>
+            <p>感謝您的協助</p>
+            <p>STAYFUN將會盡快查證並更新資料</p>
+          </div>
+        </template>
+        <validation-observer v-slot="{ invalid }" v-if="modalType === 0">
+          <form @submit.prevent="handleSubmitReport">
+            <validation-provider rules="required" v-slot="{ errors }">
+              <base-label
+                text="問題類型"
                 :valid="!errors.length"
-              />
-            </base-label>
-          </validation-provider>
-          <validation-provider rules="required" v-slot="{ errors }">
-            <base-label
-              text="消費日期/時間"
-              required
-              class="formRange"
-              :valid="!errors.length"
-              :hint="{
-                type: 'warning',
-                text: errors.length ? errors[0] : ''
-              }"
-            >
-              <base-datepicker
-                v-model="reportForm.problemDate"
-                format="YYYY-MM-DD"
+                required
+                :hint="{
+                  type: 'warning',
+                  text: errors.length ? errors[0] : ''
+                }"
+              >
+                <base-select
+                  placeholder="請選擇問題類型"
+                  v-model="reportForm.problemType"
+                  :options="[
+                    { label: '電話錯誤', value: 0, id: '1' },
+                    { label: '地址錯誤', value: 1, id: '2' },
+                    { label: '優惠項目錯誤', value: 2, id: '3' },
+                    { label: '無法使用特約優惠', value: 3, id: '4' },
+                    { label: '店家已歇業', value: 4, id: '5' },
+                    { label: '其他', value: 5, id: '6' }
+                  ]"
+                  :valid="!errors.length"
+                />
+              </base-label>
+            </validation-provider>
+            <validation-provider rules="required" v-slot="{ errors }">
+              <base-label
+                text="消費日期/時間"
+                required
+                class="formRange"
                 :valid="!errors.length"
-              />
-            </base-label>
-          </validation-provider>
-          <base-label text="是否告知為STAYFUN用戶？" required class="formRange">
-            <b-form-radio-group
-              id="radio-group-1"
-              v-model="reportForm.isStayfunUser"
-              name="radio-sub-component1"
-            >
-              <b-form-radio :value="true">是</b-form-radio>
-              <b-form-radio :value="false">否</b-form-radio>
-            </b-form-radio-group>
-          </base-label>
-          <base-label
-            text="是否出示STAYFUN電子識別證？"
-            required
-            class="formRange"
-          >
-            <b-form-radio-group
-              id="radio-group-2"
-              v-model="reportForm.isStayfunPass"
-              name="radio-sub-component2"
-            >
-              <b-form-radio :value="true">是</b-form-radio>
-              <b-form-radio :value="false">否</b-form-radio>
-            </b-form-radio-group>
-          </base-label>
-          <validation-provider v-slot="{ errors }" rules="required|max:500">
+                :hint="{
+                  type: 'warning',
+                  text: errors.length ? errors[0] : ''
+                }"
+              >
+                <base-datepicker
+                  v-model="reportForm.problemDate"
+                  format="YYYY-MM-DD"
+                  :valid="!errors.length"
+                />
+              </base-label>
+            </validation-provider>
             <base-label
-              text="使用經過"
+              text="是否告知為STAYFUN用戶？"
               required
               class="formRange"
-              :valid="!errors.length"
-              :hint="{
-                text: errors.length ? errors[0] : '',
-                type: 'warning'
-              }"
             >
-              <base-textarea
-                v-model="reportForm.problemDesc"
-                :valid="!errors.length"
-              />
+              <b-form-radio-group
+                id="radio-group-1"
+                v-model="reportForm.isStayfunUser"
+                name="radio-sub-component1"
+              >
+                <b-form-radio :value="true">是</b-form-radio>
+                <b-form-radio :value="false">否</b-form-radio>
+              </b-form-radio-group>
             </base-label>
-          </validation-provider>
-          <base-button
-            :type="
-              invalid ||
-              reportForm.problemDesc.length <= 0 ||
-              reportForm.problemType.length === 0 ||
-              reportForm.problemDate.length === 0
-                ? 'greyOne'
-                : 'primary'
-            "
-            display="block"
-            class="formRange"
-            :disabled="
-              invalid ||
-              reportForm.problemDesc.length <= 0 ||
-              reportForm.problemType.length === 0 ||
-              reportForm.problemDate.length === 0
-            "
-            >確定</base-button
-          >
-        </form>
-      </validation-observer>
-    </default-modal>
-    <default-dialog
-      :active="dialogState"
-      @cancel="handleDialogClose"
-      @accept="handleDialogClose"
-      @confirm="handleDialogConfirm"
-      :message="dialogContent.message"
-      :title="dialogContent.title"
-      :type="dialogContent.type"
-      :icon="dialogContent.icon"
-    ></default-dialog>
+            <base-label
+              text="是否出示STAYFUN電子識別證？"
+              required
+              class="formRange"
+            >
+              <b-form-radio-group
+                id="radio-group-2"
+                v-model="reportForm.isStayfunPass"
+                name="radio-sub-component2"
+              >
+                <b-form-radio :value="true">是</b-form-radio>
+                <b-form-radio :value="false">否</b-form-radio>
+              </b-form-radio-group>
+            </base-label>
+            <validation-provider v-slot="{ errors }" rules="required|max:500">
+              <base-label
+                text="使用經過"
+                required
+                class="formRange"
+                :valid="!errors.length"
+                :hint="{
+                  text: errors.length ? errors[0] : '',
+                  type: 'warning'
+                }"
+              >
+                <base-textarea
+                  v-model="reportForm.problemDesc"
+                  :valid="!errors.length"
+                />
+              </base-label>
+            </validation-provider>
+            <base-button
+              :type="
+                invalid ||
+                reportForm.problemDesc.length <= 0 ||
+                reportForm.problemType.length === 0 ||
+                reportForm.problemDate.length === 0
+                  ? 'greyOne'
+                  : 'primary'
+              "
+              display="block"
+              class="formRange"
+              :disabled="
+                invalid ||
+                reportForm.problemDesc.length <= 0 ||
+                reportForm.problemType.length === 0 ||
+                reportForm.problemDate.length === 0
+              "
+              >確定</base-button
+            >
+          </form>
+        </validation-observer>
+      </default-modal>
+    </client-only>
+    <client-only>
+      <default-dialog
+        :active="dialogState"
+        @cancel="handleDialogClose"
+        @accept="handleDialogClose"
+        @confirm="handleDialogConfirm"
+        :message="dialogContent.message"
+        :title="dialogContent.title"
+        :type="dialogContent.type"
+        :icon="dialogContent.icon"
+      ></default-dialog>
+    </client-only>
   </div>
 </template>
 <script lang="ts">

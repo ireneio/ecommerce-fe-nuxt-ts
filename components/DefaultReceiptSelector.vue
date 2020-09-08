@@ -5,13 +5,18 @@
       @input="handleOptionChange"
       name="defaultReceiptSelector"
     >
-      <b-form-radio value="1">捐贈財團法人天主教華光社會福利基金會</b-form-radio>
-      <b-form-radio value="2">StayFun會員載具</b-form-radio>
-      <b-form-radio value="3">雲端發票（手機載具</b-form-radio>
+      <b-form-radio value="1">
+        捐贈財團法人天主教華光社會福利基金會
+      </b-form-radio>
+      <b-form-radio value="2">STAYFUN 會員載具</b-form-radio>
+      <b-form-radio value="3">雲端發票（手機載具）</b-form-radio>
       <b-form-radio value="4">雲端發票（自然人憑證）</b-form-radio>
       <b-form-radio value="5">三聯式發票</b-form-radio>
     </b-form-radio-group>
-    <section class="defaultReceiptSelector__inputBox" v-if="value !== '1' || value !== ''">
+    <section
+      class="defaultReceiptSelector__inputBox"
+      v-if="value !== '1' || value !== ''"
+    >
       <validation-observer>
         <validation-provider rules="required|max:50" v-slot="{ errors }">
           <base-label
@@ -19,11 +24,16 @@
             v-if="value === '2'"
             :valid="!errors.length"
             :hint="{ type: 'warning', text: errors.length ? errors[0] : '' }"
+            :required="true"
           >
             <base-input :valid="!errors.length" v-model="form.receiver" />
           </base-label>
         </validation-provider>
-        <base-label text="發票地址" v-if="value === '2' || value === '5'">
+        <base-label
+          text="發票地址"
+          v-if="value === '2' || value === '5'"
+          :required="true"
+        >
           <div class="addressBox">
             <div class="addressBox__area">
               <validation-provider rules="required" v-slot="{ errors }">
@@ -48,9 +58,7 @@
               <validation-provider rules="required|max:50" v-slot="{ errors }">
                 <div class="addressBox__lineVal">
                   <span class="addressBox__lineZip">
-                    {{
-                    form.addressZipCode
-                    }}
+                    {{ form.addressZipCode }}
                   </span>
                   <base-input
                     class="addressBox__lineInput"
@@ -63,12 +71,30 @@
             </div>
           </div>
         </base-label>
-        <validation-provider rules="required|max:50" v-slot="{ errors }">
+        <validation-provider
+          rules="required|isTaiwanMobileCarrier"
+          v-slot="{ errors }"
+        >
           <base-label
             text="條碼"
-            v-if="value === '3' || value === '4'"
+            v-if="value === '3'"
             :valid="!errors.length"
             :hint="{ type: 'warning', text: errors.length ? errors[0] : '' }"
+            :required="true"
+          >
+            <base-input :valid="!errors.length" v-model="form.barcode" />
+          </base-label>
+        </validation-provider>
+        <validation-provider
+          rules="required|isTaiwanDigitalCert"
+          v-slot="{ errors }"
+        >
+          <base-label
+            text="條碼"
+            v-if="value === '4'"
+            :valid="!errors.length"
+            :hint="{ type: 'warning', text: errors.length ? errors[0] : '' }"
+            :required="true"
           >
             <base-input :valid="!errors.length" v-model="form.barcode" />
           </base-label>
@@ -79,16 +105,21 @@
             v-if="value === '5'"
             :valid="!errors.length"
             :hint="{ type: 'warning', text: errors.length ? errors[0] : '' }"
+            :required="true"
           >
             <base-input :valid="!errors.length" v-model="form.companyName" />
           </base-label>
         </validation-provider>
-        <validation-provider rules="required|max:50" v-slot="{ errors }">
+        <validation-provider
+          rules="required|isTaiwanReceipt"
+          v-slot="{ errors }"
+        >
           <base-label
             text="統一編號"
             v-if="value === '5'"
             :valid="!errors.length"
             :hint="{ type: 'warning', text: errors.length ? errors[0] : '' }"
+            :required="true"
           >
             <base-input :valid="!errors.length" v-model="form.identification" />
           </base-label>
@@ -141,12 +172,19 @@ export default class DefaultReceiptSelector extends Vue {
     if (this.value === '1') {
       return true
     }
-    if (this.value === '3' || this.value === '4') {
-      if (this.form.barcode !== '') {
-        return true
-      }
+    if (
+      this.value === '4' &&
+      /^[a-zA-Z]{2}[0-9]{14}$/.test(this.form.barcode)
+    ) {
+      return true
+    }
+    if (this.value === '3' && /^\/{1}[0-9A-Z]{7}$/.test(this.form.barcode)) {
+      return true
     }
     if (this.value === '2' || this.value === '5') {
+      if (this.value === '5' && !/^[0-9]{8}$/.test(this.form.identification)) {
+        return false
+      }
       if (
         this.form.addressArea !== '' &&
         this.form.addressCounty !== '' &&

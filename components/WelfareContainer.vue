@@ -112,6 +112,7 @@ export default class WelfareContainer extends Vue {
 
 <style lang="scss" scoped>
 @import '../assets/scss/utils/variables';
+@import '../assets/scss/utils/media';
 
 .welfare {
   &__title {
@@ -129,6 +130,7 @@ export default class WelfareContainer extends Vue {
 }
 .welfareheader {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   padding: $spacing-l;
   border-bottom: none;
@@ -148,7 +150,10 @@ export default class WelfareContainer extends Vue {
   }
   &__search {
     margin-left: auto;
-    width: 30%;
+    width: 100%;
+    @include grid-md {
+      width: 30%;
+    }
   }
 }
 .welfaremain {

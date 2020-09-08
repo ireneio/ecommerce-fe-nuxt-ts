@@ -7,12 +7,14 @@
             class="announcements__tab"
             :class="{ 'announcements__tab--active': currentTab === 0 }"
             @click="currentTab = 0"
-          >最新消息</span>
+            >最新消息</span
+          >
           <span
             class="announcements__tab"
             :class="{ 'announcements__tab--active': currentTab === 1 }"
             @click="currentTab = 1"
-          >個人通知</span>
+            >個人通知</span
+          >
         </div>
         <div class="announcements__content">
           <questionnaires-card
@@ -23,6 +25,12 @@
             type="announcements"
             :value="item"
             v-show="currentTab === 0"
+            @click="
+              $router.push({
+                name: 'announcements-serialno',
+                params: { serialno: item.serialno }
+              })
+            "
           />
           <questionnaires-card
             v-for="item in personalNewsCardData"
@@ -32,6 +40,12 @@
             type="announcements"
             :value="item"
             v-show="currentTab === 1"
+            @click="
+              $router.push({
+                name: 'announcements-serialno',
+                params: { serialno: item.serialno }
+              })
+            "
           />
         </div>
         <div class="announcements__paging" v-if="currentTab === 0">
@@ -39,7 +53,9 @@
             class="announcements__page"
             @click="handlePageUpdateTab0(-1)"
             v-show="pageTab0 > 1"
-          >上一頁</div>
+          >
+            上一頁
+          </div>
           <div
             class="announcements__page"
             v-for="i in latestNewsPages"
@@ -54,14 +70,18 @@
             class="announcements__page"
             @click="handlePageUpdateTab0(1)"
             v-show="pageTab0 < latestNewsPages"
-          >下一頁</div>
+          >
+            下一頁
+          </div>
         </div>
         <div class="announcements__paging" v-if="currentTab === 1">
           <div
             class="announcements__page"
             @click="handlePageUpdateTab1(-1)"
             v-show="pageTab1 > 1"
-          >上一頁</div>
+          >
+            上一頁
+          </div>
           <div
             class="announcements__page"
             v-for="i in personalNewsPages"
@@ -76,7 +96,9 @@
             class="announcements__page"
             @click="handlePageUpdateTab1(1)"
             v-show="pageTab1 < personalNewsPages"
-          >下一頁</div>
+          >
+            下一頁
+          </div>
         </div>
       </div>
     </default-main-container>

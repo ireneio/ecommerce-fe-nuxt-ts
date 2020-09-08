@@ -28,6 +28,121 @@
               class="navigationbar__logo"
               @click="$router.push({ name: 'index' })"
             ></div>
+            <ul
+              class="navigationbar__navigationMobile"
+              :class="{ 'navigationbar__navigationMobile--active': navState }"
+            >
+              <li
+                class="navigationbar__navlinkMobile navigationbar__navlinkMobile--first"
+                @click="handleToggleNav"
+              >
+                <!-- <fa
+                  :icon="['fas', `${navState ? 'angle-up' : 'angle-down'}`]"
+                  class="navigationbar__navlinkMobileIcon navigationbar__navlinkMobileIcon--first"
+                /> -->
+                <fa
+                  :icon="['fas', `${navState ? 'angle-up' : 'bars'}`]"
+                  class="navigationbar__navlinkMobileIcon navigationbar__navlinkMobileIcon--first"
+                />
+                <!-- <a href="javascript:;">{{ currentRouteName }}</a> -->
+                <!-- <a href="javascript:;">選單</a> -->
+              </li>
+              <li
+                class="navigationbar__navlinkMobile"
+                :class="{ 'navigationbar__navlinkMobile--active': navState }"
+                @click="$router.push({ name: 'index' })"
+              >
+                <fa
+                  :icon="['fas', 'globe']"
+                  class="navigationbar__navlinkMobileIcon"
+                />
+                <a href="javascript:;">首頁</a>
+              </li>
+              <li
+                class="navigationbar__navlinkMobile"
+                :class="{ 'navigationbar__navlinkMobile--active': navState }"
+                @click="$router.push({ name: 'announcements' })"
+                v-if="menu.includes('訊息牆')"
+              >
+                <fa
+                  :icon="['fas', 'comment-dots']"
+                  class="navigationbar__navlinkMobileIcon"
+                />
+                <a href="javascript:;">訊息牆</a>
+              </li>
+              <li
+                class="navigationbar__navlinkMobile"
+                :class="{ 'navigationbar__navlinkMobile--active': navState }"
+                @click="$router.push({ name: 'funevents' })"
+                v-if="menu.includes('瘋活動')"
+              >
+                <fa
+                  :icon="['fas', 'thumbtack']"
+                  class="navigationbar__navlinkMobileIcon"
+                />
+                <a href="javascript:;">瘋活動</a>
+              </li>
+              <li
+                class="navigationbar__navlinkMobile"
+                :class="{ 'navigationbar__navlinkMobile--active': navState }"
+                @click="$router.push({ name: 'joinclub' })"
+                v-if="menu.includes('揪團樂')"
+              >
+                <fa
+                  :icon="['fas', 'shopping-cart']"
+                  class="navigationbar__navlinkMobileIcon"
+                />
+                <a href="javascript:;">揪團樂</a>
+              </li>
+              <li
+                class="navigationbar__navlinkMobile"
+                :class="{ 'navigationbar__navlinkMobile--active': navState }"
+                @click="$router.push({ name: 'visitstore' })"
+                v-if="menu.includes('逛特約')"
+              >
+                <fa
+                  :icon="['fas', 'map-marker-alt']"
+                  class="navigationbar__navlinkMobileIcon"
+                />
+                <a href="javascript:;">逛特約</a>
+              </li>
+              <li
+                class="navigationbar__navlinkMobile"
+                :class="{ 'navigationbar__navlinkMobile--active': navState }"
+                @click="$router.push({ name: 'questionnaires' })"
+                v-if="menu.includes('調查所')"
+              >
+                <fa
+                  :icon="['fas', 'search']"
+                  class="navigationbar__navlinkMobileIcon"
+                />
+                <a href="javascript:;">調查所</a>
+              </li>
+              <li
+                class="navigationbar__navlinkMobile"
+                :class="{ 'navigationbar__navlinkMobile--active': navState }"
+                @click="$router.push({ name: 'welfare' })"
+                v-if="menu.includes('津貼中心')"
+              >
+                <fa
+                  :icon="['fas', 'paperclip']"
+                  class="navigationbar__navlinkMobileIcon"
+                />
+                <a href="javascript:;">津貼中心</a>
+              </li>
+              <li
+                class="navigationbar__navlinkMobile"
+                :class="{ 'navigationbar__navlinkMobile--active': navState }"
+                @click="$router.push({ name: 'member-info' })"
+                v-if="menu.includes('我的專區')"
+              >
+                <fa
+                  :icon="['fas', 'user']"
+                  class="navigationbar__navlinkMobileIcon"
+                />
+                <a href="javascript:;">我的專區</a>
+              </li>
+            </ul>
             <ul class="navigationbar__navigation">
               <li
                 class="navigationbar__navlink"
@@ -92,7 +207,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Prop } from 'nuxt-property-decorator'
+import { Component, Vue, Prop, Watch } from 'nuxt-property-decorator'
 
 @Component
 export default class DefaultHeader extends Vue {
@@ -111,6 +226,39 @@ export default class DefaultHeader extends Vue {
     }
   })
   readonly user!: string
+
+  get currentRouteName(): string {
+    const routeMap: any = {
+      announcements: '訊息牆',
+      welfare: '津貼中心',
+      joinclub: '揪團樂',
+      questionnaires: '調查所',
+      member: '我的專區',
+      funevents: '瘋活動',
+      shoppingmall: '好好買'
+    }
+    const route: string | undefined | null = this.$route.name
+    console.log(route)
+    const routeName = Object.keys(routeMap).reduce((prev, key: string) => {
+      if (route && route.includes(key)) {
+        return (prev += routeMap[key])
+      } else {
+        return prev
+      }
+    }, '')
+    return routeName
+  }
+
+  private navState = false
+
+  private handleToggleNav(): void {
+    this.navState = !this.navState
+  }
+
+  @Watch('$route.name')
+  private onRouteChange() {
+    this.navState = false
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -165,10 +313,15 @@ export default class DefaultHeader extends Vue {
   }
 }
 .navigationbar {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   width: 100%;
+  padding-bottom: 49px;
+  @include grid-md {
+    padding-bottom: 0;
+  }
   @include grid-xl {
     height: 120px;
   }
@@ -188,11 +341,14 @@ export default class DefaultHeader extends Vue {
     background-size: contain;
   }
   &__navigation {
+    display: none;
     flex: 0 0 100%;
-    display: flex;
     flex-wrap: wrap;
     justify-content: center;
     margin-left: auto;
+    @include grid-md {
+      display: flex;
+    }
     @include grid-xl {
       flex: 0 0 auto;
       justify-content: flex-start;
@@ -215,6 +371,60 @@ export default class DefaultHeader extends Vue {
       &--active {
         color: $primary;
       }
+    }
+  }
+  &__navigationMobile {
+    position: absolute;
+    top: 88px;
+    left: 0;
+    width: 100vw;
+    overflow: hidden;
+    margin-left: -15px;
+    background-color: #fff;
+    &--active {
+      z-index: 20;
+    }
+    @include grid-md {
+      display: none;
+    }
+  }
+  &__navlinkMobile {
+    font-size: 0;
+    padding: 0;
+    cursor: pointer;
+    transform: translate(0, -30%);
+    transition: transform 0.6s ease-out;
+    font-weight: bold;
+    border-top: 1px solid $whiteThree;
+    > a {
+      color: $orange;
+    }
+    &--first {
+      transform: translate(0, 0);
+      font-size: $fz-m;
+      padding: $spacing-m 0 $spacing-m 24px;
+      border-top-color: transparent;
+      > a {
+        color: $greyThree;
+      }
+    }
+    &--active {
+      padding: $spacing-m 0 $spacing-m 24px;
+      font-size: $fz-m;
+      transform: translate(0, 0);
+    }
+    &:focus {
+      > a {
+        color: $orangeDark;
+      }
+    }
+  }
+  &__navlinkMobileIcon {
+    margin-right: $spacing-s;
+    color: $orange;
+    &--first {
+      color: $orange;
+      font-size: $fz-xl;
     }
   }
 }

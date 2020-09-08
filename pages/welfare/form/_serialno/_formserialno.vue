@@ -15,7 +15,8 @@
                   ? '#fabf13'
                   : formStatus === 1
                   ? '#5ab9d1'
-                  : ''
+                  : '',
+              color: formStatus === 5 ? '#959595' : '#fff'
             }"
           >
             {{ formStrStatus }}
@@ -148,7 +149,7 @@
                     :required="col.isRequired"
                     :valid="!errors.length"
                     :hint="{
-                      text: errors.length ? errors[0] : '必填',
+                      text: errors.length ? errors[0] : '',
                       type: 'warning'
                     }"
                     v-if="
@@ -184,6 +185,7 @@
                       @change="handleFileInput($event, form[col.columnId])"
                       v-if="col.type === 'files'"
                       :disabled="formStatus !== 0"
+                      @error="handleFileError"
                     />
                     <div
                       v-if="col.type === 'files' && formFiles.length > 0"
@@ -197,7 +199,10 @@
                           handleFileAction($event, item.fileUrl, item.fileId)
                         "
                       >
-                        <span class="welfareForm__filedownloadRemove">
+                        <span
+                          class="welfareForm__filedownloadRemove"
+                          v-if="!currentRouteIsAuthorize && formStatus === 0"
+                        >
                           X
                         </span>
                         <span class="welfareForm__filedownloadBtnText">
@@ -260,8 +265,11 @@
                 </validation-provider>
               </b-col>
             </b-row>
-            <b-row class="mt-5">
-              <b-col cols="24" v-if="formStatus !== 0">
+            <b-row
+              class="mt-5"
+              v-if="formStatus !== 0 && currentRouteIsAuthorize"
+            >
+              <b-col cols="24">
                 <validation-provider
                   v-slot="{ errors }"
                   rules="max:1000|required"
@@ -317,7 +325,10 @@
                       暫存
                     </base-button>
                   </span>
-                  <span class="welfareForm__btn" v-if="formStatus === 1">
+                  <span
+                    class="welfareForm__btn"
+                    v-if="formStatus === 1 && currentRouteIsAuthorize"
+                  >
                     <base-button
                       :type="signingDisabled ? 'greyOne' : 'greyTwo'"
                       @click="handleConfirmSigning(2)"
@@ -326,7 +337,10 @@
                       需補件
                     </base-button>
                   </span>
-                  <span class="welfareForm__btn" v-if="formStatus === 1">
+                  <span
+                    class="welfareForm__btn"
+                    v-if="formStatus === 1 && currentRouteIsAuthorize"
+                  >
                     <base-button
                       :type="signingDisabled ? 'greyOne' : 'greyTwo'"
                       @click="handleConfirmSigning(5)"
@@ -358,7 +372,7 @@
                 lg="12"
                 xl="15"
                 class="mt-5 mt-lg-0"
-                v-if="formStatus === 1"
+                v-if="formStatus === 1 && currentRouteIsAuthorize"
               >
                 <base-button
                   type="primary"
@@ -419,13 +433,43 @@ import { welfareStore, dialogStore } from '~/store'
   }
 })
 export default class WelfareForm extends Vue {
+  private head() {
+    return {
+      title: 'STAYFUN員工福利整合平台 | 表單填寫',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'STAYFUN員工福利整合平台 | 表單填寫'
+        },
+        {
+          hid: 'og:title',
+          name: 'og:title',
+          content: 'STAYFUN員工福利整合平台 | 表單填寫'
+        },
+        {
+          hid: 'og:type',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台'
+        },
+        {
+          hid: 'og:description',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台 | 表單填寫'
+        }
+      ]
+    }
+  }
+
+  private currentRouteIsAuthorize = false
+
   private signingComment: string = ''
 
-  get signingDisabled(): boolean {
+  private get signingDisabled(): boolean {
     return this.signingComment === ''
   }
 
-  get signingDateTime(): string {
+  private get signingDateTime(): string {
     return Object.keys(welfareStore.formNew).length
       ? new Date(welfareStore.formNew.signingDateTime).toLocaleString('zh-tw', {
           month: '2-digit',
@@ -437,7 +481,7 @@ export default class WelfareForm extends Vue {
       : ''
   }
 
-  get signingOpinions(): string {
+  private get signingOpinions(): string {
     return Object.keys(welfareStore.formNew).length
       ? welfareStore.formNew.opinions.reduce(
           (prev: string, curr: any) => prev.concat(curr.opinionWithStatus),
@@ -489,19 +533,19 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  get authorized(): boolean {
+  private get authorized(): boolean {
     return welfareStore.authorized
   }
 
-  get dialogState() {
+  private get dialogState() {
     return dialogStore.active
   }
 
-  get dialogContent() {
+  private get dialogContent() {
     return dialogStore.content
   }
 
-  public async handleDialogConfirm() {
+  private async handleDialogConfirm() {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
     if (dialogStore.content.initializer === 'welfare-form-delete') {
@@ -528,7 +572,7 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public handleDialogClose() {
+  private handleDialogClose() {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
     if (dialogStore.content.initializer === 'welfare-submit-success') {
@@ -539,7 +583,6 @@ export default class WelfareForm extends Vue {
   }
 
   private async handleFileAction(e: any, url: string, fileId: string) {
-    console.log(e.target.classList)
     const classList = Array.from(e.target.classList)
     if (classList.includes('welfareForm__filedownloadRemove')) {
       await this.handleFileRemove(fileId)
@@ -570,7 +613,41 @@ export default class WelfareForm extends Vue {
     window.open(url, '_blank')
   }
 
-  get submitDisabled() {
+  private handleFileError(errMsg: string) {
+    dialogStore.setContent({
+      title: '請注意',
+      message: errMsg,
+      icon: true,
+      type: 'accept'
+    })
+    dialogStore.setMaskActive(true)
+    dialogStore.setActive(true)
+  }
+
+  private async handleFileInput(fileArr: Array<any>): Promise<any> {
+    const formData = new FormData()
+    fileArr.forEach((file: any) => {
+      formData.append('files', file)
+    })
+    this.form.RelatedFiles = formData
+    try {
+      await this.sendFileUploadRequest()
+      await this.sendGetLatestRequest()
+    } catch (e) {
+      // file upload error
+      dialogStore.setActive(true)
+      dialogStore.setMaskActive(true)
+      dialogStore.setContent({
+        title: '系統異常！',
+        message: '請聯絡 STAYFUN 客服人員。',
+        icon: true,
+        type: 'accept',
+        initializer: 'welfare-error'
+      })
+    }
+  }
+
+  private get submitDisabled() {
     return Object.keys(this.form).findIndex(
       (key: any) =>
         this.form[key] === '' && key !== 'RelatedFiles' && key !== 'Remarks'
@@ -579,13 +656,13 @@ export default class WelfareForm extends Vue {
       : false
   }
 
-  get confirmDisabled() {
+  private get confirmDisabled() {
     return Object.keys(welfareStore.formNew).length
       ? welfareStore.formNew.status === 1
       : false
   }
 
-  get happenDateIntervals() {
+  private get happenDateIntervals() {
     const find = this.formCols.find(
       (item: any) => item.columnId === 'HappenDate'
     )
@@ -612,7 +689,7 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public colsMap: any = {
+  private colsMap: any = {
     Remarks: { type: 'textarea', placeholder: '請輸入備註' },
     HappenDate: { type: 'date', placeholder: '請輸入日期' },
     Applicant: { type: 'text', placeholder: '請輸入真實姓名' },
@@ -640,14 +717,14 @@ export default class WelfareForm extends Vue {
     Babies: { type: 'text', placeholder: '請輸入數量' }
   }
 
-  public form: any = {}
+  private form: any = {}
 
-  public basicInfo: any = {
+  private basicInfo: any = {
     applicantId: '',
     creatorChineseName: ''
   }
 
-  public async handleSubmit(status: 0 | 1) {
+  private async handleSubmit(status: 0 | 1) {
     this.$nuxt.$loading.start()
     try {
       await this.sendSaveRequest(status)
@@ -674,7 +751,7 @@ export default class WelfareForm extends Vue {
     }
   }
 
-  public handleDelete() {
+  private handleDelete() {
     dialogStore.setActive(true)
     dialogStore.setMaskActive(true)
     dialogStore.setContent({
@@ -685,41 +762,19 @@ export default class WelfareForm extends Vue {
     })
   }
 
-  public handlePrint() {
+  private handlePrint() {
     window.print()
   }
 
-  public async handleFileInput(fileArr: Array<any>): Promise<any> {
-    const formData = new FormData()
-    fileArr.forEach((file: any) => {
-      formData.append('files', file)
-    })
-    this.form.RelatedFiles = formData
-    try {
-      await this.sendFileUploadRequest()
-    } catch (e) {
-      // file upload error
-      dialogStore.setActive(true)
-      dialogStore.setMaskActive(true)
-      dialogStore.setContent({
-        title: '系統異常！',
-        message: '請聯絡 STAYFUN 客服人員。',
-        icon: true,
-        type: 'accept',
-        initializer: 'welfare-error'
-      })
-    }
-  }
-
-  get formFiles() {
+  private get formFiles() {
     return welfareStore.formNew.files || []
   }
 
-  get formInfo() {
+  private get formInfo() {
     return welfareStore.formInfo
   }
 
-  get formCols() {
+  private get formCols() {
     return welfareStore.formCols.map((item: any) => ({
       ...item,
       placeholder: this.colsMap[item.columnId].placeholder
@@ -729,15 +784,15 @@ export default class WelfareForm extends Vue {
     }))
   }
 
-  get userName() {
+  private get userName() {
     return welfareStore.userName
   }
 
-  get userId() {
+  private get userId() {
     return welfareStore.userId
   }
 
-  get baseAllowance() {
+  private get baseAllowance() {
     return welfareStore.formNew
       ? welfareStore.formNew.baseAllowance
         ? welfareStore.formNew.baseAllowance.toString()
@@ -745,19 +800,19 @@ export default class WelfareForm extends Vue {
       : '0'
   }
 
-  get formId() {
+  private get formId() {
     return welfareStore.formNew.id
   }
 
-  get latestUpdatedDateTime() {
+  private get latestUpdatedDateTime() {
     return welfareStore.latestUpdatedDateTime
   }
 
-  get formStatus(): number | undefined {
+  private get formStatus(): number | undefined {
     return welfareStore.formNew.status
   }
 
-  get formStrStatus(): string | undefined {
+  private get formStrStatus(): string | undefined {
     return welfareStore.formNew.strStatus
   }
 
@@ -1016,14 +1071,35 @@ export default class WelfareForm extends Vue {
 
   // @typescript-eslint/no-unused-vars
   private beforeRouteEnter(to: any, from: any, next: any) {
-    if (
-      to.params.serialno === '' ||
-      to.params.serialno === undefined ||
-      to.params.formserialno === '' ||
-      to.params.formserialno === undefined
-    ) {
+    if (from.name === 'welfare-authorize') {
+      if (
+        to.params.serialno === '' ||
+        to.params.serialno === undefined ||
+        to.params.formserialno === '' ||
+        to.params.formserialno === undefined
+      ) {
+        next('/welfare')
+      } else {
+        next((vm: WelfareForm) => {
+          vm.currentRouteIsAuthorize = true
+        })
+      }
+    } else if (from.name === 'welfare-reportlist' || from.name === 'welfare') {
+      if (
+        to.params.serialno === '' ||
+        to.params.serialno === undefined ||
+        to.params.formserialno === '' ||
+        to.params.formserialno === undefined
+      ) {
+        next('/welfare')
+      } else {
+        next((vm: WelfareForm) => {
+          vm.currentRouteIsAuthorize = false
+        })
+      }
+    } else {
       next('/welfare')
-    } else next()
+    }
   }
 }
 </script>

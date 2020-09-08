@@ -102,3 +102,27 @@ extend('oneOf', {
   },
   params: ['val']
 })
+
+// 統一編號
+extend('isTaiwanReceipt', {
+  validate(value, args) {
+    return /^[0-9]{8}$/.test(value)
+  },
+  message: '非正確統一編號格式'
+})
+
+// 自然人憑證
+extend('isTaiwanDigitalCert', {
+  validate(value, args) {
+    return /^[a-zA-Z]{2}[0-9]{14}$/.test(value)
+  },
+  message: '非正確自然人憑證格式（2 碼英文字母加上 14 碼數字）'
+})
+
+// 手機載具
+extend('isTaiwanMobileCarrier', {
+  validate(value, args) {
+    return /^\/{1}[0-9A-Z]{7}$/.test(value)
+  },
+  message: '非正確手機載具格式（斜線 【 / 】 加上 7 碼數字或大寫字母）'
+})

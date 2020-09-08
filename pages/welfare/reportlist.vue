@@ -138,6 +138,34 @@ interface TableField {
   }
 })
 export default class WelfareRecord extends Vue {
+  private head() {
+    return {
+      title: 'STAYFUN員工福利整合平台 | 申請紀錄',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'STAYFUN員工福利整合平台 | 申請紀錄'
+        },
+        {
+          hid: 'og:title',
+          name: 'og:title',
+          content: 'STAYFUN員工福利整合平台 | 申請紀錄'
+        },
+        {
+          hid: 'og:type',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台'
+        },
+        {
+          hid: 'og:description',
+          name: 'og:type',
+          content: 'STAYFUN員工福利整合平台 | 申請紀錄'
+        }
+      ]
+    }
+  }
+
   get dialogState() {
     return dialogStore.active
   }

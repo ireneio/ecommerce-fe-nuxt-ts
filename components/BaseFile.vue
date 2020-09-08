@@ -5,7 +5,13 @@
       class="baseFile__text"
       :class="{ 'input__text--placeholder': filename === '' }"
     >
-      {{ disabled ? '點擊下方下載' : filename !== '' ? filename : placeholder }}
+      {{
+        disabled
+          ? '點擊下方下載'
+          : filename !== ''
+          ? `當前選擇: ${filename}`
+          : placeholder
+      }}
       <input
         :id="id"
         type="file"
@@ -21,7 +27,7 @@
     <label
       class="baseFile__btn"
       :for="id"
-      :style="{'cursor': disabled ? 'not-allowed' : 'pointer'}"
+      :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
     >
       <base-button
         :type="disabled ? 'greyOne' : 'primaryOutline'"
@@ -31,7 +37,9 @@
         <label :for="id" class="baseFile__btnlabel">上傳附件</label>
       </base-button>
     </label>
-    <p class="baseFile__helper">2M 以下，格式限定 pdf、doc、docx、xls、xlsx、jpg、jpeg、png、gif</p>
+    <p class="baseFile__helper">
+      2M 以下，格式限定 pdf、doc、docx、xls、xlsx、jpg、jpeg、png、gif
+    </p>
   </span>
 </template>
 <script lang="ts">
@@ -111,11 +119,33 @@ export default class BaseFile extends Vue {
 
   public filename: String = ''
 
-  handleFileSelect(e: any) {
+  handleFileSelect(e: any): boolean {
     const arr: Array<any> = Array.from(e.target.files)
-    if (arr.length === 1) this.filename = arr[0].name
-    else this.filename = `${arr[0].name} 和其他 ${arr.length - 1} 個檔案`
+    if (arr.length <= 0) {
+      return false
+    }
+    const booleanMap: Array<boolean> = arr.map((file: File) => {
+      return (
+        file.size <= 2000000 &&
+        (file.type ===
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+          file.type ===
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+          file.type.includes('image/'))
+      )
+    })
+    const invalid = booleanMap.indexOf(false) > -1
+    if (invalid) {
+      this.$emit('error', '檔案類型或大小不符合限制')
+      return false
+    }
+    if (arr.length === 1) {
+      this.filename = arr[0].name
+    } else {
+      this.filename = `${arr[0].name} 和其他 ${arr.length - 1} 個檔案`
+    }
     this.$emit('change', arr)
+    return true
   }
 }
 </script>

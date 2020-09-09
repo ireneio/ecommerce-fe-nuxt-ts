@@ -181,6 +181,7 @@ export default class DefaultLayout extends Vue {
       await authStore.getMenu({ token: this.$cookies.get('accessToken') })
     } catch (e) {
       // error
+      // this.$router.push('/account')
     }
   }
 
@@ -189,6 +190,7 @@ export default class DefaultLayout extends Vue {
       await authStore.getMenu({ token: this.$cookies.get('accessToken') })
     } catch (e) {
       // error
+      // this.$router.push('/account')
     }
   }
 

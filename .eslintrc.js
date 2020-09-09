@@ -34,6 +34,7 @@ module.exports = {
     'vue/html-self-closing': 'off',
     'vue/multiline-html-element-content-newline': 'off',
     'vue/html-closing-bracket-newline': 'off',
-    'unicorn/prefer-includes': 'off'
+    'unicorn/prefer-includes': 'off',
+    'nuxt/no-cjs-in-config': 'off'
   }
 }

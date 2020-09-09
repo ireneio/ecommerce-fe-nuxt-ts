@@ -24,7 +24,7 @@
   }
   &__carouselBox {
     width: 80%;
-    transform: translateY(50%);
+    transform: translateY(25%);
   }
   &__carouselText {
     color: $greyThree;
@@ -35,7 +35,7 @@
   }
   &__footer {
     position: absolute;
-    bottom: 67px;
+    bottom: 5%;
     color: $greyThree;
     font-size: 1.25rem;
     font-weight: 600;
@@ -52,7 +52,8 @@
     background-size: auto;
     background-image: url(/img/sm-logo.png);
     @include grid-sm {
-      padding: 3.5625rem 1.875rem 5.6875rem 1.875rem;
+      // padding: 3.5625rem 1.875rem 5.6875rem 1.875rem;
+      padding: 60px 0 25px 0;
     }
   }
   &__title {

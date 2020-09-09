@@ -133,21 +133,16 @@ export default class AuthModule extends VuexModule {
       method: 'get',
       token
     }
-
-    const result: ResponseObject = await $axios.post('/api', requestBody)
-    switch (result.data.syscode) {
-      case 200:
-        return result.data.data
-      case 406:
-        // Account Error
-        return 406
-      case 40102:
-        // Password Error
-        return 40102
-      case 400:
-        return 400
-      default:
-        return null
+    try {
+      const result: ResponseObject = await $axios.post('/api', requestBody)
+      switch (Number(result.data.syscode)) {
+        case 200:
+          return result.data.data
+        default:
+          throw new Error('Error fetching')
+      }
+    } catch (e) {
+      throw new Error(e)
     }
   }
 
@@ -167,24 +162,27 @@ export default class AuthModule extends VuexModule {
     if (payload.privacyVersionName) {
       requestBody.data.privacyVersionName = payload.privacyVersionName
     }
-
-    const result: ResponseObject = await $axios.post('/auth', requestBody)
-    switch (result.data.syscode) {
-      case 200:
-        return result.data.data
-      case 406:
-        // Account Error
-        return 406
-      case 40102:
-        // Password Error
-        return 40102
-      case 4032:
-        // Privacy Agreement Required
-        return { status: 4032, data: result.data.data }
-      case 400:
-        return 400
-      default:
-        return null
+    try {
+      const result: ResponseObject = await $axios.post('/auth', requestBody)
+      switch (result.data.syscode) {
+        case 200:
+          return result.data.data
+        case 406:
+          // Account Error
+          throw new Error('406')
+        case 40102:
+          // Password Error
+          throw new Error('40102')
+        case 4032:
+          // Privacy Agreement Required
+          return { status: 4032, data: result.data.data }
+        case 400:
+          throw new Error('400')
+        default:
+          throw new Error('Default Error')
+      }
+    } catch (e) {
+      throw new Error(e)
     }
   }
 
@@ -242,14 +240,16 @@ export default class AuthModule extends VuexModule {
       method: 'get'
     }
 
-    console.log($axios)
-
-    const result: ResponseObject = await $axios.post('/auth', requestBody)
-    switch (result.data.syscode) {
-      case 200:
-        return result.data.data
-      default:
-        return null
+    try {
+      const result: ResponseObject = await $axios.post('/auth', requestBody)
+      switch (Number(result.data.syscode)) {
+        case 200:
+          return result.data.data
+        default:
+          throw new Error('Error fetching')
+      }
+    } catch (e) {
+      throw new Error(e)
     }
   }
 }

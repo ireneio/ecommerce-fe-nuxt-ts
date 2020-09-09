@@ -33,7 +33,6 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'nuxt-property-decorator'
-import { v4 as uuidv4 } from 'uuid'
 
 @Component
 export default class BaseInput extends Vue {

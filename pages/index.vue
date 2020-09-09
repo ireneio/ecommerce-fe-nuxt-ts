@@ -313,7 +313,7 @@ import { landingStore, dialogStore, giftStore, authStore } from '~/store'
 
 @Component({
   layout: 'landing',
-  middleware: ['auth', 'zendesk'],
+  middleware: 'auth',
   components: {
     VueSlickCarousel,
     LandingPageSection,

@@ -15,13 +15,7 @@
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "types": [
-      "@types/node",
-      "@nuxt/types",
-      "@types/uuid",
-      "@nuxtjs/axios",
-      "nuxt-leaflet"
-    ],
+    "types": ["@types/node", "@nuxt/types", "@nuxtjs/axios", "nuxt-leaflet"],
     "rootDirs": ["js", "types"]
   },
   "exclude": ["node_modules", ".nuxt", "dist"]

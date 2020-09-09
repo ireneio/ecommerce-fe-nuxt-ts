@@ -1,4 +1,4 @@
-export default {
+const config = {
   /*
    ** Nuxt rendering mode
    ** See https://nuxtjs.org/api/configuration-mode
@@ -64,7 +64,8 @@ export default {
     '~/plugins/tooltip',
     { src: '~/plugins/vue-simple-calendar', mode: 'client' },
     { src: '~plugins/zendesk.js', mode: 'client' },
-    { src: '~/plugins/nuxt-leaflet.js', mode: 'client' }
+    { src: '~/plugins/nuxt-leaflet.js', mode: 'client' },
+    { src: '~/plugins/console.js', mode: 'client' }
   ],
   /*
    ** Auto import components
@@ -115,5 +116,24 @@ export default {
     ZENDESK_KEY: process.env.NUXT_ENV_ZENDESK_KEY
   },
   loading: '~/components/DefaultLoading.vue',
-  pageTransition: 'fade'
+  pageTransition: 'fade',
+  pwa: {
+    manifest: {
+      name: 'STAYFUN員工福利整合平台',
+      short_name: 'STAYFUN',
+      description:
+        '精選數百件商品、全台優惠折扣票券、特約優惠商店、各式有趣活動資訊，STAYFUN幫你搞定福委大小事！',
+      lang: 'zh-tw',
+      useWebmanifestExtension: false,
+      display: 'standalone',
+      theme_color: '#fabf13'
+    },
+    icon: {
+      purpose: 'maskable'
+    }
+  }
+}
+
+module.exports = {
+  ...config
 }

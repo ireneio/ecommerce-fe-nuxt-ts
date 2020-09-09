@@ -63,7 +63,7 @@
                     :value="form.password"
                     @blur="handlePasswordBlur"
                     :valid="!errors.length && passwordValid"
-                    @keydown.enter="handleSignIn"
+                    @enter="handleSignIn"
                   >
                     <template v-slot:icon>
                       <span>
@@ -168,15 +168,15 @@ export default class Login extends Vue {
   }
 
   public async handleSignIn(): Promise<any> {
-    this.$nuxt.$loading.start()
     if (this.form.isRemember) {
       this.setSaveUsername()
     } else {
       this.removeSaveUsername()
     }
     try {
+      this.$nuxt.$loading.start()
       const result = await authStore.getAccessToken(this.form)
-      this.$nuxt.$loading.finish()
+
       if (result === 40102) {
         this.passwordValid = false
         this.passwordHint = '密碼輸入錯誤'
@@ -216,6 +216,8 @@ export default class Login extends Vue {
       }
     } catch (e) {
       // error
+    } finally {
+      this.$nuxt.$loading.finish()
     }
   }
 

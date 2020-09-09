@@ -201,22 +201,19 @@
                       >
                         <span
                           class="welfareForm__filedownloadRemove"
-                          v-if="!currentRouteIsAuthorize && formStatus === 0"
+                          v-if="
+                            !currentRouteIsAuthorize &&
+                            (formStatus === 0 || formStatus === 2)
+                          "
                         >
                           X
                         </span>
                         <span class="welfareForm__filedownloadBtnText">
                           {{ item.fileName }}
                         </span>
-                        <span class="welfareForm__filedownloadBtnTime">{{
-                          new Date(item.createDateTime).toLocaleString({
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            month: '2-digit',
-                            day: '2-digit',
-                            year: 'numeric'
-                          })
-                        }}</span>
+                        <span class="welfareForm__filedownloadBtnTime">
+                          {{ item.createDateTime }}
+                        </span>
                       </button>
                     </div>
                     <b-form-radio-group
@@ -306,7 +303,10 @@
                     <base-button
                       type="greyTwoOutline"
                       @click="handleDelete"
-                      v-if="formStatus === 0"
+                      v-if="
+                        formStatus === 0 ||
+                        (formStatus === 2 && !currentRouteIsAuthorize)
+                      "
                     >
                       刪除
                     </base-button>
@@ -316,7 +316,13 @@
                       列印
                     </base-button>
                   </span>
-                  <span class="welfareForm__btn" v-if="formStatus === 0">
+                  <span
+                    class="welfareForm__btn"
+                    v-if="
+                      formStatus === 0 ||
+                      (formStatus === 2 && !currentRouteIsAuthorize)
+                    "
+                  >
                     <base-button
                       :type="confirmDisabled ? 'greyOne' : 'greyTwo'"
                       @click="handleSubmit(0)"
@@ -356,7 +362,10 @@
                 lg="12"
                 xl="15"
                 class="mt-5 mt-lg-0"
-                v-if="formStatus === 0"
+                v-if="
+                  formStatus === 0 ||
+                  (formStatus === 2 && !currentRouteIsAuthorize)
+                "
               >
                 <base-button
                   :type="submitDisabled ? 'greyOne' : 'primary'"
@@ -767,7 +776,21 @@ export default class WelfareForm extends Vue {
   }
 
   private get formFiles() {
-    return welfareStore.formNew.files || []
+    return welfareStore.formNew.files.length
+      ? welfareStore.formNew.files.map((item: any) => ({
+          ...item,
+          createDateTime: new Date(item.createDateTime).toLocaleString(
+            'zh-tw',
+            {
+              hour: '2-digit',
+              minute: '2-digit',
+              month: '2-digit',
+              day: '2-digit',
+              year: 'numeric'
+            }
+          )
+        }))
+      : []
   }
 
   private get formInfo() {
@@ -1151,7 +1174,8 @@ export default class WelfareForm extends Vue {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background-color: $whiteOne;
+    background-color: $primary;
+    color: #fff;
     margin-right: $spacing-s;
     &:hover,
     &:focus {

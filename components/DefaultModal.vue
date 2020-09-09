@@ -36,7 +36,7 @@ export default class DefaultModal extends Vue {
   })
   readonly button!: boolean
 
-  public centerFromWindow: number = window.scrollY
+  public centerFromWindow: number = process.client ? window.scrollY : 0
 
   public handleScroll() {
     if (process.client) this.centerFromWindow = window.scrollY

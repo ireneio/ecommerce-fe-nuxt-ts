@@ -10,8 +10,8 @@ ENV NUXT_PORT=3000
 ENV NUXT_ENV_PROXY_URL=http://localhost:8081
 ENV NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP
 
-RUN npm install && npm run build:docker
+RUN npm install && npm run build
 
 EXPOSE 3000
 
-CMD [ "npm", "start:docker" ]
+CMD [ "npm", "run", "start" ]

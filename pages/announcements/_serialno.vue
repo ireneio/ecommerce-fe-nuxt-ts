@@ -1,14 +1,21 @@
 <template>
   <div>
-    <default-main-container title="返回訊息牆" dark :clickableTitle="true" route="announcements">
+    <default-main-container
+      title="返回訊息牆"
+      dark
+      :clickableTitle="true"
+      route="announcements"
+    >
       <div class="announcementsDetail">
         <div class="announcementsDetail__titlebar">
           <h3 class="announcementsDetail__title">{{ detailData.title }}</h3>
-          <div class="announcementsDetail__date">{{ detailData.date.split(' ')[0] }}</div>
+          <div class="announcementsDetail__date">
+            {{ detailData.date }}
+          </div>
         </div>
-        <div class="announcementsDetail__content">
-          <p v-html="detailData.content"></p>
-        </div>
+        <section class="announcementsDetail__content">
+          <div v-html="detailData.content"></div>
+        </section>
       </div>
     </default-main-container>
     <client-only>
@@ -59,7 +66,11 @@ export default class AnnouncementsDetail extends Vue {
     const { title, announceDate, content } = announcementsStore.adDetail
     return {
       title,
-      date: new Date(announceDate).toLocaleString(),
+      date: new Date(announceDate).toLocaleString('zh-tw', {
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric'
+      }),
       content
     }
   }

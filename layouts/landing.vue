@@ -1,6 +1,6 @@
 <template>
   <div>
-    <landing-header />
+    <landing-header :logo-url="headerLogoUrl" />
     <b-container fluid="xl">
       <b-row>
         <b-col>
@@ -84,7 +84,7 @@ import DefaultDialog from '~/components/DefaultDialog.vue'
 import DefaultMask from '~/components/DefaultMask.vue'
 import DefaultScrollToButton from '~/components/DefaultScrollToButton.vue'
 
-import { landingStore, dialogStore, giftStore } from '~/store'
+import { landingStore, dialogStore, giftStore, authStore } from '~/store'
 
 @Component({
   components: {
@@ -98,6 +98,16 @@ import { landingStore, dialogStore, giftStore } from '~/store'
   }
 })
 export default class LandingLayout extends Vue {
+  get headerLogoUrl(): string {
+    if (authStore.user !== null) {
+      const mainGroupId = authStore.user.mainGroup
+      return authStore.user.groups
+        .filter((group: any) => group.groupid === mainGroupId)
+        .reduce((prev: string, curr: any) => (prev += curr.profilelogo), '')
+    }
+    return ''
+  }
+
   public timer: any = null
 
   get gifts() {

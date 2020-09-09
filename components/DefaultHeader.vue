@@ -26,6 +26,7 @@
           <nav class="navigationbar">
             <div
               class="navigationbar__logo"
+              :style="{ 'background-image': `url(${logoUrl})` }"
               @click="$router.push({ name: 'index' })"
             ></div>
             <ul
@@ -227,6 +228,14 @@ export default class DefaultHeader extends Vue {
   })
   readonly user!: string
 
+  @Prop({
+    type: String,
+    default() {
+      return []
+    }
+  })
+  readonly logoUrl!: string
+
   get currentRouteName(): string {
     const routeMap: any = {
       announcements: '訊息牆',
@@ -238,7 +247,6 @@ export default class DefaultHeader extends Vue {
       shoppingmall: '好好買'
     }
     const route: string | undefined | null = this.$route.name
-    console.log(route)
     const routeName = Object.keys(routeMap).reduce((prev, key: string) => {
       if (route && route.includes(key)) {
         return (prev += routeMap[key])

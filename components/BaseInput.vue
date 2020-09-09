@@ -24,6 +24,7 @@
       @input="handleInput"
       @blur="handleBlur"
       @focus="handleFocus"
+      @keydown.enter="$emit('enter')"
     />
     <span class="input__icon">
       <slot name="icon"></slot>

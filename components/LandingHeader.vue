@@ -4,8 +4,11 @@
       <b-row>
         <b-col cols="24" class="pr-0 pr-md-4">
           <header class="landingHeader">
-            <h1 class="landingHeader__logo">CompanyLogo</h1>
-            <div class="landingHeader__leftnavWrapper">
+            <h1
+              class="landingHeader__logo"
+              :style="{ 'background-image': `url(${logoUrl})` }"
+            ></h1>
+            <!-- <div class="landingHeader__leftnavWrapper">
               <b-container>
                 <b-row>
                   <b-col>
@@ -23,7 +26,7 @@
                   </b-col>
                 </b-row>
               </b-container>
-            </div>
+            </div> -->
             <nav class="landingHeader__nav">
               <div class="landingHeader__rightnav">
                 <nuxt-link to="/member/info" class="landingHeader__user">
@@ -46,10 +49,18 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component, Vue, Prop } from 'nuxt-property-decorator'
 
 @Component
-export default class LandingHeader extends Vue {}
+export default class LandingHeader extends Vue {
+  @Prop({
+    type: String,
+    default() {
+      return []
+    }
+  })
+  readonly logoUrl!: string
+}
 </script>
 <style lang="scss" scoped>
 @import '../assets/scss/utils/variables';
@@ -60,15 +71,21 @@ export default class LandingHeader extends Vue {}
   align-items: center;
   height: 82px;
   background-color: #fff;
+  box-shadow: 0px 5px 7px -7px rgba($color: #000000, $alpha: 0.5);
   &__bottom {
+    width: 100%;
     height: 8px;
-    background-color: $primary;
+    // background-color: $primary;
+    // box-shadow: 0px 5px 7px -7px rgba($color: #000000, $alpha: 0.5);
   }
   &__logo {
     width: 180px;
     height: 58px;
     font-size: 1.25rem;
     line-height: 58px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
   }
   &__nav {
     display: flex;

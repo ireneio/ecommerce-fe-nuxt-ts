@@ -106,7 +106,8 @@ export default {
       }
     },
     transpile: ['vee-validate/dist/rules'],
-    analyze: true
+    // analyze: true,
+    analyze: false
   },
   env: {
     apiKey: '',

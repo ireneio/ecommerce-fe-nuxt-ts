@@ -1,6 +1,11 @@
 <template>
   <div>
-    <default-header :menu="menu" @logout="handleLogout" :user="user" />
+    <default-header
+      :menu="menu"
+      @logout="handleLogout"
+      :user="user"
+      :logoUrl="headerLogoUrl"
+    />
     <b-container>
       <b-row>
         <b-col cols="24" class="px-0 position-static">
@@ -113,6 +118,16 @@ export default class DefaultLayout extends Vue {
 
   get user() {
     return authStore.user !== null ? authStore.user.accountid : ''
+  }
+
+  get headerLogoUrl(): string {
+    if (authStore.user !== null) {
+      const mainGroupId = authStore.user.mainGroup
+      return authStore.user.groups
+        .filter((group: any) => group.groupid === mainGroupId)
+        .reduce((prev: string, curr: any) => (prev += curr.profilelogo), '')
+    }
+    return ''
   }
 
   get menu() {

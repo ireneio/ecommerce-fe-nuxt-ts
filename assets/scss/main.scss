@@ -30,8 +30,8 @@ body {
 
 body {
   background-color: #fff;
-  overflow-x: hidden;
-  max-width: 100vw;
+  overflow-x: hidden !important;
+  min-width: 100vw;
 }
 
 a,

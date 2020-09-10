@@ -1,15 +1,14 @@
 <template>
   <div class="landingPageBanner">
-    <client-only>
+    <client-only v-if="items.length">
       <vue-slick-carousel v-bind="carouselSetting">
-        <div class="landingPageBanner__item" v-for="i in 15" :key="i" v-show="!items.length"></div>
-        <a
-          :href="item.url"
+        <div
+          @click="handleClick(item)"
           class="landingPageBanner__item"
           v-for="item in items"
           :key="item.serialno"
           :style="{ 'background-image': `url(${item.image})` }"
-        ></a>
+        ></div>
         <template #prevArrow>
           <div class="landingPageBanner__arrowLeft"></div>
         </template>
@@ -17,8 +16,16 @@
           <div class="landingPageBanner__arrowRight"></div>
         </template>
         <template #customPaging="page">
-          <div class="landingPageBanner__dot" :class="{ 'landingPageBanner__dot--active': page }"></div>
+          <div
+            class="landingPageBanner__dot"
+            :class="{ 'landingPageBanner__dot--active': page }"
+          ></div>
         </template>
+      </vue-slick-carousel>
+    </client-only>
+    <client-only v-else>
+      <vue-slick-carousel v-bind="carouselSetting">
+        <div class="landingPageBanner__item" v-for="i in 1" :key="i"></div>
       </vue-slick-carousel>
     </client-only>
   </div>
@@ -45,16 +52,16 @@ export default class LandingpageBanner extends Vue {
   })
   readonly items!: any
 
-  carouselSetting: any = {
+  private carouselSetting: any = {
     dots: false,
     edgeFriction: 0.35,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
     dotsClass: 'slick-dots',
-    autoplay: true,
+    autoplay: false,
     responsive: [
       {
         breakpoint: 768,
@@ -63,6 +70,10 @@ export default class LandingpageBanner extends Vue {
         }
       }
     ]
+  }
+
+  private handleClick(url: string) {
+    this.$emit('click', url)
   }
 }
 </script>
@@ -75,6 +86,8 @@ export default class LandingpageBanner extends Vue {
   &__item {
     display: block;
     height: 150px;
+    width: 100%;
+    cursor: pointer;
     background-image: url(/img/image.png);
     background-position: center center;
     background-size: contain;

@@ -5,7 +5,10 @@
       <b-row>
         <b-col>
           <div class="landingBanner">
-            <landing-page-banner :items="bannerImages" />
+            <landing-page-banner
+              :items="bannerImages"
+              @click="handleRedirect"
+            />
           </div>
         </b-col>
       </b-row>
@@ -98,6 +101,10 @@ import { landingStore, dialogStore, giftStore, authStore } from '~/store'
   }
 })
 export default class LandingLayout extends Vue {
+  private handleClick(url: string) {
+    window.open(url, '_blank')
+  }
+
   get headerLogoUrl(): string {
     if (authStore.user !== null) {
       const mainGroupId = authStore.user.mainGroup
@@ -219,7 +226,7 @@ export default class LandingLayout extends Vue {
       })
       dialogStore.setConfirmAction({ url })
     } else {
-      location.href = url
+      window.open(url, '_blank')
     }
   }
 

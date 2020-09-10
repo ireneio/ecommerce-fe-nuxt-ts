@@ -16,6 +16,10 @@ const config = {
   head: {
     title: 'STAYFUN員工福利整合平台',
     meta: [
+      {
+        'http-equiv': 'Content-Security-Policy',
+        content: 'upgrade-insecure-requests'
+      },
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       {
@@ -65,7 +69,8 @@ const config = {
     { src: '~/plugins/vue-simple-calendar', mode: 'client' },
     { src: '~plugins/zendesk.js', mode: 'client' },
     { src: '~/plugins/nuxt-leaflet.js', mode: 'client' },
-    { src: '~/plugins/console.js', mode: 'client' }
+    { src: '~/plugins/console.js', mode: 'client' },
+    { src: '~/plugins/application-insight', mode: 'client' }
   ],
   /*
    ** Auto import components

@@ -47,7 +47,7 @@ export default class LandingPageAppCarousel extends Vue {
   })
   readonly icons!: Array<Icon>
 
-  carouselSetting: any = {
+  private carouselSetting: any = {
     dots: false,
     edgeFriction: 0.35,
     infinite: false,

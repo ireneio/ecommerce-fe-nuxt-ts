@@ -87,9 +87,8 @@
                 id="rememberpassword"
                 v-model="form.isRemember"
                 :value="form.isRemember"
+                >記住我的帳號(請勿在公共場所使用此功能)</base-checkbox
               >
-                記住我的帳號(請勿在公共場所使用此功能)
-              </base-checkbox>
             </b-col>
             <b-col cols="24" class="loginInputMarginTop">
               <base-button
@@ -98,9 +97,8 @@
                 size="lg"
                 @click="handleSignIn"
                 :disabled="invalid"
+                >確認</base-button
               >
-                確認
-              </base-button>
             </b-col>
           </b-row>
         </b-container>
@@ -219,6 +217,18 @@ export default class Login extends Vue {
       }
     } catch (e) {
       // error
+      // switch (e.message) {
+      //   case '406':
+      //     this.usernameValid = false
+      //     this.usernameHint = '帳號輸入錯誤'
+      //   case '40102':
+      //     this.passwordValid = false
+      //     this.passwordHint = '密碼輸入錯誤'
+      //   case '400':
+      //     this.passwordValid = false
+      //     this.usernameValid = false
+      //     this.usernameHint = '帳號輸入錯誤'
+      // }
     } finally {
       this.$nuxt.$loading.finish()
     }

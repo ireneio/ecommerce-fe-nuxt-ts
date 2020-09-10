@@ -169,17 +169,17 @@ export default class AuthModule extends VuexModule {
           return result.data.data
         case 406:
           // Account Error
-          throw new Error('406')
+          return 406
         case 40102:
           // Password Error
-          throw new Error('40102')
+          return 40102
         case 4032:
           // Privacy Agreement Required
           return { status: 4032, data: result.data.data }
         case 400:
-          throw new Error('400')
+          return 400
         default:
-          throw new Error('Default Error')
+          return 'Default Error'
       }
     } catch (e) {
       throw new Error(e)

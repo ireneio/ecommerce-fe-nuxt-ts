@@ -34,9 +34,9 @@
                     :icon="['fas', 'user-circle']"
                     class="landingHeader__icon"
                   />
-                  <span>艾血拚</span>
+                  <span>{{ user }}</span>
                 </nuxt-link>
-                <nuxt-link to="/announcements">
+                <nuxt-link to="/announcements" class="landingHeader__bell">
                   <fa :icon="['far', 'bell']" class="landingHeader__icon" />
                 </nuxt-link>
               </div>
@@ -60,6 +60,14 @@ export default class LandingHeader extends Vue {
     }
   })
   readonly logoUrl!: string
+
+  @Prop({
+    type: String,
+    default() {
+      return []
+    }
+  })
+  readonly user!: string
 }
 </script>
 <style lang="scss" scoped>
@@ -135,6 +143,9 @@ export default class LandingHeader extends Vue {
     &:hover {
       color: $orangeDark;
     }
+  }
+  &__bell {
+    margin-top: $spacing-xl;
   }
   &__user {
     cursor: pointer;

@@ -13,13 +13,19 @@
         @click="handleRouteUpdate(item.Url)"
       />
       <div class="questionnaires__paging">
-        <div class="questionnaires__page" @click="handlePageUpdate(-1)" v-show="page > 1">上一頁</div>
+        <div
+          class="questionnaires__page"
+          @click="handlePageUpdate(-1)"
+          v-show="page > 1"
+        >
+          上一頁
+        </div>
         <div
           class="questionnaires__page"
           v-for="i in questionnairesListPagination"
           v-show="i === page || i === page - 1 || i === page + 1"
           :key="i"
-          @click="handlePageUpdate(i)"
+          @click="handlePageUpdateTabViaNumber(i)"
         >
           <span>{{ i }}</span>
           <span>.</span>
@@ -28,7 +34,9 @@
           class="questionnaires__page"
           @click="handlePageUpdate(1)"
           v-show="page < questionnairesListPages"
-        >下一頁</div>
+        >
+          下一頁
+        </div>
       </div>
     </default-main-container>
     <client-only>
@@ -66,24 +74,25 @@ export default class QuestionnairesIndex extends Vue {
     return dialogStore.content
   }
 
-  public handleDialogClose() {
+  private handleDialogClose() {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
   }
 
-  public handleRouteUpdate(url: string) {
+  private handleRouteUpdate(url: string) {
     // $router.push(`/questionnaires/${item.serialno}`)
     window.open(url, '_blank')
   }
 
-  public page: number = 1
+  private page: number = 1
 
-  public handlePageUpdate(val: number): void {
+  private handlePageUpdate(val: number): void {
     this.$nuxt.$loading.start()
     if (
       (this.page === 1 && val === -1) ||
       (val === 1 && this.page >= this.questionnairesListPages)
     ) {
+      this.$nuxt.$loading.finish()
       return
     } else if (val > 1 && val <= this.questionnairesListPages) {
       this.page = val
@@ -92,6 +101,15 @@ export default class QuestionnairesIndex extends Vue {
     }
     setTimeout(() => {
       this.$nuxt.$loading.finish()
+    }, 500)
+  }
+
+  private handlePageUpdateTabViaNumber(val: number) {
+    this.$nuxt.$loading.start()
+    this.page = val
+    const timeout = setTimeout(() => {
+      this.$nuxt.$loading.finish()
+      clearTimeout(timeout)
     }, 500)
   }
 
@@ -129,7 +147,7 @@ export default class QuestionnairesIndex extends Vue {
     return res
   }
 
-  public async sendGetQuestionnairesRequest() {
+  private async sendGetQuestionnairesRequest() {
     try {
       await questionnairesStore.getQuestionnairesList({
         token: this.$cookies.get('accessToken')
@@ -146,11 +164,11 @@ export default class QuestionnairesIndex extends Vue {
     }
   }
 
-  public async fetch() {
+  private async fetch() {
     await this.sendGetQuestionnairesRequest()
   }
 
-  public activated() {
+  private activated() {
     this.$nextTick(async () => {
       this.$nuxt.$loading.start()
       await this.sendGetQuestionnairesRequest()

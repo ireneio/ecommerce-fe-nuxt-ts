@@ -26,6 +26,7 @@ export default class VisitStoreContainer extends Vue {}
 .defaultVisitStore {
   border: 1px solid $greyOne;
   &__body {
+    min-height: 70vh;
     padding: $spacing-xs 0 $spacing-xxl 0;
   }
 }

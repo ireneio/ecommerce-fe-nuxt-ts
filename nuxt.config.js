@@ -111,9 +111,16 @@ const config = {
         return [['@nuxt/babel-preset-app', { loose: true }]]
       }
     },
+    uglify: {
+      uglifyOptions: {
+        compress: {
+          drop_console: true
+        }
+      }
+    },
+    extractCSS: true,
     transpile: ['vee-validate/dist/rules'],
-    // analyze: true,
-    analyze: false
+    analyze: process.env.NODE_ENV !== 'production'
   },
   env: {
     apiKey: '',
@@ -135,6 +142,16 @@ const config = {
     },
     icon: {
       purpose: 'maskable'
+    },
+    workbox: {
+      offlineAssets: [
+        '/img/sf-logo.png',
+        '/img/downloadapple.svg',
+        '/img/downloadgoogle.svg'
+      ],
+      manifest: {
+        crossorigin: 'use-credentials'
+      }
     }
   }
 }

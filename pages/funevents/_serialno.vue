@@ -1183,6 +1183,8 @@ import DefaultDialog from '~/components/DefaultDialog.vue'
 import DefaultReceiptSelector from '~/components/DefaultReceiptSelector.vue'
 import { funEventsStore, dialogStore, commonStore, pointStore } from '~/store'
 
+require('vue-good-table/dist/vue-good-table.css')
+
 interface TableData {
   couponPrice: string
   couponBegindate: string
@@ -1708,7 +1710,7 @@ export default class FunEventsDetail extends Vue {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
     if (dialogStore.content.initializer === 'fun-event-order-success') {
-      this.$router.push('/funevents')
+      this.$router.push('/member/info')
     }
   }
 

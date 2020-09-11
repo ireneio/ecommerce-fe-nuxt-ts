@@ -1,5 +1,6 @@
 <template>
   <div>
+    <default-download-banner />
     <default-header
       :menu="menu"
       @logout="handleLogout"
@@ -11,7 +12,7 @@
         <b-col cols="24" class="px-0 position-static">
           <nuxt
             keep-alive
-            :keep-alive-props="{ exclude: ['funevents-serialno'] }"
+            :keep-alive-props="{ exclude: ['welfare-form-formserialno'] }"
           />
         </b-col>
       </b-row>
@@ -59,6 +60,7 @@ import DefaultFooter from '~/components/DefaultFooter.vue'
 import DefaultMask from '~/components/DefaultMask.vue'
 import DefaultScrollToButton from '~/components/DefaultScrollToButton.vue'
 import DefaultModal from '~/components/DefaultModal.vue'
+import DefaultDownloadBanner from '~/components/DefaultDownloadBanner.vue'
 
 import { dialogStore, authStore, giftStore } from '~/store'
 
@@ -68,25 +70,26 @@ import { dialogStore, authStore, giftStore } from '~/store'
     DefaultFooter,
     DefaultMask,
     DefaultScrollToButton,
-    DefaultModal
+    DefaultModal,
+    DefaultDownloadBanner
   }
 })
 export default class DefaultLayout extends Vue {
-  public timer: any = null
+  private timer: any = null
 
   get gifts() {
     return giftStore.notTakenOut
   }
 
-  public modalState: boolean = false
+  private modalState: boolean = false
 
-  public handleModalClose() {
+  private handleModalClose() {
     dialogStore.setMaskActive(false)
     giftStore.setHasShowed(true)
     this.modalState = false
   }
 
-  public async handleGetGift(serialno: string) {
+  private async handleGetGift(serialno: string) {
     try {
       await this.sendClaimGiftRequest(serialno)
       giftStore.setHasShowed(true)
@@ -100,7 +103,7 @@ export default class DefaultLayout extends Vue {
     }
   }
 
-  public async handleLogout() {
+  private async handleLogout() {
     try {
       this.$nuxt.$loading.start()
       await authStore.signOut({ token: this.$cookies.get('accessToken') })
@@ -143,7 +146,7 @@ export default class DefaultLayout extends Vue {
       : []
   }
 
-  public async sendClaimGiftRequest(serialno: string) {
+  private async sendClaimGiftRequest(serialno: string) {
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/GiftActivity/notTakenOuts',
       key: process.env.apiKey,
@@ -166,7 +169,7 @@ export default class DefaultLayout extends Vue {
     }
   }
 
-  public async sendGetGiftRequest() {
+  private async sendGetGiftRequest() {
     try {
       await giftStore.getNotTakenOut({
         token: this.$cookies.get('accessToken')
@@ -176,7 +179,7 @@ export default class DefaultLayout extends Vue {
     }
   }
 
-  public async fetch() {
+  private async fetch() {
     try {
       await authStore.getMenu({ token: this.$cookies.get('accessToken') })
     } catch (e) {
@@ -185,7 +188,7 @@ export default class DefaultLayout extends Vue {
     }
   }
 
-  public async created() {
+  private async created() {
     try {
       await authStore.getMenu({ token: this.$cookies.get('accessToken') })
     } catch (e) {
@@ -194,7 +197,7 @@ export default class DefaultLayout extends Vue {
     }
   }
 
-  public mounted() {
+  private mounted() {
     const validRoutes: Array<string> = [
       'announcements',
       'funevents',

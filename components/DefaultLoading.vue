@@ -2,7 +2,7 @@
   <div v-if="loading" class="loading">
     <p>
       <!-- <fa :icon="['fas', 'spinner', 'spin']"></fa> -->
-      <span class="loading__bar"></span>
+      <!-- <span class="loading__bar"></span> -->
       <!-- <span>{{ percent }}...</span> -->
     </p>
   </div>
@@ -53,7 +53,7 @@ export default class DefaultLoading extends Vue {
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 50px;
-    background-image: url(/img/sm-logo.png);
+    background-image: url(/img/spinner.gif);
     background-size: contain;
     background-position: center center;
     background-repeat: no-repeat;

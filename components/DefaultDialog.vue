@@ -2,11 +2,16 @@
   <div
     class="defaultDialog"
     :class="{ 'defaultDialog--active': active }"
-    :style="{ top: `calc(25% + ${centerFromWindow.toString()}px)` }"
+    :style="{ top: `calc(50% + ${centerFromWindow.toString()}px)` }"
   >
     <div class="defaultDialog__icon"></div>
     <p class="defaultDialog__title" v-if="icon">
-      <img src="/img/icon-oops@3x.png" alt="warning icon" width="48px" height="48px" />
+      <img
+        src="/img/icon-oops@3x.png"
+        alt="warning icon"
+        width="48px"
+        height="48px"
+      />
     </p>
     <p class="defaultDialog__title" v-if="title === 'qrcode'">
       <img
@@ -23,17 +28,23 @@
         class="defaultDialog__btn defaultDialog__btn--greyTwo defaultDialog__btn--left"
         @click="$emit('cancel')"
         v-if="type === 'confirm'"
-      >取消</button>
+      >
+        取消
+      </button>
       <button
         class="defaultDialog__btn defaultDialog__btn--primary defaultDialog__btn--right"
         @click="$emit('confirm')"
         v-if="type === 'confirm'"
-      >確定</button>
+      >
+        確定
+      </button>
       <button
         class="defaultDialog__btn defaultDialog__btn--primary defaultDialog__btn--single"
         @click="$emit('accept')"
         v-if="type === 'accept'"
-      >關閉</button>
+      >
+        關閉
+      </button>
     </div>
   </div>
 </template>
@@ -83,17 +94,23 @@ export default class LandingPageNewsItem extends Vue {
   })
   readonly icon!: boolean
 
-  public centerFromWindow: number = 0
+  private centerFromWindow: number = 0
 
-  public handleScroll() {
+  private handleScroll() {
     if (process.client) this.centerFromWindow = window.scrollY
   }
 
-  public mounted() {
+  private created() {
+    if (process.client) {
+      this.centerFromWindow = window.scrollY
+    }
+  }
+
+  private mounted() {
     window.addEventListener('scroll', this.handleScroll)
   }
 
-  public beforeDestroyed() {
+  private beforeDestroyed() {
     window.removeEventListener('scroll', this.handleScroll)
   }
 }

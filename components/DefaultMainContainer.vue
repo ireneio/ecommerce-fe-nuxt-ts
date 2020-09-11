@@ -88,11 +88,15 @@ export default class DefaultMainContainer extends Vue {
     box-shadow: 0 0px 5px 0 rgba(0, 0, 0, 0.25);
   }
   &__aside {
+    @include grid-lg {
+      min-height: 80vh;
+    }
     height: 100%;
     background-color: $greyFour;
     padding-bottom: $spacing-m;
   }
   &__main {
+    min-height: 60vh;
     padding: 55px $spacing-m;
     color: $greyThree;
     font-weight: normal;

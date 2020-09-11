@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NUXT_ENV_APP_INSIGHT_KEY=db39af12-29b1-4a4c-9742-9d62072cbda4 NUXT_ENV_PROXY_URL=http://localhost:8081 NUXT_ENV_ZENDESK_KEY=5o67kZfbLoMX5AFZ4QctJi2cIF9ivSYP nuxt-ts",
+    "build:dev": "cross-env NODE_ENV=development NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt-ts build",
+    "start:dev": "cross-env NODE_ENV=development NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt-ts start",
     "build": "cross-env NODE_ENV=production NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt-ts build",
     "start": "cross-env NODE_ENV=production NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt-ts start",
     "generate": "cross-env NODE_ENV=production NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt-ts generate",
@@ -55,10 +57,10 @@
     "vuex-module-decorators": "^0.17.0"
   },
   "devDependencies": {
-    "@vue/test-utils": "^1.0.3",
     "@nuxtjs/eslint-config": "^3.1.0",
     "@nuxtjs/eslint-config-typescript": "^3.0.0",
     "@nuxtjs/eslint-module": "^2.0.0",
+    "@vue/test-utils": "^1.0.3",
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-config-standard": "^14.1.1",

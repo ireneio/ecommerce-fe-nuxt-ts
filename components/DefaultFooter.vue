@@ -1,42 +1,85 @@
 <template>
-  <div class="footerBar__bg">
-    <b-container>
-      <b-row>
-        <b-col cols="24">
-          <div class="footerBar">
-            <nav class="footerBar__list">
-              <div class="footerBar__listitem footerBar__navlinks">
-                <nuxt-link to="/qa">常見問題</nuxt-link>
-              </div>
-              <div class="footerBar__listitem footerBar__navlinks">
-                <nuxt-link to="/policies">會員服務條款</nuxt-link>
-              </div>
-              <div class="footerBar__listitem footerBar__navlinks">
-                <nuxt-link to="/privacy">隱私權政策</nuxt-link>
-              </div>
-              <div class="footerBar__listitem footerBar__navlinks">
-                <nuxt-link to="/contact">聯絡我們</nuxt-link>
-              </div>
-              <div class="footerBar__listitem footerBar__navlinks">
-                <a href="javascript:;">特約商家推薦 </a>
-              </div>
-              <div class="footerBar__listitem footerBar__copyright">
-                <span>
-                  Copyright © MAYO Human Capital Inc. All Rights Reserved
-                </span>
-              </div>
-            </nav>
-          </div>
-        </b-col>
-      </b-row>
-    </b-container>
-  </div>
+  <client-only>
+    <div
+      class="footerBar__bg"
+      :style="{
+        position: absolutePosition ? 'absolute' : 'relative',
+        bottom: absolutePosition ? '0' : 'null'
+      }"
+    >
+      <b-container>
+        <b-row>
+          <b-col cols="24">
+            <div class="footerBar">
+              <nav class="footerBar__list">
+                <div class="footerBar__listitem footerBar__navlinks">
+                  <nuxt-link to="/qa">常見問題</nuxt-link>
+                </div>
+                <div class="footerBar__listitem footerBar__navlinks">
+                  <nuxt-link to="/policies">會員服務條款</nuxt-link>
+                </div>
+                <div class="footerBar__listitem footerBar__navlinks">
+                  <nuxt-link to="/privacy">隱私權政策</nuxt-link>
+                </div>
+                <div class="footerBar__listitem footerBar__navlinks">
+                  <nuxt-link to="/contact">聯絡我們</nuxt-link>
+                </div>
+                <div class="footerBar__listitem footerBar__navlinks">
+                  <a href="javascript:;">特約商家推薦 </a>
+                </div>
+                <div class="footerBar__listitem footerBar__copyright">
+                  <span>
+                    Copyright © MAYO Human Capital Inc. All Rights Reserved
+                  </span>
+                </div>
+              </nav>
+            </div>
+          </b-col>
+        </b-row>
+      </b-container>
+    </div>
+  </client-only>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'nuxt-property-decorator'
 
 @Component
-export default class DefaultFooter extends Vue {}
+export default class DefaultFooter extends Vue {
+  private absolutePosition: boolean = false
+
+  private onElementHeightChange(elm: any, callback: Function) {
+    let lastHeight = elm.clientHeight
+    let newHeight
+    ;(function run() {
+      newHeight = elm.clientHeight
+      if (lastHeight !== newHeight) {
+        callback(newHeight)
+      }
+      lastHeight = newHeight
+
+      if (elm.onElementHeightChangeTimer) {
+        clearTimeout(elm.onElementHeightChangeTimer)
+      }
+
+      elm.onElementHeightChangeTimer = setTimeout(run, 200)
+    })()
+  }
+
+  private mounted() {
+    this.$nextTick(() => {
+      if (window.document.body.clientHeight <= window.innerHeight) {
+        this.absolutePosition = true
+      }
+      this.onElementHeightChange(document.body, (h: string) => {
+        if (window.document.body.clientHeight <= window.innerHeight) {
+          this.absolutePosition = true
+        } else {
+          this.absolutePosition = false
+        }
+      })
+    })
+  }
+}
 </script>
 <style lang="scss" scoped>
 @import '../assets/scss/utils/variables';

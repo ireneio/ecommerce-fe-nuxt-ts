@@ -457,8 +457,9 @@
                 reportForm.problemType.length === 0 ||
                 reportForm.problemDate.length === 0
               "
-              >確定</base-button
             >
+              確定
+            </base-button>
           </form>
         </validation-observer>
       </default-modal>

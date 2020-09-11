@@ -28,13 +28,19 @@
             </b-col>
             <b-col cols="24" class="mt-5">
               <div class="d-flex justify-content-center">
-                <base-button
+                <!-- <base-button
                   type="primary"
                   display="inline"
                   @click="handlePageUpdate"
                   v-show="storeData.length < storeDataLength"
-                  >看更多</base-button
+                  >看更多
+                </base-button> -->
+                <div
+                  class="endInfo"
+                  v-show="storeData.length >= storeDataLength"
                 >
+                  無更多資料
+                </div>
               </div>
             </b-col>
           </b-row>
@@ -80,6 +86,16 @@ interface card {
   }
 })
 export default class VisitStoreIndex extends Vue {
+  private handleScroll(e: any) {
+    if (process.client) {
+      const scrollTopPercent =
+        (window.scrollY / document.body.clientHeight) * 100
+      if (scrollTopPercent >= 5) {
+        this.handlePageUpdate()
+      }
+    }
+  }
+
   get dialogState() {
     return dialogStore.active
   }
@@ -88,20 +104,20 @@ export default class VisitStoreIndex extends Vue {
     return dialogStore.content
   }
 
-  public handleDialogClose() {
+  private handleDialogClose() {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
   }
 
-  public paging: number = 10
+  private paging: number = 16
 
-  public handlePageUpdate() {
-    this.$nuxt.$loading.start()
+  private handlePageUpdate() {
+    // this.$nuxt.$loading.start()
     this.paging += 10
-    const timeout = setTimeout(() => {
-      this.$nuxt.$loading.finish()
-      clearTimeout(timeout)
-    }, 500)
+    // const timeout = setTimeout(() => {
+    //   this.$nuxt.$loading.finish()
+    //   clearTimeout(timeout)
+    // }, 500)
   }
 
   get storeDataLength() {
@@ -124,14 +140,14 @@ export default class VisitStoreIndex extends Vue {
     return visitStore.searchParams
   }
 
-  public async handleUpdateSearch(payload: any): Promise<any> {
+  private async handleUpdateSearch(payload: any): Promise<any> {
     visitStore.setSearchParams({ ...payload })
     this.$nuxt.$loading.start()
     await this.sendStoreSearchRequest()
     this.$nuxt.$loading.finish()
   }
 
-  public handleUpdateRoute(serialno: string): void {
+  private handleUpdateRoute(serialno: string): void {
     this.$router.push({
       name: 'visitstore-serialno',
       params: { serialno }
@@ -142,7 +158,7 @@ export default class VisitStoreIndex extends Vue {
     return commonStore.categories
   }
 
-  public async sendStoreSearchRequest() {
+  private async sendStoreSearchRequest() {
     try {
       await visitStore.getStoreHome({
         token: this.$cookies.get('accessToken'),
@@ -154,7 +170,7 @@ export default class VisitStoreIndex extends Vue {
     }
   }
 
-  public async sendGetCategoriesRequest() {
+  private async sendGetCategoriesRequest() {
     try {
       await commonStore.getCategories({
         token: this.$cookies.get('accessToken')
@@ -165,7 +181,7 @@ export default class VisitStoreIndex extends Vue {
     }
   }
 
-  public async sendGetAreasRequest() {
+  private async sendGetAreasRequest() {
     try {
       await commonStore.getAreas({
         token: this.$cookies.get('accessToken')
@@ -176,7 +192,7 @@ export default class VisitStoreIndex extends Vue {
     }
   }
 
-  public async fetch() {
+  private async fetch() {
     try {
       await this.sendGetCategoriesRequest()
       await this.sendGetAreasRequest()
@@ -193,7 +209,7 @@ export default class VisitStoreIndex extends Vue {
     }
   }
 
-  public activated() {
+  private activated() {
     this.$nextTick(async () => {
       try {
         this.$nuxt.$loading.start()
@@ -214,5 +230,23 @@ export default class VisitStoreIndex extends Vue {
       }
     })
   }
+
+  private mounted() {
+    window.addEventListener('scroll', this.handleScroll)
+  }
+
+  private beforeDestroyed() {
+    window.removeEventListener('scroll', this.handleScroll)
+  }
 }
 </script>
+<style lang="scss" scoped>
+@import '../../assets/scss/utils/variables';
+
+.endInfo {
+  font-weight: bold;
+  font-size: $fz-m;
+  color: $greyTwo;
+  text-align: center;
+}
+</style>

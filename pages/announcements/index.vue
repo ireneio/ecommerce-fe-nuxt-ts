@@ -61,7 +61,7 @@
             v-for="i in latestNewsPages"
             v-show="i === pageTab0 || i === pageTab0 - 1 || i === pageTab0 + 1"
             :key="i"
-            @click="handlePageUpdateTab0(i)"
+            @click="handlePageUpdateTab0ViaNumber(i)"
           >
             <span>{{ i }}</span>
             <span>.</span>
@@ -87,7 +87,7 @@
             v-for="i in personalNewsPages"
             v-show="i === pageTab1 || i === pageTab1 - 1 || i === pageTab1 + 1"
             :key="i"
-            @click="handlePageUpdateTab1(i)"
+            @click="handlePageUpdateTab1ViaNumber(i)"
           >
             <span>{{ i }}</span>
             <span>.</span>
@@ -139,48 +139,69 @@ export default class AnnouncementsIndex extends Vue {
     return dialogStore.content
   }
 
-  public handleDialogClose() {
+  private handleDialogClose() {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
   }
 
-  public currentTab: 0 | 1 = 0
+  private currentTab: 0 | 1 = 0
 
-  public pageTab0: number = 1
+  private pageTab0: number = 1
 
-  public pageTab1: number = 1
+  private pageTab1: number = 1
 
-  public handlePageUpdateTab0(val: number) {
+  private handlePageUpdateTab0(val: number) {
     this.$nuxt.$loading.start()
     if (
       (this.pageTab0 === 1 && val === -1) ||
       (val === 1 && this.pageTab0 >= this.latestNewsPages)
     ) {
+      this.$nuxt.$loading.finish()
       return
     } else if (val > 1 && val <= this.latestNewsPages) {
       this.pageTab0 = val
     } else {
       this.pageTab0 += val
     }
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       this.$nuxt.$loading.finish()
+      clearTimeout(timeout)
     }, 500)
   }
 
-  public handlePageUpdateTab1(val: number) {
+  private handlePageUpdateTab1(val: number) {
     this.$nuxt.$loading.start()
     if (
       (this.pageTab1 === 1 && val === -1) ||
-      (val === 1 && this.pageTab1 >= this.personalNewsPages)
+      (val === 1 && this.pageTab1 >= this.latestNewsPages)
     ) {
+      this.$nuxt.$loading.finish()
       return
-    } else if (val > 1 && val <= this.personalNewsPages) {
+    } else if (val > 1 && val <= this.latestNewsPages) {
       this.pageTab1 = val
     } else {
       this.pageTab1 += val
     }
     setTimeout(() => {
       this.$nuxt.$loading.finish()
+    }, 500)
+  }
+
+  private handlePageUpdateTab0ViaNumber(val: number) {
+    this.$nuxt.$loading.start()
+    this.pageTab0 = val
+    const timeout = setTimeout(() => {
+      this.$nuxt.$loading.finish()
+      clearTimeout(timeout)
+    }, 500)
+  }
+
+  private handlePageUpdateTab1ViaNumber(val: number) {
+    this.$nuxt.$loading.start()
+    this.pageTab1 = val
+    const timeout = setTimeout(() => {
+      this.$nuxt.$loading.finish()
+      clearTimeout(timeout)
     }, 500)
   }
 
@@ -262,7 +283,7 @@ export default class AnnouncementsIndex extends Vue {
     }))
   }
 
-  public async sendGetAnnouncementsRequest() {
+  private async sendGetAnnouncementsRequest() {
     try {
       await announcementsStore.getAds({
         token: this.$cookies.get('accessToken')
@@ -279,11 +300,11 @@ export default class AnnouncementsIndex extends Vue {
     }
   }
 
-  public async fetch() {
+  private async fetch() {
     await this.sendGetAnnouncementsRequest()
   }
 
-  public activated() {
+  private activated() {
     this.$nextTick(async () => {
       this.$nuxt.$loading.start()
       await this.sendGetAnnouncementsRequest()

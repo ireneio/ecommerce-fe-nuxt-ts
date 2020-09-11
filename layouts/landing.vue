@@ -1,6 +1,7 @@
 <template>
   <div>
-    <landing-header :logo-url="headerLogoUrl" />
+    <default-download-banner />
+    <landing-header :logo-url="headerLogoUrl" :user="user" />
     <b-container fluid="xl">
       <b-row>
         <b-col>
@@ -68,8 +69,9 @@
             type="primary"
             display="block"
             @click="handleGetGift(gifts[0].announcementSerialNo)"
-            >立即領取</base-button
           >
+            立即領取
+          </base-button>
         </div>
       </default-modal>
     </client-only>
@@ -86,6 +88,9 @@ import LandingPageBanner from '~/components/LandingPageBanner.vue'
 import DefaultDialog from '~/components/DefaultDialog.vue'
 import DefaultMask from '~/components/DefaultMask.vue'
 import DefaultScrollToButton from '~/components/DefaultScrollToButton.vue'
+import DefaultDownloadBanner from '~/components/DefaultDownloadBanner.vue'
+
+// import DefaultModal from '~/components/DefaultModal.vue'
 
 import { landingStore, dialogStore, giftStore, authStore } from '~/store'
 
@@ -97,10 +102,17 @@ import { landingStore, dialogStore, giftStore, authStore } from '~/store'
     LandingPageAppCarousel,
     LandingPageBanner,
     DefaultMask,
-    DefaultScrollToButton
+    DefaultScrollToButton,
+    DefaultDownloadBanner,
+    DefaultModal: () =>
+      import(/* webpackPrefetch: true */ '~/components/DefaultModal.vue')
   }
 })
 export default class LandingLayout extends Vue {
+  get user() {
+    return authStore.user !== null ? authStore.user.accountid : ''
+  }
+
   private handleClick(url: string) {
     window.open(url, '_blank')
   }

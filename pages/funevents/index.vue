@@ -15,37 +15,55 @@
           <span>回到列表</span>
         </button>
       </div>
-      <div v-show="!calendarToggle" class="funEventsBody">
-        <b-container>
-          <b-row>
-            <b-col
-              cols="24"
-              md="12"
-              lg="8"
-              xl="6"
-              v-for="event in eventListPaged"
-              :key="event.serialno"
-              class="px-0 mb-5"
-            >
-              <div class="funEventsBody__cardbox" @click="handleRouteUpdate(event.serialno)">
-                <fun-events-card :value="event" />
+      <div id="wrapper">
+        <div v-show="!calendarToggle" class="funEventsBody">
+          <b-container>
+            <b-row>
+              <b-col
+                cols="24"
+                md="12"
+                lg="8"
+                xl="6"
+                v-for="event in eventListPaged"
+                :key="event.serialno"
+                class="px-0 mb-5"
+              >
+                <div
+                  class="funEventsBody__cardbox"
+                  @click="handleRouteUpdate(event.serialno)"
+                >
+                  <fun-events-card :value="event" />
+                </div>
+              </b-col>
+            </b-row>
+            <b-col cols="24" class="mt-5">
+              <div class="d-flex justify-content-center">
+                <!-- <base-button
+                  type="primary"
+                  display="inline"
+                  @click="handlePageUpdate"
+                  v-show="eventListPaged.length < eventList.length"
+                  >看更多
+                </base-button> -->
+                <div
+                  class="endInfo"
+                  v-show="eventListPaged.length >= eventList.length"
+                >
+                  無更多資料
+                </div>
               </div>
             </b-col>
-          </b-row>
-          <b-col cols="24" class="mt-5">
-            <div class="d-flex justify-content-center">
-              <base-button
-                type="primary"
-                display="inline"
-                @click="handlePageUpdate"
-                v-show="eventListPaged.length < eventList.length"
-              >看更多</base-button>
-            </div>
-          </b-col>
-        </b-container>
+          </b-container>
+        </div>
       </div>
+
       <div class="funEventsBody" v-if="calendarToggle">
-        <fun-events-calendar :items="calendarItem" @calendar-item-click="handleCalendarItemClick" />
+        <client-only>
+          <fun-events-calendar
+            :items="calendarItem"
+            @calendar-item-click="handleCalendarItemClick"
+          />
+        </client-only>
       </div>
     </default-main-container>
     <client-only>
@@ -77,6 +95,16 @@ import { funEventsStore, dialogStore } from '~/store'
   }
 })
 export default class FunEventsIndex extends Vue {
+  private handleScroll(e: any) {
+    if (process.client) {
+      const scrollTopPercent =
+        (window.scrollY / document.body.clientHeight) * 100
+      if (scrollTopPercent >= 5) {
+        this.handlePageUpdate()
+      }
+    }
+  }
+
   get dialogState() {
     return dialogStore.active
   }
@@ -85,34 +113,37 @@ export default class FunEventsIndex extends Vue {
     return dialogStore.content
   }
 
-  public handleDialogClose() {
+  private handleDialogClose() {
     dialogStore.setActive(false)
     dialogStore.setMaskActive(false)
   }
 
-  public handlePageUpdate() {
-    this.$nuxt.$loading.start()
+  private handlePageUpdate() {
+    // this.$nuxt.$loading.start()
     this.paging += 10
-    const timeout = setTimeout(() => {
-      this.$nuxt.$loading.finish()
-      clearTimeout(timeout)
-    }, 500)
+    // this.paging += 4
+    // const timeout = setTimeout(() => {
+    //   this.$nuxt.$loading.finish()
+    //   clearTimeout(timeout)
+    // }, 500)
   }
 
-  public paging: number = 10
+  private paging: number = 16
+
+  // private paging: number = 4
 
   get eventListPaged() {
     return this.eventList.slice(0, this.paging)
   }
 
-  public calendarToggle: boolean = false
+  private calendarToggle: boolean = false
 
-  public handleCalendarItemClick({ originalItem: { url } }: any) {
+  private handleCalendarItemClick({ originalItem: { url } }: any) {
     const serialno = url.split('=')[1]
     this.handleRouteUpdate(serialno)
   }
 
-  public handleRouteUpdate(serialno: string) {
+  private handleRouteUpdate(serialno: string) {
     this.$router.push({ name: 'funevents-serialno', params: { serialno } })
   }
 
@@ -136,7 +167,7 @@ export default class FunEventsIndex extends Vue {
   }
 
   @Watch('calendarToggle')
-  public async onCalendarToggle(newVal: boolean) {
+  private async onCalendarToggle(newVal: boolean) {
     if (newVal) {
       this.$nuxt.$loading.start()
       await this.sendGetCalendarRequest(
@@ -168,7 +199,7 @@ export default class FunEventsIndex extends Vue {
       : []
   }
 
-  public async sendGetCalendarRequest(date: string, calendarType: string) {
+  private async sendGetCalendarRequest(date: string, calendarType: string) {
     try {
       await funEventsStore.getCalendar({
         token: this.$cookies.get('accessToken'),
@@ -180,7 +211,7 @@ export default class FunEventsIndex extends Vue {
     }
   }
 
-  public async sendGetEventListRequest() {
+  private async sendGetEventListRequest() {
     try {
       await funEventsStore.getEventList({
         token: this.$cookies.get('accessToken')
@@ -197,16 +228,24 @@ export default class FunEventsIndex extends Vue {
     }
   }
 
-  public async fetch() {
+  private async fetch() {
     await this.sendGetEventListRequest()
   }
 
-  public activated() {
+  private activated() {
     this.$nextTick(async () => {
       this.$nuxt.$loading.start()
       await this.sendGetEventListRequest()
       this.$nuxt.$loading.finish()
     })
+  }
+
+  private mounted() {
+    window.addEventListener('scroll', this.handleScroll)
+  }
+
+  private beforeDestroyed() {
+    window.removeEventListener('scroll', this.handleScroll)
   }
 }
 </script>
@@ -245,5 +284,11 @@ export default class FunEventsIndex extends Vue {
   &__cardbox {
     margin: 0 $spacing-m;
   }
+}
+.endInfo {
+  font-weight: bold;
+  font-size: $fz-m;
+  color: $greyTwo;
+  text-align: center;
 }
 </style>

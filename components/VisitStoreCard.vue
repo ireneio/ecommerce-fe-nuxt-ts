@@ -14,13 +14,21 @@
         </div>
         <div class="visitStoreCard__descImg" v-if="cardType !== 'coupon'">
           <img
-            src="https://hnstayfuntst.blob.core.windows.net/store/defaultimg/stayfun_logo_defualt.png"
-            alt="description image"
+            :src="
+              imageUrl
+                ? imageUrl
+                : 'https://hnstayfuntst.blob.core.windows.net/store/defaultimg/stayfun_logo_defualt.png'
+            "
+            alt=""
           />
         </div>
         <div class="visitStoreCard__pricebox" v-if="cardType === 'coupon'">
-          <div class="visitStoreCard__ogPrice">原價 ${{ originalPrice.toLocaleString('en') }}</div>
-          <div class="visitStoreCard__newPrice">${{ salePrice.toLocaleString('en') }}</div>
+          <div class="visitStoreCard__ogPrice">
+            原價 ${{ originalPrice.toLocaleString('en') }}
+          </div>
+          <div class="visitStoreCard__newPrice">
+            ${{ salePrice.toLocaleString('en') }}
+          </div>
         </div>
       </div>
     </div>
@@ -47,6 +55,14 @@ export default class VisitStoreCard extends Vue {
     }
   })
   readonly type!: '生活' | '美食' | '住宿' | '舒壓' | '時尚'
+
+  @Prop({
+    type: String,
+    default() {
+      return 'https://hnstayfuntst.blob.core.windows.net/store/defaultimg/stayfun_logo_defualt.png'
+    }
+  })
+  readonly imageUrl!: string
 
   @Prop({
     type: String,

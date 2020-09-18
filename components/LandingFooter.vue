@@ -24,14 +24,23 @@
               </li>
             </ul>
             <ul class="landingFooter__list">
-              <li><a href="javascript:;">特約商家推薦</a></li>
+              <li>
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSfcIYRzm9KHdKOCOkWQMRXjzMX3131n9Q96Qye2MTcgayuRLw/viewform"
+                  target="_blank"
+                  >特約商家推薦
+                </a>
+              </li>
               <li>
                 <nuxt-link to="/contact">聯絡我們</nuxt-link>
               </li>
             </ul>
             <ul class="landingFooter__downloadlist">
               <li>
-                <a href="javascript:;">
+                <a
+                  href="https://apps.apple.com/tw/app/stayfun-%E5%93%A1%E5%B7%A5%E7%A6%8F%E5%88%A9%E6%95%B4%E5%90%88%E5%B9%B3%E5%8F%B0/id1182909836"
+                  target="_blank"
+                >
                   <img
                     src="/img/downloadapple.svg"
                     alt="appstore download logo"
@@ -40,7 +49,10 @@
                 </a>
               </li>
               <li>
-                <a href="javascript:;">
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.huanuage.stayfun&hl=zh_TW"
+                  target="_blank"
+                >
                   <img
                     src="/img/downloadgoogle.svg"
                     alt="google playstore download logo"
@@ -51,14 +63,17 @@
             </ul>
             <div class="landingFooter__socialmedia">
               <div>
-                <a href="javascript:;">
+                <a
+                  href="https://www.facebook.com/stayfungogogo/"
+                  target="_blank"
+                >
                   <img
                     src="/img/icon_facebook.svg"
                     alt="facebook logo"
                     class="landingFooter__icon"
                   />
                 </a>
-                <a href="javascript:;">
+                <a href="mailto:stayfun_service@mayohr.com">
                   <img
                     src="/img/icon_mail.svg"
                     alt="mail logo"

@@ -6,7 +6,7 @@
       <div class="downloadBanner__title">STAYFUN</div>
       <div class="downloadBanner__subtitle">在 App 打開</div>
     </div>
-    <div class="downloadBanner__btn">開啟</div>
+    <div class="downloadBanner__btn" @click="handleOpenApp">開啟</div>
   </div>
 </template>
 <script lang="ts">
@@ -23,6 +23,11 @@ export default class DefaultDownloadBanner extends Vue {
   readonly link!: string
 
   private active: boolean = true
+
+  private handleOpenApp(): void {
+    const url = 'http://onelink.to/sfun'
+    window.open(url, '_blank')
+  }
 }
 </script>
 <style lang="scss" scoped>

@@ -23,7 +23,8 @@ import {
   faArrowUp,
   faBars,
   faTimes,
-  faSpinner
+  faSpinner,
+  faMoneyBillWave
 } from '@fortawesome/free-solid-svg-icons'
 import {
   faQuestionCircle,
@@ -63,7 +64,8 @@ const icons = [
   faArrowUp,
   faBars,
   faTimes,
-  faSpinner
+  faSpinner,
+  faMoneyBillWave
 ]
 icons.forEach((icon) => library.add(icon))
 

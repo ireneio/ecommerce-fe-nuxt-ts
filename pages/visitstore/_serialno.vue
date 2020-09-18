@@ -8,7 +8,13 @@
               <div class="visitstoredetailimgbox">
                 <div
                   class="visitstoredetailimgbox__img"
-                  :style="{ 'background-image': `url(${storeData.logoUrl})` }"
+                  :style="{
+                    'background-image': `url(${
+                      storeData.banner.length
+                        ? storeData.banner[0].imageUrl
+                        : ''
+                    })`
+                  }"
                 ></div>
                 <div class="visitstoredetailimgbox__desc">
                   <span>
@@ -69,6 +75,15 @@
                     <div class="visitstoredetaildetails__text">電話</div>
                     <div class="visitstoredetaildetails__value">
                       {{ storeData.storePhone }}
+                    </div>
+                  </div>
+                  <div class="visitstoredetaildetails__row">
+                    <div class="visitstoredetaildetails__icon">
+                      <fa :icon="['fas', 'money-bill-wave']"></fa>
+                    </div>
+                    <div class="visitstoredetaildetails__text">平均消費</div>
+                    <div class="visitstoredetaildetails__value">
+                      {{ storeData.avePrice }}
                     </div>
                   </div>
                   <div class="visitstoredetaildetails__row">
@@ -309,7 +324,7 @@
                       <client-only>
                         <div class="visitstoredetaildetails__map">
                           <l-map
-                            :zoom="12"
+                            :zoom="16"
                             :center="[
                               storeData.lat ? storeData.lat : 0,
                               storeData.lat ? storeData.lng : 0

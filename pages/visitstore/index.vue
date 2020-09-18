@@ -22,7 +22,8 @@
                 :subtitle="item.subtitle"
                 :type="item.type"
                 :serialno="item.serialno"
-                :logoUrl="item.logoUrl"
+                :logoUrl="item.bannerImageUrl"
+                :imageUrl="item.imageUrl"
                 @update-route="handleUpdateRoute"
               />
             </b-col>
@@ -148,10 +149,11 @@ export default class VisitStoreIndex extends Vue {
   }
 
   private handleUpdateRoute(serialno: string): void {
-    this.$router.push({
-      name: 'visitstore-serialno',
-      params: { serialno }
-    })
+    window.open(`/visitstore/${serialno}`, '_blank')
+    // this.$router.push({
+    //   name: 'visitstore-serialno',
+    //   params: { serialno }
+    // })
   }
 
   get categories() {

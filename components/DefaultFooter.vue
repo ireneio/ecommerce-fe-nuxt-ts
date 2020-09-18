@@ -25,7 +25,12 @@
                   <nuxt-link to="/contact">聯絡我們</nuxt-link>
                 </div>
                 <div class="footerBar__listitem footerBar__navlinks">
-                  <a href="javascript:;">特約商家推薦 </a>
+                  <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSfcIYRzm9KHdKOCOkWQMRXjzMX3131n9Q96Qye2MTcgayuRLw/viewform"
+                    target="_blank"
+                  >
+                    特約商家推薦
+                  </a>
                 </div>
                 <div class="footerBar__listitem footerBar__copyright">
                   <span>

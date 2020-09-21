@@ -24,7 +24,7 @@ stages:
             displayName: Login to ACR
             inputs:
               command: login
-              containerRegistry: tstpipeline
+              containerRegistry: stayfunFrontend-1710
           - task: Docker@2
             displayName: Build an image
             inputs:

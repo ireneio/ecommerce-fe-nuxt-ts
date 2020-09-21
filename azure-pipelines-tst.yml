@@ -24,7 +24,7 @@ stages:
             displayName: Login to ACR
             inputs:
               command: login
-              containerRegistry: 00c7454b-9d6f-477d-a0b8-2c31ff700218
+              containerRegistry: stayfunFrontend-1710
               repository: stayfunFrontend
           - task: Docker@2
             displayName: Build an image

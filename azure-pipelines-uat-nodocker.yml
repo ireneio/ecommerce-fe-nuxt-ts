@@ -4,9 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-  branches:
-    - develop
-    - release/*
+  - release/*
 
 pool:
   vmImage: 'ubuntu-latest'

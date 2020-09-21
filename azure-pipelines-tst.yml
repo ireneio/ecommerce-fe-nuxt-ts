@@ -24,12 +24,13 @@ stages:
             displayName: Login to ACR
             inputs:
               command: login
-              containerRegistry: stayfunFrontend-1710
-              repository: stayfunFrontend
+              containerRegistry: stayfunFrontend
+
           - task: Docker@2
             displayName: Build an image
             inputs:
               command: buildAndPush
+              repository: frontend
               dockerfile: '**/Dockerfile'
               tags: |
                 $(tag)

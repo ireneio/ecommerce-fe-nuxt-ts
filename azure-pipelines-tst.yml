@@ -24,7 +24,8 @@ stages:
             displayName: Login to ACR
             inputs:
               command: login
-              containerRegistry: stayfunFrontend-1710
+              containerRegistry: 2019_MPN01-2
+              repository: stayfunFrontend
           - task: Docker@2
             displayName: Build an image
             inputs:

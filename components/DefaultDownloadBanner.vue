@@ -25,8 +25,11 @@ export default class DefaultDownloadBanner extends Vue {
   private active: boolean = true
 
   private handleOpenApp(): void {
-    const url = 'http://onelink.to/sfun'
-    window.open(url, '_blank')
+    location.href = 'https://stayfun.mayohr.com/ShoppingMall'
+    setTimeout(() => {
+      const url = 'http://onelink.to/sfun'
+      window.open(url, '_blank')
+    }, 1000)
   }
 }
 </script>

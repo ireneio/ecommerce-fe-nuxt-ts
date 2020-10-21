@@ -18,7 +18,7 @@
                 <landing-page-news-item
                   v-for="detail in item.data"
                   :key="detail.serialno"
-                  :text="detail.content"
+                  :text="detail.title"
                   :name="detail.creatorname"
                   :date="new Date(detail.createdatetime).toLocaleString()"
                   @click="handleGoToAnnouncements(detail.serialno)"
@@ -421,7 +421,8 @@ export default class Index extends Vue {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    arrows: false
+    arrows: false,
+    autoplay: true
   }
 
   public tabCarouselSetting: any = {
@@ -696,10 +697,11 @@ export default class Index extends Vue {
   @include grid-lg {
     height: 217px;
   }
-  background-color: $primary;
+  background-color: transparent;
   background-image: url(/img/image.png);
   background-position: center center;
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
   &__box {
     width: 100%;
     padding-left: 0;

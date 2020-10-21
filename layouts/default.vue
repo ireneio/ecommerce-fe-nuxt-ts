@@ -48,6 +48,27 @@
         </div>
       </default-modal>
     </client-only>
+    <client-only>
+      <default-modal
+        :active="adsModalState"
+        v-if="latestAds !== null && !gifts.length"
+        @click="handleAdsModalClose"
+      >
+        <div class="gift">
+          <!-- <div class="gift__title"></div> -->
+          <div
+            class="gift__banner"
+            :style="{ 'background-image': `url(${latestAds.fileurl})` }"
+          ></div>
+          <!-- <div class="gift__content">{{ latestAds.title }}</div> -->
+        </div>
+        <div>
+          <base-button type="primary" display="block" @click="handleAdsClick">
+            前往查看
+          </base-button>
+        </div>
+      </default-modal>
+    </client-only>
   </div>
 </template>
 
@@ -62,7 +83,7 @@ import DefaultScrollToButton from '~/components/DefaultScrollToButton.vue'
 import DefaultModal from '~/components/DefaultModal.vue'
 import DefaultDownloadBanner from '~/components/DefaultDownloadBanner.vue'
 
-import { dialogStore, authStore, giftStore } from '~/store'
+import { dialogStore, authStore, giftStore, commonStore } from '~/store'
 
 @Component({
   components: {
@@ -146,6 +167,33 @@ export default class DefaultLayout extends Vue {
       : []
   }
 
+  get latestAds() {
+    return commonStore.ads
+  }
+
+  private adsModalState: boolean = false
+
+  private handleAdsModalClose() {
+    dialogStore.setMaskActive(false)
+    this.adsModalState = false
+  }
+
+  private handleAdsClick() {
+    if (this.latestAds !== null && this.latestAds.link !== '') {
+      window.open(this.latestAds.link, '_blank')
+    }
+  }
+
+  private async sendGetLatestAds() {
+    try {
+      await commonStore.getLatestAds({
+        token: this.$cookies.get('accessToken')
+      })
+    } catch (e) {
+      //  error
+    }
+  }
+
   private async sendClaimGiftRequest(serialno: string) {
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/GiftActivity/notTakenOuts',
@@ -197,7 +245,7 @@ export default class DefaultLayout extends Vue {
     }
   }
 
-  private mounted() {
+  private async mounted() {
     const validRoutes: Array<string> = [
       'announcements',
       'funevents',
@@ -215,6 +263,10 @@ export default class DefaultLayout extends Vue {
           this.modalState = true
         }
       }, 3000)
+    }
+    await this.sendGetLatestAds()
+    if (this.latestAds !== null) {
+      this.adsModalState = true
     }
   }
 

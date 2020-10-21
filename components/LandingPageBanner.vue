@@ -7,7 +7,10 @@
           class="landingPageBanner__item"
           v-for="item in items"
           :key="item.serialno"
-          :style="{ 'background-image': `url(${item.image})` }"
+          :style="{
+            'background-image': `url(${item.image})`,
+            cursor: item.url !== '' ? 'pointer' : 'not-allowed'
+          }"
         ></div>
         <template #prevArrow>
           <div class="landingPageBanner__arrowLeft"></div>
@@ -61,7 +64,7 @@ export default class LandingpageBanner extends Vue {
     slidesToScroll: 1,
     arrows: true,
     dotsClass: 'slick-dots',
-    autoplay: false,
+    autoplay: true,
     responsive: [
       {
         breakpoint: 768,

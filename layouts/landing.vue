@@ -75,6 +75,27 @@
         </div>
       </default-modal>
     </client-only>
+    <client-only>
+      <default-modal
+        :active="adsModalState"
+        v-if="latestAds !== null && !gifts.length"
+        @click="handleAdsModalClose"
+      >
+        <div class="gift">
+          <!-- <div class="gift__title"></div> -->
+          <div
+            class="gift__banner"
+            :style="{ 'background-image': `url(${latestAds.fileurl})` }"
+          ></div>
+          <!-- <div class="gift__content">{{ latestAds.title }}</div> -->
+        </div>
+        <div>
+          <base-button type="primary" display="block" @click="handleAdsClick">
+            前往查看
+          </base-button>
+        </div>
+      </default-modal>
+    </client-only>
   </div>
 </template>
 <script lang="ts">
@@ -92,7 +113,13 @@ import DefaultDownloadBanner from '~/components/DefaultDownloadBanner.vue'
 
 // import DefaultModal from '~/components/DefaultModal.vue'
 
-import { landingStore, dialogStore, giftStore, authStore } from '~/store'
+import {
+  landingStore,
+  dialogStore,
+  giftStore,
+  authStore,
+  commonStore
+} from '~/store'
 
 @Component({
   components: {
@@ -139,6 +166,19 @@ export default class LandingLayout extends Vue {
     dialogStore.setMaskActive(false)
     giftStore.setHasShowed(true)
     this.modalState = false
+  }
+
+  private adsModalState: boolean = false
+
+  private handleAdsModalClose() {
+    dialogStore.setMaskActive(false)
+    this.adsModalState = false
+  }
+
+  private handleAdsClick() {
+    if (this.latestAds !== null && this.latestAds.link !== '') {
+      window.open(this.latestAds.link, '_blank')
+    }
   }
 
   public async handleGetGift(serialno: string) {
@@ -211,6 +251,10 @@ export default class LandingLayout extends Vue {
     return dialogStore.content
   }
 
+  get latestAds() {
+    return commonStore.ads
+  }
+
   public handleDialogConfirm() {
     dialogStore.setConfirmed(true)
     dialogStore.setActive(false)
@@ -234,10 +278,11 @@ export default class LandingLayout extends Vue {
       dialogStore.setMaskActive(true)
       dialogStore.setContent({
         title: '您即將前往第三方合作網站，是否繼續？',
-        message: redirectHintMessage
+        message: redirectHintMessage,
+        type: 'confirm'
       })
       dialogStore.setConfirmAction({ url })
-    } else {
+    } else if (url !== '') {
       window.open(url, '_blank')
     }
   }
@@ -275,7 +320,17 @@ export default class LandingLayout extends Vue {
     }
   }
 
-  public mounted() {
+  private async sendGetLatestAds() {
+    try {
+      await commonStore.getLatestAds({
+        token: this.$cookies.get('accessToken')
+      })
+    } catch (e) {
+      //  error
+    }
+  }
+
+  public async mounted() {
     if (!giftStore.hasShowed) {
       this.timer = setTimeout(async () => {
         await this.sendGetGiftRequest()
@@ -284,6 +339,11 @@ export default class LandingLayout extends Vue {
           this.modalState = true
         }
       }, 3000)
+    }
+    await this.sendGetLatestAds()
+    if (this.latestAds !== null) {
+      dialogStore.setMaskActive(true)
+      this.adsModalState = true
     }
   }
 

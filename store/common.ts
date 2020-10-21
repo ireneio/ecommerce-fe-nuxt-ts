@@ -13,6 +13,7 @@ export default class CommonModule extends VuexModule {
   public countyListForFunEvents: any = []
   public areas: any = []
   public categories: any = []
+  public ads: any = []
 
   @Mutation
   setAreaList(payload: any) {
@@ -50,6 +51,11 @@ export default class CommonModule extends VuexModule {
   @Mutation
   setAreas(payload: any) {
     this.areas = payload
+  }
+
+  @Mutation
+  setLatestAds(payload: any) {
+    this.ads = payload
   }
 
   @Action({ commit: 'setAreaList' })
@@ -126,6 +132,29 @@ export default class CommonModule extends VuexModule {
   async getAreas({ token }: any) {
     const requestBody: ProxyRequestObject = {
       endpoint: '/api/Main/FindAreas',
+      key: process.env.apiKey,
+      method: 'get',
+      token
+    }
+    try {
+      const result: ResponseObject = await $axios.post('/api', requestBody)
+      switch (Number(result.data.syscode)) {
+        case 200:
+          return result.data.data
+        case 404:
+          return new Error('Failed to Get List')
+        default:
+          return null
+      }
+    } catch (e) {
+      throw new Error(`Backend Error: ${e}`)
+    }
+  }
+
+  @Action({ commit: 'setLatestAds' })
+  async getLatestAds({ token }: any) {
+    const requestBody: ProxyRequestObject = {
+      endpoint: '/api/Ads/GetLatestAd?enumCode=3',
       key: process.env.apiKey,
       method: 'get',
       token

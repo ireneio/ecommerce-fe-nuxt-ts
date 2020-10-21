@@ -1,6 +1,6 @@
 <template>
   <div class="landingPageNewsItem" @click="$emit('click')">
-    <h4 class="landingPageNewsItem__title" v-html="text"></h4>
+    <h4 class="landingPageNewsItem__title">{{ text }}</h4>
     <span class="landingPageNewsItem__date">{{ date }}</span>
     <span class="landingPageNewsItem__author">
       <span class="landingPageNewsItem__authoricon"></span>

@@ -79,7 +79,7 @@ export default class DefaultModal extends Vue {
     padding: 42px 85px 53px;
   }
   @include grid-lg {
-    width: 50vw;
+    width: 30vw;
     transform: translate(-50%, -50%);
   }
   &--active {

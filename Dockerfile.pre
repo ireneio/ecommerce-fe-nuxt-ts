@@ -1,4 +1,4 @@
-FROM stayfunfrontend.azurecr.io/node
+FROM node:14
 
 RUN mkdir -p /usr/src/nuxt-frontend
 WORKDIR /usr/src/nuxt-frontend

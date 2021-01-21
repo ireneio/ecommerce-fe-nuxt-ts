@@ -9,6 +9,9 @@
     "build": "cross-env NODE_ENV=production NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt-ts build",
     "start": "cross-env NODE_ENV=production NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt-ts start",
     "generate": "cross-env NODE_ENV=production NUXT_HOST=0.0.0.0 NUXT_PORT=3000 nuxt-ts generate",
+    "docker:dev": "bash ./docker-build-run.sh",
+    "docker:hub": "bash ./docker-build-push.sh",
+    "azure": "bash ./azure-deploy.sh",
     "lint:js": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "lint": "npm run lint:js",
     "test": "jest"
